@@ -1,0 +1,47 @@
+# Created by https://www.toptal.com/developers/gitignore/api/angular,intellij,maven
+# Edit at https://www.toptal.com/developers/gitignore?templates=angular,intellij,maven
+
+### Angular ###
+## Angular ##
+# compiled output
+frontend/dist/
+frontend/tmp/
+frontend/app/**/*.js
+frontend/app/**/*.js.map
+
+# dependencies
+frontend/node_modules/
+frontend/bower_components/
+
+# IDEs and editors
+frontend/.idea/
+redBoxBack/.idea/
+
+# misc
+frontend/.sass-cache/
+frontend/connect.lock/
+frontend/coverage/
+frontend/libpeerconnection.log/
+frontend/npm-debug.log
+frontend/testem.log
+frontend/typings/
+
+# e2e
+frontend/e2e/*.js
+frontend/e2e/*.map
+
+# IDEs and editors
+.idea/
+
+### Maven ###
+target/
+Backend/pom.xml.tag
+Backend/pom.xml.releaseBackup
+Backend/pom.xml.versionsBackup
+Backend/pom.xml.next
+Backend/release.properties
+Backend/dependency-reduced-pom.xml
+Backend/buildNumber.properties
+Backend/.mvn/timing.properties
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+Backend/.mvn/wrapper/maven-wrapper.jar
