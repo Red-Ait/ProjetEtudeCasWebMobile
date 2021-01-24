@@ -11,4 +11,4 @@ Ceci est le diagramme de classe
 
 ## Hiérarchie
 Ceci est un exemple de relation hiérarchique entre les différentes Entitées
-![Hiérarchie](Doc/conception/Conception-Hierarchie.png)
+![Hiérarchie](Doc/conception/Conception-hierarchie.png)
