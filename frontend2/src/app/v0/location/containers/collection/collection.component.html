@@ -1,3 +1,27 @@
-<p>
-  collection works!
-</p>
+<ul class="list-group list-group-flush">
+
+  <li
+    *ngFor="let c of collections"
+    class="list-group-item d-flex justify-content-between"
+  >
+    <span>{{c.name}}</span>
+    <div>
+      <mat-icon
+        (click)="editCollection(c)"
+        matListIcon
+      >edit</mat-icon>
+      <mat-icon
+        (click)="removeCollection(c)"
+        matListIcon
+      >delete_outline</mat-icon>
+    </div>
+  </li>
+  <input [(ngModel)]="collection.name" class="list-group-item"/>
+  <button
+    (click)="addCollection(collection)"
+    class="btn-success font-weight-bolder text-center p-3"
+    [disabled]="isButtonDisabled()"
+  >
+    Ajouter
+  </button>
+</ul>
