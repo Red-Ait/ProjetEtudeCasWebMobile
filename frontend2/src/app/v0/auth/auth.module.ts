@@ -3,13 +3,16 @@ import { CommonModule } from '@angular/common';
 
 import { AuthRoutingModule } from './auth-routing.module';
 import {components} from './component';
+import {containers} from './container';
+import {IonicModule} from '@ionic/angular';
 
 
 @NgModule({
-  declarations: [...components],
+  declarations: [...components, ...containers],
   imports: [
     CommonModule,
-    AuthRoutingModule
+    AuthRoutingModule,
+    IonicModule
   ]
 })
 export class AuthModule { }
