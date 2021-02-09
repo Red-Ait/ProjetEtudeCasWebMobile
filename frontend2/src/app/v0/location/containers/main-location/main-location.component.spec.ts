@@ -1,7 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {IonicModule} from '@ionic/angular';
 
-import { MainLocationComponent } from './main-location.component';
+import {MainLocationComponent} from './main-location.component';
 
 describe('MainLocationComponent', () => {
   let component: MainLocationComponent;

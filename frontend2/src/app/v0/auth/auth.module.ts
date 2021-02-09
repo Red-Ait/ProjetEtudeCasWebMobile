@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
-import { AuthRoutingModule } from './auth-routing.module';
+import {AuthRoutingModule} from './auth-routing.module';
 import {components} from './component';
 import {containers} from './container';
 import {IonicModule} from '@ionic/angular';

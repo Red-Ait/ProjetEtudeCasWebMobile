@@ -1,7 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {IonicModule} from '@ionic/angular';
 
-import { MapComponent } from './map.component';
+import {MapComponent} from './map.component';
 
 describe('MapComponent', () => {
   let component: MapComponent;

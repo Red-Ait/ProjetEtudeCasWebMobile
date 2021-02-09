@@ -1,7 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {IonicModule} from '@ionic/angular';
 
-import { CollectionComponent } from './collection.component';
+import {CollectionComponent} from './collection.component';
 
 describe('CollectionComponent', () => {
   let component: CollectionComponent;

@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import {MenuController} from '@ionic/angular';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-main-location',
