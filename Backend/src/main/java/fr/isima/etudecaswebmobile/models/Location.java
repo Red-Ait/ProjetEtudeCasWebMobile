@@ -12,7 +12,7 @@ public class Location {
     @GeneratedValue
     private Long id_location;
 
-    private String Label;
+    private String label;
     private double longitude;
     private double latitude;
 }
