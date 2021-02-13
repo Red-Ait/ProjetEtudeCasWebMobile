@@ -20,11 +20,6 @@ public class UserController {
     private UserService userService;
 
 
-    public UserController() {
-        // TODO Auto-generated constructor stub
-    }
-
-
     @GetMapping(path = "/user")
     public List<User> getAll() {
         return this.userService.getAllUsers();
