@@ -23,6 +23,11 @@ public class LocationImpl implements LocationService {
 
 
     @Override
+    public Location addLocation(Location location) {
+        return locationRepository.save(location);
+    }
+
+    @Override
     public List<Location> getAllLocations() {
         List<Location> locations  = this.locationRepository.findAll();
         if (locations.isEmpty())

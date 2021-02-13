@@ -8,7 +8,9 @@ import java.util.Optional;
 
 public interface LocationService {
 
+    public Location addLocation(Location location );
     public List<Location> getAllLocations();
     public Optional<Location> getLocationById(Long id) ;
+
 
 }
