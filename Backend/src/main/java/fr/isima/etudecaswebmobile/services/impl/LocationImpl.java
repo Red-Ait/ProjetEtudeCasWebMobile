@@ -1,7 +1,6 @@
 package fr.isima.etudecaswebmobile.services.impl;
 
 import fr.isima.etudecaswebmobile.models.Location;
-import fr.isima.etudecaswebmobile.models.User;
 import fr.isima.etudecaswebmobile.repositories.LocationRepository;
 import fr.isima.etudecaswebmobile.services.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +38,24 @@ public class LocationImpl implements LocationService {
     @Override
     public Optional<Location> getLocationById(Long id) {
         return locationRepository.findById(id);
+    }
+
+    @Override
+    public Location updateLocationById(Location newLocation, Long id)
+    {
+        Optional<Location> oldLocation = this.getLocationById(id);
+        oldLocation.get().setLabel(newLocation.getLabel());
+        oldLocation.get().setLongitude(newLocation.getLongitude());
+        oldLocation.get().setLongitude(newLocation.getLatitude());
+
+        return locationRepository.save(oldLocation.get());
+    }
+
+    @Override
+    public Location deleteLocationById(Long id)
+    {
+        Optional<Location> Location = this.getLocationById(id);
+        this.locationRepository.delete(Location.get());
+        return Location.get();
     }
 }

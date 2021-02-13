@@ -35,4 +35,17 @@ public class LocationController {
     public Optional<Location> getLocationById(@PathVariable long id) {
         return this.locationService.getLocationById(id);
     }
+
+    @RequestMapping(value = "/location/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<Location> udpateLocationById(@Validated @RequestBody Location location, @PathVariable long id)
+    {
+        return new ResponseEntity<Location>(this.locationService.updateLocationById(location, id), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/location/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Location> deleteLocationById(@PathVariable long id)
+    {
+        return new ResponseEntity<Location>(this.locationService.deleteLocationById(id), HttpStatus.OK);
+    }
+
 }
