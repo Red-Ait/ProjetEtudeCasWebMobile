@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -28,5 +29,10 @@ public class LocationImpl implements LocationService {
             return Collections.emptyList();
         else
             return locations;
+    }
+
+    @Override
+    public Optional<Location> getLocationById(Long id) {
+        return locationRepository.findById(id);
     }
 }
