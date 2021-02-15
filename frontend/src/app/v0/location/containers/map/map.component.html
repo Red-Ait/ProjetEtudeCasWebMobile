@@ -1,0 +1,33 @@
+<app-header [title]="'Map'"></app-header>
+<ion-content [fullscreen]="true">
+
+  <div id="container" style="color: black">
+    <ion-searchbar showCancelButton="always"></ion-searchbar>
+    <div id="map"
+         [style]="{'height': '100%', marginTop: 0}"
+         (leafletClick)="onMapClick($event)"
+         leaflet
+         (leafletMapReady)="onMapReady($event)"
+         [leafletOptions]="mapOptions">
+    </div>
+  </div>
+
+  <ng-template #newPositionDetail let-c="close" let-d="dismiss">
+    <div class="modal-body" >
+      <p>({{selectedPoint.latitude}} , {{selectedPoint.longitude}})</p>
+      <ion-button>Save</ion-button>
+      <ion-button (click)="unselectPoint()">Cancel</ion-button>
+    </div>
+  </ng-template>
+
+  <ng-template #positionDetail let-c="close" let-d="dismiss">
+    <div class="modal-body" >
+      <h5>{{selectedPoint.label}}</h5>
+      <span class="badge badge-pill badge-info" style="margin-right: 6px" *ngFor="let tag of selectedPoint.tags">{{tag.label}}</span>
+      <br>
+      <span class="badge badge-pill badge-info" style="margin-right: 6px" >+</span>
+      <p>({{selectedPoint.latitude}} , {{selectedPoint.longitude}})</p>
+    </div>
+  </ng-template>
+
+</ion-content>
