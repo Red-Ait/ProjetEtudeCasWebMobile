@@ -12,6 +12,8 @@ import {CollectionComponent} from './containers/collection/collection.component'
 import {MatIconModule} from '@angular/material/icon';
 import {LeafletModule} from '@asymmetrik/ngx-leaflet';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgxsModule} from '@ngxs/store';
+import {LocationState} from './state/location.state';
 
 
 @NgModule({
@@ -27,6 +29,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
     FormsModule,
     MatIconModule,
     NgbModule,
+    NgxsModule.forFeature([LocationState]),
     LeafletModule
   ],
   exports: [CollectionComponent]
