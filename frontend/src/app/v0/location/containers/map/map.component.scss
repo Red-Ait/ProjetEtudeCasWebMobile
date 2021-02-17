@@ -1,0 +1,43 @@
+ion-menu-button {
+  color: var(--ion-color-primary);
+}
+
+#container {
+  text-align: center;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 100%;
+}
+ion-searchbar {
+  z-index: 23000 !important;
+  position: absolute !important;
+}
+ion-list {
+  z-index: 2200 !important;
+  position: absolute !important;
+  width: 100%;
+}
+#container strong {
+  font-size: 20px;
+  line-height: 26px;
+}
+
+#container p {
+  font-size: 16px;
+  line-height: 22px;
+  color: #8c8c8c;
+  margin: 0;
+}
+
+#container a {
+  text-decoration: none;
+}
+.backdrop-class {
+  background-color: white !important;
+  visibility: hidden;
+}
+.modal-class {
+  text-align: center;
+  top: 75% !important;
+}
