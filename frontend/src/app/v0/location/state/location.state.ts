@@ -3,8 +3,8 @@ import {Action, Selector, State, StateContext} from '@ngxs/store';
 import {Injectable} from '@angular/core';
 import {ITag} from '../../@entities/ITag';
 import * as locationAction from './location.action';
+import {GetUserMapPointFail, GetUserMapPointSuccess} from './location.action';
 import {LocationApi} from '../service/location.api';
-import {GetUserMapPointFail, GetUserMapPointSuccess} from "./location.action";
 
 export class LocationStateModel {
   mapPoints: Array<IMapPoint>;
