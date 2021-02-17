@@ -1,3 +1,5 @@
+import {ERole} from './ERole';
+
 export interface IUser {
   id: number;
   firstName: string;
@@ -5,5 +7,5 @@ export interface IUser {
   email: string;
   username: string;
   password: string;
-  roles: Array<string>;
+  roles: Array<ERole>;
 }

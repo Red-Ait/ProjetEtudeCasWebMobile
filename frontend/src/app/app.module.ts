@@ -10,7 +10,10 @@ import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {StoreModule} from '@ngrx/store';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {UserGuard} from './v0/interceptors/user.guard';
+import {HttpListenerService, HTTPStatus} from './v0/interceptors/http-listener.service';
+import {AuthGuard} from './v0/interceptors/auth.guard';
 import {NgxsModule} from '@ngxs/store';
 import {AppState} from './v0/state/app.state';
 
@@ -29,7 +32,14 @@ import {AppState} from './v0/state/app.state';
     NgxsModule.forRoot([AppState]),
     BrowserAnimationsModule
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    AuthGuard,
+    UserGuard,
+    HttpListenerService,
+    HTTPStatus,
+    { provide: HTTP_INTERCEPTORS, useClass: HttpListenerService, multi: true }
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
