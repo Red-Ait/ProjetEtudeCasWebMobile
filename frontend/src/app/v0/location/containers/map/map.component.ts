@@ -2,7 +2,6 @@ import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {control, icon, latLng, MapOptions, Marker, tileLayer} from 'leaflet';
 import {IMapPoint} from '../../../@entities/IMapPoint';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {ITag} from '../../../@entities/ITag';
 
 @Component({
   selector: 'app-map',

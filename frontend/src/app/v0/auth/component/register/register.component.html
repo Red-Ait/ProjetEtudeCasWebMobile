@@ -2,13 +2,51 @@
   <div id="formContent">
 
     <!-- Login Form -->
-    <form>
-      <input type="text" id="name" class="fadeIn second" name="login" placeholder="Nom">
-      <input type="text" id="lastName" class="fadeIn second" name="login" placeholder="Prénom">
-      <input type="text" id="id" class="fadeIn second" name="login" placeholder="Email">
-      <input type="text" id="password" class="fadeIn third" name="login" placeholder="Mot de passe">
-      <input type="text" id="passwordConfirmer" class="fadeIn third" name="login" placeholder="Confirmer">
-      <input type="submit" class="fadeIn fourth" value="Register">
+    <form #f="ngForm" (ngSubmit)="submit()">
+      <input
+        type="text"
+        id="lastName"
+        [(ngModel)]="user.lastName"
+        class="fadeIn second"
+        name="lastName"
+        placeholder="Nom"
+      >
+      <input
+        type="text"
+        id="firstName"
+        [(ngModel)]="user.firstName"
+        class="fadeIn second"
+        name="firstName"
+        placeholder="Prénom"
+      >
+      <input
+        type="text"
+        id="id"
+        [(ngModel)]="user.username"
+        class="fadeIn second"
+        name="username"
+        placeholder="Email"
+      >
+      <input
+        type="text"
+        id="password"
+        [(ngModel)]="user.password"
+        class="fadeIn third"
+        name="password"
+        placeholder="Mot de passe"
+      >
+      <input
+        type="text"
+        id="passwordConfirmer"
+        class="fadeIn third"
+        name="login"
+        placeholder="Confirmer"
+      >
+      <input
+        type="submit"
+        class="fadeIn fourth"
+        value="Register"
+      >
     </form>
 
     <!-- Remind Passowrd -->
