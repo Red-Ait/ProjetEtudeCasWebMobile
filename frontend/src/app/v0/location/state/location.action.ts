@@ -1,4 +1,4 @@
-import {IMapPoint} from "../../@entities/IMapPoint";
+import {IMapPoint} from '../../@entities/IMapPoint';
 
 export class GetUserMapPoint {
   static readonly type = '[location/map] get user map point';
@@ -8,13 +8,13 @@ export class GetUserMapPoint {
 
 export class GetUserMapPointSuccess {
   static readonly type = '[location/map] get user map point success';
-  constructor(payload: Array<IMapPoint>) {
+  constructor(public payload: Array<IMapPoint>) {
   }
 }
 
 export class GetUserMapPointFail {
   static readonly type = '[location/map] get user map point fail';
-  constructor(payload: string) {
+  constructor(public payload: string) {
   }
 }
 
@@ -26,12 +26,12 @@ export class GetUserMapPointByTag {
 
 export class GetUserMapPointByTagSuccess {
   static readonly type = '[location/map] get user map point by tag success';
-  constructor(payload: Array<IMapPoint>) {
+  constructor(public payload: Array<IMapPoint>) {
   }
 }
 export class GetUserMapPointByTagFail {
   static readonly type = '[location/map] get user map point by tag fail';
-  constructor(payload: string) {
+  constructor(public payload: string) {
   }
 }
 

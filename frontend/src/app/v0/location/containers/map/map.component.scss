@@ -10,8 +10,13 @@ ion-menu-button {
   height: 100%;
 }
 ion-searchbar {
-  z-index: 1000 !important;
+  z-index: 23000 !important;
   position: absolute !important;
+}
+ion-list {
+  z-index: 2200 !important;
+  position: absolute !important;
+  width: 100%;
 }
 #container strong {
   font-size: 20px;
@@ -34,5 +39,5 @@ ion-searchbar {
 }
 .modal-class {
   text-align: center;
-  top: 75%;
+  top: 75% !important;
 }

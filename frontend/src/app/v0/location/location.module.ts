@@ -14,6 +14,8 @@ import {LeafletModule} from '@asymmetrik/ngx-leaflet';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {NgxsModule} from '@ngxs/store';
 import {LocationState} from './state/location.state';
+import {LeafletMarkerClusterModule} from '@asymmetrik/ngx-leaflet-markercluster';
+import {services} from './service';
 
 
 @NgModule({
@@ -30,8 +32,10 @@ import {LocationState} from './state/location.state';
     MatIconModule,
     NgbModule,
     NgxsModule.forFeature([LocationState]),
+    LeafletMarkerClusterModule,
     LeafletModule
   ],
+  providers: [...services],
   exports: [CollectionComponent]
 })
 export class LocationModule { }

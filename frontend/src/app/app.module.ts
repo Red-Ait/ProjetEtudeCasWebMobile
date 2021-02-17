@@ -11,6 +11,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { NgxsModule } from '@ngxs/store';
 import {AppState} from './v0/state/app.state';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,6 +20,7 @@ import {AppState} from './v0/state/app.state';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
+    HttpClientModule,
     NgxsReduxDevtoolsPluginModule.forRoot(),
     NgxsLoggerPluginModule,
     NgxsModule.forRoot([AppState]),

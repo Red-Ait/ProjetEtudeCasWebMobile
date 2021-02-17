@@ -1,7 +1,10 @@
 import {IMapPoint} from '../../@entities/IMapPoint';
-import {Selector, State} from '@ngxs/store';
+import {Action, Selector, State, StateContext} from '@ngxs/store';
 import {Injectable} from '@angular/core';
 import {ITag} from '../../@entities/ITag';
+import * as locationAction from './location.action';
+import {LocationApi} from '../service/location.api';
+import {GetUserMapPointFail, GetUserMapPointSuccess} from "./location.action";
 
 export class LocationStateModel {
   mapPoints: Array<IMapPoint>;
@@ -18,7 +21,7 @@ export class LocationStateModel {
 
 @Injectable()
 export class LocationState {
-  constructor() {
+  constructor(private locationApi: LocationApi) {
   }
 
   /************       App Selectors           ********************/
@@ -33,4 +36,21 @@ export class LocationState {
     return state.tags;
   }
 
+  @Action(locationAction.GetUserMapPoint)
+  getUserMapPoint(ctx: StateContext<LocationStateModel>) {
+    this.locationApi.getUserMapPoint().subscribe(data => {
+      ctx.dispatch(new GetUserMapPointSuccess(data));
+    }, error => {
+      ctx.dispatch(new GetUserMapPointFail(error));
+    });
+  }
+
+  @Action(locationAction.GetUserMapPointSuccess)
+  getUserMapPointSuccess(ctx: StateContext<LocationStateModel>, {payload}: locationAction.GetUserMapPointSuccess) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
+      mapPoints: payload
+    });
+  }
 }

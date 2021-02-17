@@ -2,18 +2,28 @@
 <ion-content [fullscreen]="true">
 
   <div id="container" style="color: black">
-    <ion-searchbar showCancelButton="always"></ion-searchbar>
+
+    <ion-searchbar showCancelButton="always" (keyup)="addressLookup($event.target.value)"></ion-searchbar>
+    <ion-list *ngIf="searchResults.length > 0">
+      <ion-item></ion-item>
+      <ion-item *ngFor="let result of searchResults">{{result.displayName}}</ion-item>
+    </ion-list>
     <div id="map"
          [style]="{'height': '100%', marginTop: 0}"
-         (leafletClick)="onMapClick($event)"
+         (leafletClick)="onMapClick($event.latlng.lat, $event.latlng.lng)"
          leaflet
          (leafletMapReady)="onMapReady($event)"
-         [leafletOptions]="mapOptions">
+         [leafletOptions]="mapOptions"
+         [leafletMarkerCluster]="markerClusterData"
+         [leafletMarkerClusterOptions]="markerClusterOptions"
+         (leafletMarkerClusterReady)="markerClusterReady($event)">
+
     </div>
   </div>
 
   <ng-template #newPositionDetail let-c="close" let-d="dismiss">
     <div class="modal-body" >
+      <h5>{{selectedPoint.label}}</h5>
       <p>({{selectedPoint.latitude}} , {{selectedPoint.longitude}})</p>
       <ion-button>Save</ion-button>
       <ion-button (click)="unselectPoint()">Cancel</ion-button>
