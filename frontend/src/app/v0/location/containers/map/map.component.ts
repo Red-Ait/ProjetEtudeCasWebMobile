@@ -8,12 +8,10 @@ import 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/images/marker-icon.png';
 import {NominatimService} from '../../service/nominatim-service';
 import {NominatimResponse} from '../../models/nominatim-response.model';
-<<<<<<< HEAD
+
 import {Select, Store} from '@ngxs/store';
 import {GetUserMapPoint} from '../../state/location.action';
 import {LocationState} from '../../state/location.state';
-=======
->>>>>>> f6b580abe5abe374c5c9f9d5f2a4c936d2dfa6f5
 
 @Component({
   selector: 'app-map',

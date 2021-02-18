@@ -7,10 +7,13 @@ import {containers} from './container';
 import {IonicModule} from '@ionic/angular';
 import {FormsModule} from '@angular/forms';
 import {JWT_OPTIONS, JwtHelperService} from '@auth0/angular-jwt';
+import {NgxsModule} from '@ngxs/store';
+import {AppState} from './state/app.state';
 
 @NgModule({
   declarations: [...components, ...containers],
     imports: [
+        NgxsModule.forFeature([AppState]),
         CommonModule,
         AuthRoutingModule,
         IonicModule,
