@@ -1,4 +1,8 @@
 export const environment = {
   production: true,
-  backendApiUrl: ''
+  backendApiUrl: '',
+  apiUrl: '/api',
+  resourceUri: {
+    user: '/user'
+  }
 };

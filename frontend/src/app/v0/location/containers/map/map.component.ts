@@ -1,16 +1,19 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import * as L from 'leaflet';
 import {control, icon, latLng, MapOptions, Marker, tileLayer} from 'leaflet';
 import {IMapPoint} from '../../../@entities/IMapPoint';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/images/marker-icon.png';
 import {NominatimService} from '../../service/nominatim-service';
 import {NominatimResponse} from '../../models/nominatim-response.model';
+<<<<<<< HEAD
 import {Select, Store} from '@ngxs/store';
 import {GetUserMapPoint} from '../../state/location.action';
 import {LocationState} from '../../state/location.state';
+=======
+>>>>>>> f6b580abe5abe374c5c9f9d5f2a4c936d2dfa6f5
 
 @Component({
   selector: 'app-map',
@@ -67,7 +70,7 @@ export class MapComponent implements OnInit {
       windowClass: 'modal-class',
       backdropClass: 'backdrop-class'
     });
-  }
+   }
 
   private initializeMapOptions() {
     this.mapOptions = {

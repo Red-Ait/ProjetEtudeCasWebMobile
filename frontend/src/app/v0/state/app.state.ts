@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {State, Selector} from '@ngxs/store';
+import {Selector, State} from '@ngxs/store';
 import {IUser} from '../@entities/IUser';
 
 export class AppStateModel {
