@@ -3,14 +3,16 @@
 
   <div id="container" style="color: black">
 
-    <ion-searchbar showCancelButton="always" (keyup)="addressLookup($event.target.value)"></ion-searchbar>
+    <ion-searchbar showCancelButton="always" (keyup)="addressLookup($event.target.value)" [value]="searchValue" (ionClear)="addressLookup('')"></ion-searchbar>
     <ion-list *ngIf="searchResults.length > 0">
       <ion-item></ion-item>
-      <ion-item *ngFor="let result of searchResults">{{result.displayName}}</ion-item>
+      <ion-item *ngFor="let result of searchResults" (click)="selectReselt(result)">
+        {{result.displayName}}
+      </ion-item>
     </ion-list>
     <div id="map"
          [style]="{'height': '100%', marginTop: 0}"
-         (leafletClick)="onMapClick($event.latlng.lat, $event.latlng.lng)"
+         (leafletClick)="showNewMarker($event.latlng.lat, $event.latlng.lng, 'Unknown Position', false)"
          leaflet
          (leafletMapReady)="onMapReady($event)"
          [leafletOptions]="mapOptions"
@@ -21,23 +23,18 @@
     </div>
   </div>
 
-  <ng-template #newPositionDetail let-c="close" let-d="dismiss">
-    <div class="modal-body" >
-      <h5>{{selectedPoint.label}}</h5>
-      <p>({{selectedPoint.latitude}} , {{selectedPoint.longitude}})</p>
-      <ion-button>Save</ion-button>
-      <ion-button (click)="unselectPoint()">Cancel</ion-button>
+  <ng-template #positionDetail let-c="close" let-d="dismiss">
+    <div class="modal-body"  >
+      <ion-icon *ngIf="selectedPoint.saved" name="bookmark" class="saved-flag"></ion-icon>
+      <ion-button class="extend-button">
+        <ion-icon name="chevron-up-circle-outline" size="30px" ></ion-icon>
+      </ion-button>
+      <ion-button class="close-button" (click)="c('Close click')">
+        <ion-icon name="chevron-down-circle-outline" size="30px" ></ion-icon>
+      </ion-button>
+      <h5>{{selectedPoint.point.label}}</h5>
     </div>
   </ng-template>
 
-  <ng-template #positionDetail let-c="close" let-d="dismiss">
-    <div class="modal-body" >
-      <h5>{{selectedPoint.label}}</h5>
-      <span class="badge badge-pill badge-info" style="margin-right: 6px" *ngFor="let tag of selectedPoint.tags">{{tag.label}}</span>
-      <br>
-      <span class="badge badge-pill badge-info" style="margin-right: 6px" >+</span>
-      <p>({{selectedPoint.latitude}} , {{selectedPoint.longitude}})</p>
-    </div>
-  </ng-template>
 
 </ion-content>

@@ -27,7 +27,7 @@ export class LocationState {
   /************       App Selectors           ********************/
 
   @Selector()
-  static getMapPoint(state: LocationStateModel) {
+  static getMapPoints(state: LocationStateModel) {
     return state.mapPoints;
   }
 
