@@ -1,13 +1,13 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import * as L from 'leaflet';
 import {control, icon, latLng, MapOptions, Marker, tileLayer} from 'leaflet';
 import {IMapPoint} from '../../../@entities/IMapPoint';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/images/marker-icon.png';
 import {NominatimService} from '../../service/nominatim-service';
-import {NominatimResponse} from "../../models/nominatim-response.model";
+import {NominatimResponse} from '../../models/nominatim-response.model';
 
 @Component({
   selector: 'app-map',
