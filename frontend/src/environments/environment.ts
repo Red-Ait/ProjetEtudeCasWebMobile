@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+  backendApiUrl: '',
   apiUrl: '/api',
   resourceUri: {
     user: '/user'
