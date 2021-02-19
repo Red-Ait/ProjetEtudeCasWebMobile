@@ -12,6 +12,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { NgxsModule } from '@ngxs/store';
 import {AppState} from './v0/state/app.state';
 import {HttpClientModule} from '@angular/common/http';
+import { StoreModule } from '@ngrx/store';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,7 +25,8 @@ import {HttpClientModule} from '@angular/common/http';
     NgxsReduxDevtoolsPluginModule.forRoot(),
     NgxsLoggerPluginModule,
     NgxsModule.forRoot([AppState]),
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    StoreModule.forRoot({}, {})
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],

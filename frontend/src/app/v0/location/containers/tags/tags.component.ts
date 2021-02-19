@@ -2,6 +2,9 @@ import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {Component, OnInit} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
+import {Store} from "@ngxs/store";
+import {AppState} from "@capacitor/core";
+import {ITag} from "../../../@entities/ITag";
 
 
 export interface Tag {
@@ -28,7 +31,9 @@ export class TagsComponent implements OnInit {
     {label: 'School', color: 'accent'},
   ];
 
-  constructor() { }
+  constructor(private store: Store) {
+    //this.tags = this.store.select(state => state.tags);
+  }
 
   ngOnInit() {}
 
