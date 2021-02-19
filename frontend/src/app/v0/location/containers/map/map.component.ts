@@ -12,6 +12,8 @@ import {NominatimResponse} from '../../models/nominatim-response.model';
 import {Select, Store} from '@ngxs/store';
 import {GetUserMapPoint} from '../../state/location.action';
 import {LocationState} from '../../state/location.state';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import {Tag} from '../tags/tags.component';
 
 @Component({
   selector: 'app-map',
@@ -35,18 +37,31 @@ export class MapComponent implements OnInit {
   mapPoints: Array<IMapPoint> = new Array<IMapPoint>();
   selectedPoint: {
     point: IMapPoint,
-    saved: boolean
+    saved: boolean,
+    onSave: boolean
   } = null;
 
   // Search params
   searchResults: NominatimResponse[] = [];
   searchValue = '';
 
+  // Save Form params
+  selectable = true;
+  removable = true;
+  addOnBlur = true;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
+  tags: Tag[] = [
+    {label: 'Hotel', color: 'primary'},
+    {label: 'Resto', color: 'primary'},
+    {label: 'School', color: 'accent'},
+  ];
+
   // Selectors
   @Select(LocationState.getMapPoints) $mapPoints;
 
   // View Child
   @ViewChild('positionDetail') positionDetail;
+  @ViewChild('positionDetailExtended') positionDetailExtended;
 
   constructor(private modalService: NgbModal,
               private store: Store,
@@ -62,13 +77,27 @@ export class MapComponent implements OnInit {
     });
   }
 
-  openModal(template: any) {
+  removeTag(tag) {
+
+  }
+  addTag($event){
+
+  }
+  openModal(template: any, extended: boolean) {
     this.modalService.open(template, {
       size: 'sm',
-      windowClass: 'modal-class',
+      windowClass: extended ? 'extended-modal-class' : 'short-modal-class',
       backdropClass: 'backdrop-class'
     });
    }
+  extendPositionDetal(extend: boolean) {
+    this.modalService.dismissAll();
+    if (extend) {
+      this.openModal(this.positionDetailExtended, true);
+    } else {
+      this.openModal(this.positionDetail, false);
+    }
+  }
 
   private initializeMapOptions() {
     this.mapOptions = {
@@ -104,13 +133,14 @@ export class MapComponent implements OnInit {
     const data: Marker[] = [];
 
     this.mapPoints.forEach(p => {
+      // tslint:disable-next-line:no-shadowed-variable
       const icon = L.icon({
         iconSize: [ 25, 41 ],
         iconAnchor: [ 13, 41 ],
         iconUrl: 'assets/marker-icon.png'
       });
 
-      let marker: Marker = L.marker([ p.latitude, p.longitude], { icon });
+      const marker: Marker = L.marker([ p.latitude, p.longitude], { icon });
       marker.on('click', () => {this.onClickOnMarker(p); });
       data.push(marker);
     });
@@ -121,11 +151,12 @@ export class MapComponent implements OnInit {
   onClickOnMarker(pt: IMapPoint) {
     this.selectedPoint = {
       point: pt,
-      saved: true
+      saved: true,
+      onSave: false
     };
     this.modalService.dismissAll();
     this.unselectPoint();
-    this.openModal(this.positionDetail);
+    this.openModal(this.positionDetail, false);
 
   }
   selectReselt(result: NominatimResponse) {
@@ -156,9 +187,10 @@ export class MapComponent implements OnInit {
         longitude: lng,
         tags: []
       },
-      saved
+      saved,
+      onSave: false
   };
-    this.openModal(this.positionDetail);
+    this.openModal(this.positionDetail, false);
   }
 
   private unselectPoint() {

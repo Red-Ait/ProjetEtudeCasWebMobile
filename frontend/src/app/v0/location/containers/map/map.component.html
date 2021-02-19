@@ -24,15 +24,44 @@
   </div>
 
   <ng-template #positionDetail let-c="close" let-d="dismiss">
-    <div class="modal-body"  >
+    <div class="modal-body">
       <ion-icon *ngIf="selectedPoint.saved" name="bookmark" class="saved-flag"></ion-icon>
-      <ion-button class="extend-button">
+      <ion-button class="extend-button" (click)="extendPositionDetal(true)">
         <ion-icon name="chevron-up-circle-outline" size="30px" ></ion-icon>
       </ion-button>
       <ion-button class="close-button" (click)="c('Close click')">
         <ion-icon name="chevron-down-circle-outline" size="30px" ></ion-icon>
       </ion-button>
       <h5>{{selectedPoint.point.label}}</h5>
+    </div>
+  </ng-template>
+
+  <ng-template #positionDetailExtended let-c="close" let-d="dismiss">
+    <div class="modal-body" style="height: 440px;">
+      <ion-icon *ngIf="selectedPoint.saved" name="bookmark" class="saved-flag"></ion-icon>
+      <ion-button class="close-button" (click)="extendPositionDetal(false)">
+        <ion-icon name="chevron-down-circle-outline" size="30px" ></ion-icon>
+      </ion-button>
+      <h5>{{selectedPoint.point.label}}</h5>
+      <p>({{selectedPoint.point.latitude}} , {{selectedPoint.point.longitude}})</p>
+      <span class="badge badge-pill badge-info" style="margin-right: 12px" *ngFor="let tag of selectedPoint.point.tags">{{tag.label}}</span>
+      <div *ngIf="!selectedPoint.saved">
+        <ion-button *ngIf="!selectedPoint.onSave" (click)="selectedPoint.onSave = true">Save</ion-button>
+        <div *ngIf="selectedPoint.onSave">
+          <mat-chip-list #chipList aria-label="Color selection">
+            <mat-chip class="ship" *ngFor="let tag of selectedPoint.point.tags" [selectable]="selectable"
+                      [removable]="removable" (removed)="removeTag(tag)" selected >
+              {{tag.label}}
+              <mat-icon matChipRemove *ngIf="removable">X</mat-icon>
+              </mat-chip>
+            <input placeholder="New tag..."
+                   [matChipInputFor]="chipList"
+                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                   [matChipInputAddOnBlur]="addOnBlur"
+                   (matChipInputTokenEnd)="addTag($event)">
+          </mat-chip-list>
+        </div>
+      </div>
     </div>
   </ng-template>
 

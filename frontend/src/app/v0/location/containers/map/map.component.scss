@@ -37,11 +37,15 @@ ion-list {
   background-color: white !important;
   visibility: hidden;
 }
-.modal-class {
-  position: absolute;
+.short-modal-class {
   text-align: center;
   height: 140px;
   top: calc(100% - 150px) !important;
+}
+.extended-modal-class {
+  text-align: center;
+  height: 440px;
+  top: calc(100% - 455px) !important;
 }
 .extend-button {
   position: relative;
@@ -54,9 +58,9 @@ ion-list {
   bottom: 26px;
 }
 .saved-flag {
-  position: absolute;
+  position: relative;
   z-index: 2400 !important;
-  left: 0;
+  right: 80px;
   font-size: 25px;
-  bottom: 80px;
+  bottom: 10px;
 }
