@@ -1,10 +1,10 @@
-import {IUser} from '../@entities/IUser';
+import {IUser} from '../../@entities/IUser';
 
 export class Register {
 
   static readonly type = '[auth/register] register';
 
-  constructor(public payload: { firstName: string, lastName: string, email: string, password: string }) {
+  constructor(public payload: IUser) {
   }
 }
 
@@ -12,7 +12,7 @@ export class RegisterSuccess {
 
   static readonly type = '[auth/register] register success';
 
-  constructor(public payload: IUser) {
+  constructor() {
   }
 }
 

@@ -38,6 +38,25 @@ ion-list {
   visibility: hidden;
 }
 .modal-class {
+  position: absolute;
   text-align: center;
-  top: 75% !important;
+  height: 140px;
+  top: calc(100% - 150px) !important;
+}
+.extend-button {
+  position: relative;
+  z-index: 2400 !important;
+  bottom: 26px;
+}
+.close-button {
+  position: relative;
+  z-index: 2400 !important;
+  bottom: 26px;
+}
+.saved-flag {
+  position: absolute;
+  z-index: 2400 !important;
+  left: 0;
+  font-size: 25px;
+  bottom: 80px;
 }
