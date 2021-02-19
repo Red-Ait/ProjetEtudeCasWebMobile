@@ -1,17 +1,17 @@
-import {IMapPoint} from "../../@entities/IMapPoint";
 import {ITag} from "../../@entities/ITag";
 import {Action, Selector, State, StateContext} from "@ngxs/store";
 import {Injectable} from "@angular/core";
 import * as tagAction from "./tag.action";
-import {TagService} from "../service/tag.service";
 import {
   AddTagFail,
   AddTagSuccess,
-  DeleteTagSuccess, GetTagByLabelFail,
+  DeleteTagSuccess,
+  GetTagByLabelFail,
   GetTagByLabelSuccess,
   UpdateTagFail,
   UpdateTagSuccess
 } from "./tag.action";
+import {TagService} from "../service/tag.service";
 
 export class TagStateModel {
   tags: Array<ITag>;

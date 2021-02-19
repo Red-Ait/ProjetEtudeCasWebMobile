@@ -1,5 +1,4 @@
 import {ITag} from '../../@entities/ITag';
-import {IMapPoint} from "../../@entities/IMapPoint";
 
 export class GetTags {
   static readonly type = '[tags] get tags';

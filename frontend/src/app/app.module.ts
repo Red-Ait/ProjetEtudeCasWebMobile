@@ -17,10 +17,7 @@ import {AuthGuard} from './v0/interceptors/auth.guard';
 import {UserGuard} from './v0/interceptors/user.guard';
 import {HttpListenerService, HTTPStatus} from './v0/interceptors/http-listener.service';
 import {InsertAuthTokenInterceptorService} from './v0/interceptors/insert-auth-token-interceptor.service';
-import { NgxsModule } from '@ngxs/store';
 import {AppState} from './v0/state/app.state';
-import {HttpClientModule} from '@angular/common/http';
-import { StoreModule } from '@ngrx/store';
 
 @NgModule({
   declarations: [AppComponent],
