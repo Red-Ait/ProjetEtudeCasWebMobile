@@ -20,7 +20,8 @@ export class GetTagsFail {
 
 export class AddTag {
   static readonly type = '[Tag] Add  tag';
-  constructor(public payload: string) {
+
+  constructor(public payload: ITag) {
   }
 }
 

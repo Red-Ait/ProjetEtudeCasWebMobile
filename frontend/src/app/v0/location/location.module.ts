@@ -16,6 +16,7 @@ import {NgxsModule} from '@ngxs/store';
 import {LocationState} from './state/location.state';
 import {LeafletMarkerClusterModule} from '@asymmetrik/ngx-leaflet-markercluster';
 import {services} from './service';
+import {TagState} from "./state/tag.state";
 
 
 @NgModule({
@@ -31,7 +32,7 @@ import {services} from './service';
     FormsModule,
     MatIconModule,
     NgbModule,
-    NgxsModule.forFeature([LocationState]),
+    NgxsModule.forFeature([LocationState,TagState]),
     LeafletMarkerClusterModule,
     LeafletModule
   ],
