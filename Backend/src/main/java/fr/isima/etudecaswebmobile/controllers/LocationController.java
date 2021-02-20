@@ -2,11 +2,12 @@ package fr.isima.etudecaswebmobile.controllers;
 
 
 import fr.isima.etudecaswebmobile.models.Location;
-import fr.isima.etudecaswebmobile.models.User;
 import fr.isima.etudecaswebmobile.services.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +47,14 @@ public class LocationController {
     public ResponseEntity<Location> deleteLocationById(@PathVariable long id)
     {
         return new ResponseEntity<Location>(this.locationService.deleteLocationById(id), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/greeting", method = RequestMethod.GET)
+    public String getEmployees()
+    {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        return "Welcome! "+currentPrincipalName;
     }
 
 }

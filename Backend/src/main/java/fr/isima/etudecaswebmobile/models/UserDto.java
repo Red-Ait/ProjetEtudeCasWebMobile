@@ -1,10 +1,7 @@
-package fr.isima.etudecaswebmobile.security;
+package fr.isima.etudecaswebmobile.models;
 
-public class Login {
-
+public class UserDto {
     private String username;
-
-
     private String password;
 
     public String getUsername() {
