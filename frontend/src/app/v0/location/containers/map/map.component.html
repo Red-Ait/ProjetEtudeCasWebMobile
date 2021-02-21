@@ -2,14 +2,32 @@
 <ion-content [fullscreen]="true">
 
   <div id="container" style="color: black">
+    <ion-list class="search-mode" *ngIf="onSearch">
+      <ion-radio-group [(ngModel)]="searchMode">
+        <ion-list-header>
+          <ion-label>Search</ion-label>
+        </ion-list-header>
+        <ion-item>
+          <ion-label>Current Position</ion-label>
+          <ion-radio slot="start" color="success" [value]="currentPosition"></ion-radio>
+        </ion-item>
 
-    <ion-searchbar showCancelButton="always" (keyup)="addressLookup($event.target.value)" [value]="searchValue" (ionClear)="addressLookup('')"></ion-searchbar>
-    <ion-list *ngIf="searchResults.length > 0">
+        <ion-item>
+          <ion-searchbar [disabled]="searchMode === currentPosition" (ionFocus)="onSearch = true" showCancelButton="always" (keyup)="addressLookup($event.target.value)" [value]="searchValue" (ionClear)="addressLookup('')"></ion-searchbar>
+          <ion-radio slot="start" color="success" [value]="searchPlace"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+    <ion-searchbar *ngIf="!onSearch" (ionFocus)="onSearch = true" (ionBlur)="onSearch = false" showCancelButton="always" (keyup)="addressLookup($event.target.value)" [value]="searchValue" (ionClear)="addressLookup('')"></ion-searchbar>
+    <ion-list class="search-suggestions" *ngIf="searchResults.length > 0 && searchMode === searchPlace && onSearch">
+      <ion-item></ion-item>
+      <ion-item></ion-item>
       <ion-item></ion-item>
       <ion-item *ngFor="let result of searchResults" (click)="selectReselt(result)">
         {{result.displayName}}
       </ion-item>
     </ion-list>
+
     <div id="map"
          [style]="{'height': '100%', marginTop: 0}"
          (leafletClick)="showNewMarker($event.latlng.lat, $event.latlng.lng, 'Unknown Position', false)"
@@ -33,6 +51,13 @@
         <ion-icon name="chevron-down-circle-outline" size="30px" ></ion-icon>
       </ion-button>
       <h5>{{selectedPoint.point.label}}</h5>
+      <ion-button fill="outline" size="small">
+        <ion-label style="display: inline-block; vertical-align: middle">
+          Direction
+        </ion-label>
+        <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px"
+                  name="compass-outline"></ion-icon>
+      </ion-button>
     </div>
   </ng-template>
 
@@ -42,16 +67,66 @@
       <ion-button class="close-button" (click)="extendPositionDetal(false)">
         <ion-icon name="chevron-down-circle-outline" size="30px" ></ion-icon>
       </ion-button>
-      <h5>{{selectedPoint.point.label}}</h5>
-      <p>({{selectedPoint.point.latitude}} , {{selectedPoint.point.longitude}})</p>
-      <span class="badge badge-pill badge-info" style="margin-right: 12px" *ngFor="let tag of selectedPoint.point.tags">{{tag.label}}</span>
-      <div *ngIf="!selectedPoint.saved">
-        <ion-button *ngIf="!selectedPoint.onSave" (click)="selectedPoint.onSave = true">Save</ion-button>
-        <div *ngIf="selectedPoint.onSave">
-          <input style="width: 100%; text-align: left" type="text" [(ngModel)]="newTagLabel" (keydown.enter)="addTag()"
-                 class="fadeIn second"  placeholder="Tag Label">
-          <ion-button (click)="saveNewPosition()">Save</ion-button>
+
+      <div *ngIf="selectedPoint.saved">
+        <div *ngIf="!selectedPoint.onSave">
+          <h5>{{selectedPoint.point.label}}</h5>
+          <p>({{selectedPoint.point.latitude}} , {{selectedPoint.point.longitude}})</p>
+          <p>
+            <span class="badge badge-pill badge-info" style="margin: 6px; font-size: 14px" *ngFor="let tag of selectedPoint.point.tags" >
+              <ion-label style="display: inline-block; vertical-align: middle">
+               {{tag.label}}
+              </ion-label>
+            </span>
+          </p>
+          <ion-button (click)="selectedPoint.onSave = true">Update</ion-button>
+          <ion-button color="danger" (click)="deleteConfirmAlert()">Delete</ion-button>
         </div>
+        <div *ngIf="selectedPoint.onSave">
+          <input style="width: 100%; text-align: left" type="text" [(ngModel)]="selectedPoint.point.label"
+                 class="second text-input-save"  placeholder="Position Label">
+          <span class="badge badge-pill badge-info" style="margin: 6px; font-size: 14px" *ngFor="let tag of selectedPoint.point.tags" (click)="removeTag(tag)">
+            <ion-label style="display: inline-block; vertical-align: middle">
+             {{tag.label}}
+            </ion-label>
+            <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px" name="close-circle"></ion-icon>
+          </span>
+          <input list="tags2" style="width: 100%; text-align: left" type="text" [(ngModel)]="newTagLabel" (keydown.enter)="addTag()"
+                 class="second text-input-save"  placeholder="Tag Label">
+          <datalist id="tags2">
+            <option [value]="tag.label" *ngFor="let tag of tags | filterTagSuggestion : selectedPoint.point.tags">{{tag.label}}</option>
+          </datalist>
+          <ion-button (click)="updatePosition()">Update</ion-button>
+          <ion-button (click)="selectedPoint.onSave = false" color="light">Cancel</ion-button>
+        </div>
+      </div>
+
+      <div *ngIf="!selectedPoint.saved">
+
+        <div *ngIf="!selectedPoint.onSave">
+          <h5>{{selectedPoint.point.label}}</h5>
+          <p>({{selectedPoint.point.latitude}} , {{selectedPoint.point.longitude}})</p>
+          <ion-button *ngIf="!selectedPoint.onSave" (click)="selectedPoint.onSave = true">Save</ion-button>
+        </div>
+
+        <div *ngIf="selectedPoint.onSave">
+          <input style="width: 100%; text-align: left" type="text" [(ngModel)]="selectedPoint.point.label"
+                 class="second text-input-save"  placeholder="Position Label">
+          <span class="badge badge-pill badge-info" style="margin: 6px; font-size: 14px" *ngFor="let tag of selectedPoint.point.tags" (click)="removeTag(tag)">
+            <ion-label style="display: inline-block; vertical-align: middle">
+             {{tag.label}}
+            </ion-label>
+            <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px" name="close-circle"></ion-icon>
+          </span>
+          <input list="tags" style="width: 100%; text-align: left" type="text" [(ngModel)]="newTagLabel" (keydown.enter)="addTag()"
+                 class="second text-input-save"  placeholder="Tag Label">
+          <datalist id="tags">
+            <option [value]="tag.label" *ngFor="let tag of tags | filterTagSuggestion : selectedPoint.point.tags">{{tag.label}}</option>
+          </datalist>
+          <ion-button (click)="saveNewPosition()">Save</ion-button>
+          <ion-button (click)="selectedPoint.onSave = false" color="light">Cancel</ion-button>
+        </div>
+
       </div>
     </div>
   </ng-template>

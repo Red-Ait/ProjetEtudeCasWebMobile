@@ -10,11 +10,11 @@ import {NominatimService} from '../../service/nominatim-service';
 import {NominatimResponse} from '../../models/nominatim-response.model';
 
 import {Select, Store} from '@ngxs/store';
-import {GetUserMapPoint, SavePosition} from '../../state/location.action';
+import {DeletePosition, GetUserMapPoint, SavePosition, UpdatePosition} from '../../state/location.action';
 import {LocationState} from '../../state/location.state';
-import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {Tag} from '../tags/tags.component';
-import {MatChipInputEvent} from '@angular/material/chips';
+import {ITag} from '../../../@entities/ITag';
+import {AlertController} from '@ionic/angular';
+import {SearchMode} from '../../../@entities/SearchMode';
 
 @Component({
   selector: 'app-map',
@@ -45,13 +45,19 @@ export class MapComponent implements OnInit {
   // Search params
   searchResults: NominatimResponse[] = [];
   searchValue = '';
+  onSearch = false;
+  searchMode: SearchMode = SearchMode.searchPlace;
+  currentPosition = SearchMode.currentPosition;
+  searchPlace = SearchMode.searchPlace;
 
   // Save Form params
   newTagLabel = '';
-  tags: Tag[] = [
-    {label: 'Hotel', color: 'primary'},
-    {label: 'Resto', color: 'primary'},
-    {label: 'School', color: 'accent'},
+  tags: ITag[] = [
+    {label: 'Hotel'},
+    {label: 'Resto'},
+    {label: 'School'},
+    {label: 'Plage'},
+    {label: 'Ville'},
   ];
 
   // Selectors
@@ -63,6 +69,7 @@ export class MapComponent implements OnInit {
 
   constructor(private modalService: NgbModal,
               private store: Store,
+              public alertController: AlertController,
               private nominatimService: NominatimService
               ) { }
 
@@ -75,13 +82,36 @@ export class MapComponent implements OnInit {
     });
   }
 
-  removeTag(tag: Tag): void {
-    const index = this.tags.indexOf(tag);
+  removeTag(tag: ITag): void {
+    const index = this.selectedPoint.point.tags.indexOf(tag);
 
     if (index >= 0) {
       this.selectedPoint.point.tags.splice(index, 1);
     }
   }
+  async deleteConfirmAlert() {
+    this.modalService.dismissAll();
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: ' ',
+      subHeader: 'Are you sure ?',
+      buttons: [
+        {
+        text: 'Yes',
+        handler: () => {
+          this.store.dispatch(new DeletePosition(this.selectedPoint.point));
+        }
+      },
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {
+          }
+        }]
+    });
+    await alert.present();
+  }
+
   addTag(): void {
     for (const tag of this.selectedPoint.point.tags) {
       if (tag.label === this.newTagLabel.trim() ||  tag.label === '') {
@@ -95,7 +125,13 @@ export class MapComponent implements OnInit {
     this.newTagLabel = '';
   }
   saveNewPosition() {
+    this.addTag();
     this.store.dispatch(new SavePosition(this.selectedPoint.point));
+  }
+
+  updatePosition() {
+    this.addTag();
+    this.store.dispatch(new UpdatePosition(this.selectedPoint.point));
   }
   openModal(template: any, extended: boolean) {
     this.modalService.open(template, {
@@ -131,6 +167,9 @@ export class MapComponent implements OnInit {
 
   markerClusterReady(group: L.MarkerClusterGroup){
     this.markerClusterGroup = group;
+    this.markerClusterGroup.on('clusterclick', () => {
+      this.onSearch = false;
+    });
   }
 
   onMapReady(map: any) {
@@ -171,7 +210,7 @@ export class MapComponent implements OnInit {
     this.modalService.dismissAll();
     this.unselectPoint();
     this.openModal(this.positionDetail, false);
-
+    this.onSearch = false;
   }
   selectReselt(result: NominatimResponse) {
     this.showNewMarker(result.latitude, result.longitude, result.displayName, false);
@@ -179,6 +218,7 @@ export class MapComponent implements OnInit {
     this.searchResults = [];
     this.map.setZoom(15);
     this.map.flyTo(latLng(result.latitude, result.longitude));
+    this.onSearch = false;
   }
   showNewMarker(lat, lng, label, saved) {
 
@@ -205,6 +245,7 @@ export class MapComponent implements OnInit {
       onSave: false
     };
     this.openModal(this.positionDetail, false);
+    this.onSearch = false;
   }
 
   private unselectPoint() {

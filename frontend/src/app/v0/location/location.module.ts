@@ -16,10 +16,12 @@ import {NgxsModule} from '@ngxs/store';
 import {LocationState} from './state/location.state';
 import {LeafletMarkerClusterModule} from '@asymmetrik/ngx-leaflet-markercluster';
 import {services} from './service';
+import { FilterTagSuggestionPipe } from './pipes/filter-tag-suggestion.pipe';
+import {pipes} from './pipes';
 
 
 @NgModule({
-  declarations: [...containers, ...components],
+  declarations: [...containers, ...components, ...pipes],
   imports: [
     CommonModule,
     LocationRoutingModule,

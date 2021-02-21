@@ -52,3 +52,37 @@ export class SavePositionFail {
   }
 }
 
+export class UpdatePosition {
+  static readonly type = '[location/map] update position';
+  constructor(public payload: IMapPoint) {
+  }
+}
+
+export class UpdatePositionSuccess {
+  static readonly type = '[location/map] update position success';
+  constructor(public payload: IMapPoint) {
+  }
+}
+export class UpdatePositionFail {
+  static readonly type = '[location/map] update position fail';
+  constructor(public payload: string) {
+  }
+}
+
+export class DeletePosition {
+  static readonly type = '[location/map] delete position';
+  constructor(public payload: IMapPoint) {
+  }
+}
+
+export class DeletePositionSuccess {
+  static readonly type = '[location/map] delete position success';
+  constructor(public payload: IMapPoint) {
+  }
+}
+export class DeletePositionFail {
+  static readonly type = '[location/map] delete position fail';
+  constructor(public payload: string) {
+  }
+}
+
