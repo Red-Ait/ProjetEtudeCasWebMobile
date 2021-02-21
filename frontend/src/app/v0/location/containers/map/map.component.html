@@ -3,22 +3,34 @@
 
   <div id="container" style="color: black">
     <ion-list class="search-mode" *ngIf="onSearch">
-      <ion-radio-group [(ngModel)]="searchMode">
+      <ion-radio-group [(ngModel)]="searchMode" (ngModelChange)="switchSearchMod()">
         <ion-list-header>
           <ion-label>Search</ion-label>
         </ion-list-header>
         <ion-item>
           <ion-label>Current Position</ion-label>
-          <ion-radio slot="start" color="success" [value]="currentPosition"></ion-radio>
+          <ion-radio slot="start" color="success" [value]="currentPosition" ></ion-radio>
         </ion-item>
 
         <ion-item>
-          <ion-searchbar [disabled]="searchMode === currentPosition" (ionFocus)="onSearch = true" showCancelButton="always" (keyup)="addressLookup($event.target.value)" [value]="searchValue" (ionClear)="addressLookup('')"></ion-searchbar>
+          <ion-searchbar [disabled]="searchMode === currentPosition"
+                         (ionFocus)="onSearch = true"
+                         showCancelButton="always"
+                         (keyup)="addressLookup($event.target.value)"
+                         [value]="searchValue"
+                         (ionClear)="addressLookup('')">
+          </ion-searchbar>
           <ion-radio slot="start" color="success" [value]="searchPlace"></ion-radio>
         </ion-item>
       </ion-radio-group>
     </ion-list>
-    <ion-searchbar *ngIf="!onSearch" (ionFocus)="onSearch = true" (ionBlur)="onSearch = false" showCancelButton="always" (keyup)="addressLookup($event.target.value)" [value]="searchValue" (ionClear)="addressLookup('')"></ion-searchbar>
+    <ion-searchbar *ngIf="!onSearch"
+                   (ionFocus)="onSearch = true; searchMode = searchPlace"
+                   showCancelButton="always"
+                   (keyup)="addressLookup($event.target.value)"
+                   [value]="searchValue"
+                   (ionClear)="addressLookup('')">
+    </ion-searchbar>
     <ion-list class="search-suggestions" *ngIf="searchResults.length > 0 && searchMode === searchPlace && onSearch">
       <ion-item></ion-item>
       <ion-item></ion-item>

@@ -15,6 +15,7 @@ import {LocationState} from '../../state/location.state';
 import {ITag} from '../../../@entities/ITag';
 import {AlertController} from '@ionic/angular';
 import {SearchMode} from '../../../@entities/SearchMode';
+import {Geolocation} from '@ionic-native/geolocation/ngx';
 
 @Component({
   selector: 'app-map',
@@ -68,6 +69,7 @@ export class MapComponent implements OnInit {
   @ViewChild('positionDetailExtended') positionDetailExtended;
 
   constructor(private modalService: NgbModal,
+              private geolocation: Geolocation,
               private store: Store,
               public alertController: AlertController,
               private nominatimService: NominatimService
@@ -264,7 +266,23 @@ export class MapComponent implements OnInit {
     } else {
       this.searchResults = [];
     }
-
   }
 
+  switchSearchMod() {
+    if (this.searchMode === this.currentPosition) {
+      this.currentLocationLookup();
+    }
+  }
+  currentLocationLookup() {
+    this.geolocation.getCurrentPosition().then((resp) => {
+      this.showNewMarker(resp.coords.latitude, resp.coords.longitude, 'Current Position', false);
+      this.map.setZoom(15);
+      this.map.flyTo(latLng(resp.coords.latitude, resp.coords.longitude));
+      this.onSearch = false;
+    }).catch((error) => {
+      console.log('Error getting location', error);
+    });
+
+
+  }
 }
