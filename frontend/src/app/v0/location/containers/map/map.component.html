@@ -13,7 +13,7 @@
         </ion-item>
 
         <ion-item>
-          <ion-searchbar [disabled]="searchMode === currentPosition"
+          <ion-searchbar #searchbar [disabled]="searchMode === currentPosition"
                          (ionFocus)="onSearch = true"
                          showCancelButton="always"
                          (keyup)="addressLookup($event.target.value)"
@@ -25,10 +25,10 @@
       </ion-radio-group>
     </ion-list>
     <ion-searchbar *ngIf="!onSearch"
-                   (ionFocus)="onSearch = true; searchMode = searchPlace"
+                   (ionFocus)="searchFocus()"
                    showCancelButton="always"
                    (keyup)="addressLookup($event.target.value)"
-                   [value]="searchValue"
+                   [value]="searchMode === currentPosition ? 'Current Posistion' : searchValue"
                    (ionClear)="addressLookup('')">
     </ion-searchbar>
     <ion-list class="search-suggestions" *ngIf="searchResults.length > 0 && searchMode === searchPlace && onSearch">

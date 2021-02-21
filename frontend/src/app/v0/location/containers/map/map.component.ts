@@ -67,6 +67,7 @@ export class MapComponent implements OnInit {
   // View Child
   @ViewChild('positionDetail') positionDetail;
   @ViewChild('positionDetailExtended') positionDetailExtended;
+  @ViewChild('searchbar') searchBar;
 
   constructor(private modalService: NgbModal,
               private geolocation: Geolocation,
@@ -284,5 +285,12 @@ export class MapComponent implements OnInit {
     });
 
 
+  }
+  searchFocus() {
+    this.onSearch = true;
+    this.searchMode = this.searchPlace;
+    setTimeout(() => {
+      this.searchBar.setFocus();
+    },  822);
   }
 }
