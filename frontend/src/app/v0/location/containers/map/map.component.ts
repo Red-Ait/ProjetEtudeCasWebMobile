@@ -10,10 +10,11 @@ import {NominatimService} from '../../service/nominatim-service';
 import {NominatimResponse} from '../../models/nominatim-response.model';
 
 import {Select, Store} from '@ngxs/store';
-import {GetUserMapPoint} from '../../state/location.action';
+import {GetUserMapPoint, SavePosition} from '../../state/location.action';
 import {LocationState} from '../../state/location.state';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {Tag} from '../tags/tags.component';
+import {MatChipInputEvent} from '@angular/material/chips';
 
 @Component({
   selector: 'app-map',
@@ -46,10 +47,7 @@ export class MapComponent implements OnInit {
   searchValue = '';
 
   // Save Form params
-  selectable = true;
-  removable = true;
-  addOnBlur = true;
-  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
+  newTagLabel = '';
   tags: Tag[] = [
     {label: 'Hotel', color: 'primary'},
     {label: 'Resto', color: 'primary'},
@@ -77,11 +75,27 @@ export class MapComponent implements OnInit {
     });
   }
 
-  removeTag(tag) {
+  removeTag(tag: Tag): void {
+    const index = this.tags.indexOf(tag);
 
+    if (index >= 0) {
+      this.selectedPoint.point.tags.splice(index, 1);
+    }
   }
-  addTag($event){
+  addTag(): void {
+    for (const tag of this.selectedPoint.point.tags) {
+      if (tag.label === this.newTagLabel.trim() ||  tag.label === '') {
+        return;
+      }
+    }
 
+    if ((this.newTagLabel || '').trim()) {
+      this.selectedPoint.point.tags.push({label: this.newTagLabel.trim()});
+    }
+    this.newTagLabel = '';
+  }
+  saveNewPosition() {
+    this.store.dispatch(new SavePosition(this.selectedPoint.point));
   }
   openModal(template: any, extended: boolean) {
     this.modalService.open(template, {
@@ -189,7 +203,7 @@ export class MapComponent implements OnInit {
       },
       saved,
       onSave: false
-  };
+    };
     this.openModal(this.positionDetail, false);
   }
 

@@ -48,18 +48,9 @@
       <div *ngIf="!selectedPoint.saved">
         <ion-button *ngIf="!selectedPoint.onSave" (click)="selectedPoint.onSave = true">Save</ion-button>
         <div *ngIf="selectedPoint.onSave">
-          <mat-chip-list #chipList aria-label="Color selection">
-            <mat-chip class="ship" *ngFor="let tag of selectedPoint.point.tags" [selectable]="selectable"
-                      [removable]="removable" (removed)="removeTag(tag)" selected >
-              {{tag.label}}
-              <mat-icon matChipRemove *ngIf="removable">X</mat-icon>
-              </mat-chip>
-            <input placeholder="New tag..."
-                   [matChipInputFor]="chipList"
-                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                   [matChipInputAddOnBlur]="addOnBlur"
-                   (matChipInputTokenEnd)="addTag($event)">
-          </mat-chip-list>
+          <input style="width: 100%; text-align: left" type="text" [(ngModel)]="newTagLabel" (keydown.enter)="addTag()"
+                 class="fadeIn second"  placeholder="Tag Label">
+          <ion-button (click)="saveNewPosition()">Save</ion-button>
         </div>
       </div>
     </div>

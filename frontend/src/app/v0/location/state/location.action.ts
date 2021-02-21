@@ -35,3 +35,20 @@ export class GetUserMapPointByTagFail {
   }
 }
 
+export class SavePosition {
+  static readonly type = '[location/map] save position';
+  constructor(public payload: IMapPoint) {
+  }
+}
+
+export class SavePositionSuccess {
+  static readonly type = '[location/map] save position success';
+  constructor(public payload: IMapPoint) {
+  }
+}
+export class SavePositionFail {
+  static readonly type = '[location/map] save position fail';
+  constructor(public payload: string) {
+  }
+}
+
