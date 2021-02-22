@@ -57,6 +57,18 @@ ion-searchbar {
   z-index: 2400 !important;
   bottom: 26px;
 }
+.nextSlide {
+  position: relative;
+  z-index: 2400 !important;
+  left: 30px;
+  bottom: 26px;
+}
+.prevSlide {
+  position: relative;
+  z-index: 2400 !important;
+  right: 30px;
+  bottom: 26px;
+}
 .close-button {
   position: relative;
   z-index: 2400 !important;
@@ -112,4 +124,7 @@ ion-searchbar {
   /*when navigating through the items using the arrow keys:*/
   background-color: DodgerBlue !important;
   color: #ffffff;
+}
+.leaflet-routing-container {
+  display: none !important;
 }

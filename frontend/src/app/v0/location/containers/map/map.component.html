@@ -53,6 +53,42 @@
     </div>
   </div>
 
+  <ng-template #routeDetail let-c="close" let-d="dismiss">
+    <div class="modal-body">
+      <ion-button fill="outline" size="small" (click)="previousSlide(slides)" color="light" class="prevSlide">
+        <ion-label style="display: inline-block; vertical-align: middle">
+          Next
+        </ion-label>
+        <ion-icon style="margin-left: 5px" name="arrow-forward-circle-outline"></ion-icon>
+      </ion-button>
+      <ion-button class="close-button" (click)="c('Close click')">
+        <ion-icon name="chevron-down-circle-outline" size="30px" ></ion-icon>
+      </ion-button>
+
+      <ion-button fill="outline" size="small" (click)="nextSlide(slides)" color="light" class="nextSlide">
+        <ion-icon style="margin-right: 5px" name="arrow-forward-circle-outline"></ion-icon>
+        <ion-label style="display: inline-block; vertical-align: middle">
+          Next
+        </ion-label>
+      </ion-button>
+      <ion-slides #slides [options]="{ slidesPerView: 'auto', zoom: false, grabCursor: true }" scrollbar="true">
+        <ion-slide *ngFor="let ins of routeInstructions" style="width: calc(100% - 40px); border: 2px solid #f8f8f8">
+          <tr class="">
+            <td class="">
+              <span class="leaflet-routing-icon " [class]="ins.type">
+              </span>
+            </td>
+            <td class="">
+              {{ins.text}}
+            </td>
+            <td class="">
+              {{ins.distance}}m
+            </td>
+          </tr>
+        </ion-slide>
+      </ion-slides>
+    </div>
+  </ng-template>
   <ng-template #positionDetail let-c="close" let-d="dismiss">
     <div class="modal-body">
       <ion-icon *ngIf="selectedPoint.saved" name="bookmark" class="saved-flag"></ion-icon>
@@ -63,7 +99,7 @@
         <ion-icon name="chevron-down-circle-outline" size="30px" ></ion-icon>
       </ion-button>
       <h5>{{selectedPoint.point.label}}</h5>
-      <ion-button fill="outline" size="small">
+      <ion-button fill="outline" size="small" (click)="getDirection()">
         <ion-label style="display: inline-block; vertical-align: middle">
           Direction
         </ion-label>

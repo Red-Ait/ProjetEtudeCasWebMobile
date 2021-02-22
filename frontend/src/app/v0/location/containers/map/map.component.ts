@@ -1,11 +1,15 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
-import * as L from 'leaflet';
+import 'leaflet';
+import 'leaflet-routing-machine';
+declare let L;
+import * as M from 'leaflet';
 import {control, icon, latLng, MapOptions, Marker, tileLayer} from 'leaflet';
 import {IMapPoint} from '../../../@entities/IMapPoint';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import 'leaflet.markercluster';
 import 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/images/marker-icon.png';
+import 'leaflet/dist/images/marker-icon-2x.png';
 import {NominatimService} from '../../service/nominatim-service';
 import {NominatimResponse} from '../../models/nominatim-response.model';
 
@@ -16,6 +20,7 @@ import {ITag} from '../../../@entities/ITag';
 import {AlertController} from '@ionic/angular';
 import {SearchMode} from '../../../@entities/SearchMode';
 import {Geolocation} from '@ionic-native/geolocation/ngx';
+import {OsmRoutingService} from '../../service/osm-routing.service';
 
 @Component({
   selector: 'app-map',
@@ -30,10 +35,12 @@ export class MapComponent implements OnInit {
   map: any;
   lastSelectedLayer: any;
 
+  //  OSM Routing params
+  routeInstructions = [];
   // Cluster params
-  markerClusterData: L.Marker[] = [];
-  markerClusterOptions: L.MarkerClusterGroupOptions;
-  markerClusterGroup: L.MarkerClusterGroup;
+  markerClusterData: M.Marker[] = [];
+  markerClusterOptions: M.MarkerClusterGroupOptions;
+  markerClusterGroup: M.MarkerClusterGroup;
 
   // Map points
   mapPoints: Array<IMapPoint> = new Array<IMapPoint>();
@@ -68,8 +75,10 @@ export class MapComponent implements OnInit {
   @ViewChild('positionDetail') positionDetail;
   @ViewChild('positionDetailExtended') positionDetailExtended;
   @ViewChild('searchbar') searchBar;
+  @ViewChild('routeDetail') routeDetail;
 
   constructor(private modalService: NgbModal,
+              private routingService: OsmRoutingService,
               private geolocation: Geolocation,
               private store: Store,
               public alertController: AlertController,
@@ -168,7 +177,7 @@ export class MapComponent implements OnInit {
     };
   }
 
-  markerClusterReady(group: L.MarkerClusterGroup){
+  markerClusterReady(group: M.MarkerClusterGroup){
     this.markerClusterGroup = group;
     this.markerClusterGroup.on('clusterclick', () => {
       this.onSearch = false;
@@ -176,12 +185,11 @@ export class MapComponent implements OnInit {
   }
 
   onMapReady(map: any) {
-
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 2110);
     this.map = map;
-    this.map.addControl(control.zoom({ position: 'bottomright' }));
+    this.map.addControl(M.control.zoom({ position: 'bottomright' }));
+    setTimeout(() => {
+      this.map.invalidateSize();
+    }, 2110);
     this.markerClusterData = this.setMarkers();
   }
 
@@ -190,13 +198,13 @@ export class MapComponent implements OnInit {
 
     this.mapPoints.forEach(p => {
       // tslint:disable-next-line:no-shadowed-variable
-      const icon = L.icon({
+      const icon = M.icon({
         iconSize: [ 25, 41 ],
         iconAnchor: [ 13, 41 ],
         iconUrl: 'assets/marker-icon.png'
       });
 
-      const marker: Marker = L.marker([ p.latitude, p.longitude], { icon });
+      const marker: Marker = M.marker([ p.latitude, p.longitude], { icon });
       marker.on('click', () => {this.onClickOnMarker(p); });
       data.push(marker);
     });
@@ -280,8 +288,14 @@ export class MapComponent implements OnInit {
       this.map.setZoom(15);
       this.map.flyTo(latLng(resp.coords.latitude, resp.coords.longitude));
       this.onSearch = false;
-    }).catch((error) => {
-      console.log('Error getting location', error);
+    }).catch(async (error) => {
+      const alert = await this.alertController.create({
+        cssClass: 'my-custom-class',
+        header: ' ',
+        subHeader: 'Error getting location',
+        buttons: ['OK']
+      });
+      await alert.present();
     });
 
 
@@ -292,5 +306,77 @@ export class MapComponent implements OnInit {
     setTimeout(() => {
       this.searchBar.setFocus();
     },  822);
+  }
+  getDirection() {
+    this.geolocation.getCurrentPosition().then((resp) => {
+      if (this.map.hasLayer(this.lastSelectedLayer)) {
+        this.map.removeLayer(this.lastSelectedLayer);
+      }
+      const myRouting = L.Routing.control({
+        waypoints: [
+          M.latLng(resp.coords.latitude, resp.coords.longitude),
+          M.latLng(this.selectedPoint.point.latitude, this.selectedPoint.point.longitude),
+        ],
+        icon: M.icon({
+          iconSize: [ 25, 41 ],
+          iconAnchor: [ 13, 41 ],
+          iconUrl: 'assets/marker-icon.png'
+        }),
+        createMarker: (i, start, n) => {
+          // tslint:disable-next-line:variable-name
+          let marker_icon = null;
+          if (i === 0) {
+            marker_icon = icon({
+              iconSize: [40, 41],
+              iconAnchor: [13, 41],
+              iconUrl: 'assets/green-marker.png'
+            });
+          } else if (i === n - 1) {
+            marker_icon = icon({
+              iconSize: [40, 41],
+              iconAnchor: [13, 41],
+              iconUrl: 'assets/red-marker.png'
+            });
+
+          }
+          const marker = L.marker(start.latLng, {
+            draggable: true,
+            bounceOnAdd: false,
+            bounceOnAddOptions: {
+              duration: 1000,
+              height: 800,
+            },
+            icon: marker_icon
+          });
+          return marker;
+        },
+        lineOptions: {
+          styles: [{ color: 'green', opacity: 1, weight: 5 }]
+        },
+      }).addTo(this.map);
+      myRouting.on('routesfound', (e) => {
+        console.log('routing distance: ', e.routes[0].instructions);
+        this.routeInstructions = e.routes[0].instructions.map(i => {
+          i.type = this.routingService.getIconClass(i.type);
+          return i;
+        });
+        this.modalService.dismissAll();
+        this.openModal(this.routeDetail, false);
+      });
+    }).catch(async (error) => {
+      const alert = await this.alertController.create({
+        cssClass: 'my-custom-class',
+        header: ' ',
+        subHeader: 'Error getting location',
+        buttons: ['OK']
+      });
+      await alert.present();
+    });
+  }
+  nextSlide(slides) {
+    slides.slideNext();
+  }
+  previousSlide(slides) {
+    slides.slidePrev();
   }
 }
