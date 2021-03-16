@@ -1,8 +1,7 @@
 package fr.isima.etudecaswebmobile.services;
 
 
-
-import fr.isima.etudecaswebmobile.models.UserDao;
+import fr.isima.etudecaswebmobile.entities.user.UserDao;
 import fr.isima.etudecaswebmobile.models.UserDto;
 import fr.isima.etudecaswebmobile.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
@@ -42,8 +40,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 		newUser.setUsername(user.getUsername());
 		newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
 		newUser.setEmail(user.getEmail());
-		newUser.setFirstname(user.getFirstname());
-		newUser.setLastname(user.getLastname());
+		newUser.setFirstname(user.getFirstName());
+		newUser.setLastname(user.getLastName());
 		return userDao.save(newUser);
 	}
 
@@ -70,8 +68,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 		oldUser.setUsername(newUser.getUsername());
 		oldUser.setPassword(bcryptEncoder.encode(newUser.getPassword()));
 		oldUser.setEmail(newUser.getEmail());
-		oldUser.setFirstname(newUser.getFirstname());
-		oldUser.setLastname(newUser.getLastname());
+		oldUser.setFirstname(newUser.getFirstName());
+		oldUser.setLastname(newUser.getLastName());
 		return userDao.save(oldUser);
 	}
 

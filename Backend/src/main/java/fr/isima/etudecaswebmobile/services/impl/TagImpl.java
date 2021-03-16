@@ -1,20 +1,25 @@
 package fr.isima.etudecaswebmobile.services.impl;
 
 
-import fr.isima.etudecaswebmobile.models.Location;
+import fr.isima.etudecaswebmobile.entities.location.LocationEntity;
+import fr.isima.etudecaswebmobile.entities.location.LocationMapper;
+import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
+import fr.isima.etudecaswebmobile.entities.tag.TagMapper;
+import fr.isima.etudecaswebmobile.exception.NoContentException;
+import fr.isima.etudecaswebmobile.exception.NotFoundException;
+import fr.isima.etudecaswebmobile.exception.UnauthorizedException;
 import fr.isima.etudecaswebmobile.models.Tag;
+import fr.isima.etudecaswebmobile.repositories.LocationRepository;
 import fr.isima.etudecaswebmobile.repositories.TagRepository;
 import fr.isima.etudecaswebmobile.services.JwtUserDetailsService;
 import fr.isima.etudecaswebmobile.services.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -26,63 +31,126 @@ public class TagImpl implements TagService {
     private TagRepository tagRepository;
     @Autowired
     private LocationImpl locationService;
+    @Autowired
+    private LocationRepository locationRepository;
+    @Autowired
+    private LocationMapper locationMapper;
+    @Autowired
+    private TagMapper tagMapper;
+    @Autowired
+    private JwtUserDetailsService userDetailsService;
 
     @Override
     public Tag addTag(Tag tag) {
-        return tagRepository.save(tag);
+
+        if(tag.getId_tag() == null) {
+            TagEntity tagEntity = tagMapper.fromModel(tag);
+            tagEntity.setUserDao(userDetailsService.getCurrentUser());
+            return tagMapper.toModel(tagRepository.save(tagEntity));
+        }else
+            throw new UnauthorizedException("Tag exist");
     }
 
     @Override
     public List<Tag> getAllTags() {
-        List<Tag> tags  = this.tagRepository.findAll();
-        if (tags.isEmpty())
-            return Collections.emptyList();
+        List<TagEntity> tagEntities = tagRepository.findAll();
+        if (!tagEntities.isEmpty())
+            return tagEntities.stream()
+                    .map(tagMapper::toModel)
+                    .collect(Collectors.toList());
         else
-            return tags;
+            throw new NoContentException("Tags Not Found");
     }
 
     @Override
-    public Optional<Tag> getTagById(Long id) {
-        return tagRepository.findById(id);
+    public Tag getTagById(Long id) {
+        Optional<TagEntity> tagEntity = tagRepository.findById(id);
+        if (tagEntity.isPresent())
+            return tagMapper.toModel(tagEntity.get());
+        else
+            throw new NoContentException("The tag selected not Found");
     }
 
     @Override
     public Tag updateTagById(Tag newTag, Long id) {
-        Optional<Tag> oldTag = this.getTagById(id);
-        oldTag.get().setTitle(newTag.getTitle());
-
-        return tagRepository.save(oldTag.get());
+        Optional<TagEntity> optionalTagEntity = tagRepository.findById(id);
+        if (optionalTagEntity.isPresent()) {
+            TagEntity oldTagEntity = optionalTagEntity.get();
+            oldTagEntity.setTitle(newTag.getTitle());
+            return tagMapper.toModel(tagRepository.save(oldTagEntity));
+        }else
+            throw new NotFoundException("Tag not found");
     }
 
     @Override
-    public Tag deleteTagById(Long id) {
-        Optional<Tag> tag = this.getTagById(id);
-        this.tagRepository.delete(tag.get());
-        return tag.get();
+    public void deleteTagById(Long id) {
+        Optional<TagEntity> tagEntityOptional = tagRepository.findById(id);
+        if (tagEntityOptional.isPresent()) {
+            TagEntity tagEntity = tagEntityOptional.get();
+            List<LocationEntity> locationEntities = tagEntity.getLocationEntities();
+            if (locationEntities != null) {
+                locationEntities.forEach(locationEntity -> {
+                    List<TagEntity> tagEntities = locationEntity.getTagEntities();
+                    tagEntities.remove(locationEntity);
+                    locationEntity.setTagEntities(tagEntities);
+                });
+                tagEntity.setLocationEntities(null);
+            }
+            tagRepository.deleteById(id);
+        } else
+            throw new NotFoundException("Tag Not Found");
     }
 
     @Override
     public Tag addTagToLocation(Long location_id, Tag tag)
     {
-        Tag newTag = new Tag(tag);
-        Optional<Location> locationObject = locationService.getLocationById(location_id);
-        Location location = locationObject.get();
-        newTag.getLocations().add(location);
-        location.getTags().add(newTag);
-        locationService.updateLocationById(location, location_id);
+        TagEntity newTag = tagMapper.fromModel(tag);
 
-        return this.addTag(newTag);
+        Optional<LocationEntity> locationOptional = locationRepository.findById(location_id);
+        if (locationOptional.isPresent()) {
+            LocationEntity location = locationOptional.get();
+
+            List<LocationEntity> locationEntities = newTag.getLocationEntities();
+            locationEntities.add(location);
+            newTag.setLocationEntities(locationEntities);
+
+            List<TagEntity> tagEntities = location.getTagEntities();
+            tagEntities.add(newTag);
+            location.setTagEntities(tagEntities);
+
+            locationRepository.save(location);
+
+            return tagMapper.toModel(tagRepository.save(newTag));
+        } else
+            throw new NotFoundException("Location Not Found");
     }
 
     @Override
     public Tag addExistedTagToLocation(long location_id, long tag_id)
     {
-        Tag existedTag = this.getTagById(tag_id).get();
-        Optional<Location> locationObject = locationService.getLocationById(location_id);
-        Location location = locationObject.get();
-        existedTag.getLocations().add(location);
-        location.getTags().add(existedTag);
-        locationService.updateLocationById(location, location_id);
-        return this.addTag(existedTag);
+        TagEntity existedTag;
+        Optional<TagEntity> tagEntityOptional = tagRepository.findById(tag_id);
+        if (tagEntityOptional.isPresent())
+            existedTag = tagEntityOptional.get();
+        else
+            throw new NotFoundException("Tag Not Found");
+
+        Optional<LocationEntity> locationOptional = locationRepository.findById(location_id);
+        if (locationOptional.isPresent()) {
+            LocationEntity location = locationOptional.get();
+
+            List<LocationEntity> locationEntities = existedTag.getLocationEntities();
+            locationEntities.add(location);
+            existedTag.setLocationEntities(locationEntities);
+
+            List<TagEntity> tagEntities = location.getTagEntities();
+            tagEntities.add(existedTag);
+            location.setTagEntities(tagEntities);
+
+            locationRepository.save(location);
+
+            return tagMapper.toModel(tagRepository.save(existedTag));
+        } else
+            throw new NotFoundException("Location Not Found");
     }
 }

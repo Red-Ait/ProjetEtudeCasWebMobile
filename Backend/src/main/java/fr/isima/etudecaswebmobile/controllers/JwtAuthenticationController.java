@@ -2,7 +2,10 @@ package fr.isima.etudecaswebmobile.controllers;
 
 
 import fr.isima.etudecaswebmobile.config.JwtTokenUtil;
-import fr.isima.etudecaswebmobile.models.*;
+import fr.isima.etudecaswebmobile.entities.user.UserDao;
+import fr.isima.etudecaswebmobile.models.JwtRequest;
+import fr.isima.etudecaswebmobile.models.JwtResponse;
+import fr.isima.etudecaswebmobile.models.UserDto;
 import fr.isima.etudecaswebmobile.services.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +24,8 @@ public class JwtAuthenticationController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
-
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
-
 	@Autowired
 	private JwtUserDetailsService userDetailsService;
 
