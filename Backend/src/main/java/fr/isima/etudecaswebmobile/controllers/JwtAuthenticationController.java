@@ -10,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,4 +54,20 @@ public class JwtAuthenticationController {
 			throw new Exception("INVALID_CREDENTIALS", e);
 		}
 	}
+
+	@RequestMapping(value = "/user/current", method = RequestMethod.GET)
+	public UserDao getUserByUsername() throws Exception
+	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		return userDetailsService.getUserByUsername(username);
+		//return ResponseEntity.ok(userDetailsService.getUserByUsername(username));
+	}
+
+	@RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<?> updateUser(@RequestBody UserDto user, @PathVariable long id) throws Exception
+	{
+		return ResponseEntity.ok(userDetailsService.update(user, id));
+	}
+
 }

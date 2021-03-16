@@ -2,6 +2,10 @@ package fr.isima.etudecaswebmobile.controllers;
 
 
 import fr.isima.etudecaswebmobile.models.Location;
+import fr.isima.etudecaswebmobile.models.Tag;
+import fr.isima.etudecaswebmobile.models.UserDao;
+import fr.isima.etudecaswebmobile.repositories.UserRepository;
+import fr.isima.etudecaswebmobile.services.JwtUserDetailsService;
 import fr.isima.etudecaswebmobile.services.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,11 +24,13 @@ public class LocationController {
 
     @Autowired
     private LocationService locationService;
-
+    @Autowired
+    private JwtUserDetailsService userDetailsService;
 
     @PostMapping(path = "/location")
-    public ResponseEntity<Location> addLocation(@Validated @RequestBody Location location) {
-        return new ResponseEntity<Location>(this.locationService.addLocation(location), HttpStatus.OK);
+    public ResponseEntity<Location> addLocation(@Validated @RequestBody Location location) throws Exception
+    {
+        return new ResponseEntity<Location>(this.locationService.addLocation(location, "default tag"), HttpStatus.OK);
     }
 
     @GetMapping(path = "/locations")
@@ -49,12 +55,10 @@ public class LocationController {
         return new ResponseEntity<Location>(this.locationService.deleteLocationById(id), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/greeting", method = RequestMethod.GET)
-    public String getEmployees()
+    @RequestMapping(value = "/locations/tag/{tag_id}", method = RequestMethod.GET)
+    public ResponseEntity<List<Location>> getLocationsByTag(@PathVariable long tag_id)
     {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        return "Welcome! "+currentPrincipalName;
+        return new ResponseEntity<List<Location>>(this.locationService.getLocationsByTag(tag_id), HttpStatus.OK);
     }
 
 }

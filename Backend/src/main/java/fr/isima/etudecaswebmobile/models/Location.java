@@ -4,6 +4,10 @@ package fr.isima.etudecaswebmobile.models;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 @Generated
 @Setter
@@ -21,11 +25,32 @@ public class Location {
     private double longitude;
     private double latitude;
 
-    public Location(Long id_location, String label, double longitude, double latitude) {
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "locations_tags",
+            joinColumns = @JoinColumn(name = "location_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private List<Tag> tags;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserDao userDao;
+
+    public Location(Long id_location, String label, double longitude, double latitude)
+    {
         this.id_location = id_location;
         this.label = label;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.tags = Arrays.asList();
+    }
+
+    public Location(Location location)
+    {
+        this.label = location.label;
+        this.longitude = location.longitude;
+        this.latitude = location.latitude;
+        this.tags = new ArrayList();
     }
 
     public Long getId_location() {
@@ -58,5 +83,21 @@ public class Location {
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public UserDao getUserDao() {
+        return userDao;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 }

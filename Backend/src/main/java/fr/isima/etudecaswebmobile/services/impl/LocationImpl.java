@@ -1,15 +1,21 @@
 package fr.isima.etudecaswebmobile.services.impl;
 
+import fr.isima.etudecaswebmobile.controllers.JwtAuthenticationController;
 import fr.isima.etudecaswebmobile.models.Location;
+import fr.isima.etudecaswebmobile.models.Tag;
+import fr.isima.etudecaswebmobile.models.UserDao;
 import fr.isima.etudecaswebmobile.repositories.LocationRepository;
+import fr.isima.etudecaswebmobile.repositories.UserRepository;
+import fr.isima.etudecaswebmobile.services.JwtUserDetailsService;
 import fr.isima.etudecaswebmobile.services.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -20,10 +26,19 @@ public class LocationImpl implements LocationService {
     @Autowired
     private LocationRepository locationRepository;
 
+    @Autowired
+    private JwtUserDetailsService userDetailsService;
+
 
     @Override
-    public Location addLocation(Location location) {
-        return locationRepository.save(location);
+    public Location addLocation(Location location, String tag_title)
+    {
+        Location newlocation = new Location(location);
+        Tag tag = new Tag(tag_title);
+        //tag.getLocations().add(newlocation);
+        newlocation.setUserDao(userDetailsService.getCurrentUser());
+        newlocation.getTags().add(tag);
+        return locationRepository.save(newlocation);
     }
 
     @Override
@@ -57,5 +72,11 @@ public class LocationImpl implements LocationService {
         Optional<Location> Location = this.getLocationById(id);
         this.locationRepository.delete(Location.get());
         return Location.get();
+    }
+
+    @Override
+    public List<Location> getLocationsByTag(@PathVariable long tag_id)
+    {
+        return this.locationRepository.getLocationsByTag(tag_id);
     }
 }

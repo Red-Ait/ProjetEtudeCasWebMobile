@@ -2,6 +2,8 @@ package fr.isima.etudecaswebmobile.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -24,7 +26,9 @@ public class UserDao {
     @Column
     private String email;
 
-
+    @OneToMany
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private List<Location> location;
 
     public String getUsername() {
         return username;

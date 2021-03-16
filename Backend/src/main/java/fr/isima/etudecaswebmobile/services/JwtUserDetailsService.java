@@ -6,6 +6,8 @@ import fr.isima.etudecaswebmobile.models.UserDao;
 import fr.isima.etudecaswebmobile.models.UserDto;
 import fr.isima.etudecaswebmobile.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
@@ -33,10 +36,43 @@ public class JwtUserDetailsService implements UserDetailsService {
 				new ArrayList<>());
 	}
 
-	public UserDao save(UserDto user) {
+	public UserDao save(UserDto user)
+	{
 		UserDao newUser = new UserDao();
 		newUser.setUsername(user.getUsername());
 		newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
+		newUser.setEmail(user.getEmail());
+		newUser.setFirstname(user.getFirstname());
+		newUser.setLastname(user.getLastname());
 		return userDao.save(newUser);
 	}
+
+	public UserDao getUserById(Long id)
+	{
+		return userDao.findById(id);
+	}
+
+	public UserDao getUserByUsername(String username)
+	{
+		return userDao.findByUsername(username);
+	}
+
+	public UserDao getCurrentUser()
+	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		return userDao.findByUsername(username);
+	}
+
+	public UserDao update(UserDto newUser, Long id)
+	{
+		UserDao oldUser = this.getUserById(id);
+		oldUser.setUsername(newUser.getUsername());
+		oldUser.setPassword(bcryptEncoder.encode(newUser.getPassword()));
+		oldUser.setEmail(newUser.getEmail());
+		oldUser.setFirstname(newUser.getFirstname());
+		oldUser.setLastname(newUser.getLastname());
+		return userDao.save(oldUser);
+	}
+
 }
