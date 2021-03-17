@@ -1,4 +1,5 @@
 export enum SearchMode {
   currentPosition,
-  searchPlace
+  searchPlace,
+  advancedSearch
 }
