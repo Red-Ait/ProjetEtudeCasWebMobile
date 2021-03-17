@@ -40,8 +40,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 		newUser.setUsername(user.getUsername());
 		newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
 		newUser.setEmail(user.getEmail());
-		newUser.setFirstname(user.getFirstName());
-		newUser.setLastname(user.getLastName());
+		newUser.setFirstName(user.getFirstName());
+		newUser.setLastName(user.getLastName());
 		return userDao.save(newUser);
 	}
 
@@ -68,8 +68,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 		oldUser.setUsername(newUser.getUsername());
 		oldUser.setPassword(bcryptEncoder.encode(newUser.getPassword()));
 		oldUser.setEmail(newUser.getEmail());
-		oldUser.setFirstname(newUser.getFirstName());
-		oldUser.setLastname(newUser.getLastName());
+		oldUser.setFirstName(newUser.getFirstName());
+		oldUser.setLastName(newUser.getLastName());
 		return userDao.save(oldUser);
 	}
 

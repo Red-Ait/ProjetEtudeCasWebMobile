@@ -12,8 +12,8 @@ public class UserMapper implements Mapper<UserDto, UserDao> {
         return new UserDto(
                 entity.getUsername(),
                 entity.getPassword(),
-                entity.getFirstname(),
-                entity.getLastname(),
+                entity.getFirstName(),
+                entity.getLastName(),
                 entity.getEmail()
         );
     }

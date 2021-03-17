@@ -16,7 +16,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "tag")
+@Table(
+        name = "tag",
+        uniqueConstraints={@UniqueConstraint(columnNames = {"title", "user_id"})}
+)
 public class TagEntity {
 
     @Id
@@ -48,6 +51,7 @@ public class TagEntity {
     public TagEntity(Long id_tag, String title) {
         this.id_tag = id_tag;
         this.title = title;
+        this.locationEntities = new ArrayList<>();
     }
 
 }
