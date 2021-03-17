@@ -14,13 +14,15 @@ import {NominatimService} from '../../service/nominatim-service';
 import {NominatimResponse} from '../../models/nominatim-response.model';
 
 import {Select, Store} from '@ngxs/store';
-import {DeletePosition, GetUserMapPoint, SavePosition, UpdatePosition} from '../../state/location.action';
+import {DeletePosition, GetUserMapPoint, SavePosition, SearchByTags, UpdatePosition} from '../../state/location.action';
 import {LocationState} from '../../state/location.state';
 import {ITag} from '../../../@entities/ITag';
 import {AlertController} from '@ionic/angular';
 import {SearchMode} from '../../../@entities/SearchMode';
 import {Geolocation} from '@ionic-native/geolocation/ngx';
 import {OsmRoutingService} from '../../service/osm-routing.service';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-map',
@@ -51,15 +53,19 @@ export class MapComponent implements OnInit {
   } = null;
 
   // Search params
-  searchResults: NominatimResponse[] = [];
+  searchResults: {point: IMapPoint, saved: boolean}[] = [];
   searchValue = '';
   onSearch = false;
   searchMode: SearchMode = SearchMode.searchPlace;
   currentPosition = SearchMode.currentPosition;
   searchPlace = SearchMode.searchPlace;
+  advancedSearch = SearchMode.advancedSearch;
+  searchedTags = new Array<ITag>();
+  searchedTagLabel = '';
 
   // Save Form params
   newTagLabel = '';
+  // TODO get tags from api
   tags: ITag[] = [
     {label: 'Hotel'},
     {label: 'Resto'},
@@ -70,6 +76,7 @@ export class MapComponent implements OnInit {
 
   // Selectors
   @Select(LocationState.getMapPoints) $mapPoints;
+  @Select(LocationState.getPointsSearchedByTags) $pointsSearchedByTags;
 
   // View Child
   @ViewChild('positionDetail') positionDetail;
@@ -91,6 +98,13 @@ export class MapComponent implements OnInit {
     this.$mapPoints.subscribe(data => {
       this.mapPoints = data;
       this.markerClusterData = this.setMarkers();
+      if (this.selectedPoint !== null) {
+        if (this.selectedPoint.onSave) {
+          this.selectedPoint.saved = true;
+          this.selectedPoint.onSave = false;
+          this.removeUnknownMarker();
+        }
+      }
     });
   }
 
@@ -100,6 +114,14 @@ export class MapComponent implements OnInit {
     if (index >= 0) {
       this.selectedPoint.point.tags.splice(index, 1);
     }
+  }
+  removeSearchedTag(tag: ITag): void {
+    const index = this.searchedTags.indexOf(tag);
+
+    if (index >= 0) {
+      this.searchedTags.splice(index, 1);
+    }
+    this.addSearchTag();
   }
   async deleteConfirmAlert() {
     this.modalService.dismissAll();
@@ -123,7 +145,30 @@ export class MapComponent implements OnInit {
     });
     await alert.present();
   }
+  addSearchTag() {
+    if (this.searchedTags.length === 0 && this.searchedTagLabel === '') {
+      this.searchResults = [];
+      return;
+    }
+    for (const tag of this.searchedTags) {
+      if (tag.label === this.searchedTagLabel.trim() ||  tag.label === '') {
+        return;
+      }
+    }
 
+    if ((this.searchedTagLabel || '').trim()) {
+      this.searchedTags.unshift({label: this.searchedTagLabel.trim()});
+    }
+    this.searchedTagLabel = '';
+    this.store.dispatch(new SearchByTags(this.searchedTags));
+    this.$pointsSearchedByTags.subscribe(results => {
+      const aux: Array<{point: IMapPoint, saved: boolean}> = results.map(r => ({
+        point: r,
+        saved: false
+      }));
+      this.searchResults = [...aux];
+    });
+  }
   addTag(): void {
     for (const tag of this.selectedPoint.point.tags) {
       if (tag.label === this.newTagLabel.trim() ||  tag.label === '') {
@@ -138,12 +183,16 @@ export class MapComponent implements OnInit {
   }
   saveNewPosition() {
     this.addTag();
-    this.store.dispatch(new SavePosition(this.selectedPoint.point));
+    if (this.selectedPoint.point.tags.length > 0) {
+      this.store.dispatch(new SavePosition(this.selectedPoint.point));
+    }
   }
 
   updatePosition() {
     this.addTag();
-    this.store.dispatch(new UpdatePosition(this.selectedPoint.point));
+    if (this.selectedPoint.point.tags.length > 0) {
+      this.store.dispatch(new UpdatePosition(this.selectedPoint.point));
+    }
   }
   openModal(template: any, extended: boolean) {
     this.modalService.open(template, {
@@ -184,8 +233,8 @@ export class MapComponent implements OnInit {
     });
   }
 
-  onMapReady(map: any) {
-    this.map = map;
+  onMapReady(m: any) {
+    this.map = m;
     this.map.addControl(M.control.zoom({ position: 'bottomright' }));
     setTimeout(() => {
       this.map.invalidateSize();
@@ -193,23 +242,27 @@ export class MapComponent implements OnInit {
     this.markerClusterData = this.setMarkers();
   }
 
+  createMarker(p: IMapPoint): Marker{
+    // tslint:disable-next-line:no-shadowed-variable
+    const icon = M.icon({
+      iconSize: [ 25, 41 ],
+      iconAnchor: [ 13, 41 ],
+      iconUrl: 'assets/marker-icon.png'
+    });
+
+    const marker: Marker = M.marker([ p.latitude, p.longitude], { icon });
+    marker.on('click', () => {this.onClickOnMarker(p); });
+
+    return marker;
+  }
+
   private setMarkers() {
     const data: Marker[] = [];
 
     this.mapPoints.forEach(p => {
-      // tslint:disable-next-line:no-shadowed-variable
-      const icon = M.icon({
-        iconSize: [ 25, 41 ],
-        iconAnchor: [ 13, 41 ],
-        iconUrl: 'assets/marker-icon.png'
-      });
-
-      const marker: Marker = M.marker([ p.latitude, p.longitude], { icon });
-      marker.on('click', () => {this.onClickOnMarker(p); });
-      data.push(marker);
+      data.push(this.createMarker(p));
     });
     return data;
-
   }
 
   onClickOnMarker(pt: IMapPoint) {
@@ -223,16 +276,17 @@ export class MapComponent implements OnInit {
     this.openModal(this.positionDetail, false);
     this.onSearch = false;
   }
-  selectReselt(result: NominatimResponse) {
-    this.showNewMarker(result.latitude, result.longitude, result.displayName, false);
-    this.searchValue = result.displayName;
+  selectResult(result: { point: IMapPoint, saved: boolean }) {
+    if (!result.saved) {
+      this.showNewMarker(result.point.latitude, result.point.longitude, result.point.label, result.saved);
+    }
+    this.searchValue = result.point.label;
     this.searchResults = [];
     this.map.setZoom(15);
-    this.map.flyTo(latLng(result.latitude, result.longitude));
+    this.map.flyTo(latLng(result.point.latitude, result.point.longitude));
     this.onSearch = false;
   }
   showNewMarker(lat, lng, label, saved) {
-
     this.modalService.dismissAll();
     this.unselectPoint();
 
@@ -247,6 +301,7 @@ export class MapComponent implements OnInit {
 
     this.selectedPoint = {
       point: {
+        id: null,
         label,
         latitude: lat,
         longitude: lng,
@@ -262,16 +317,35 @@ export class MapComponent implements OnInit {
   private unselectPoint() {
 
     this.modalService.dismissAll();
+    this.removeUnknownMarker();
+  }
+  removeUnknownMarker() {
     if (this.map.hasLayer(this.lastSelectedLayer)){
       this.map.removeLayer(this.lastSelectedLayer);
-//      this.selectedPoint = null;
     }
   }
   addressLookup(address: string) {
+    this.searchResults = [];
     if (address.length > 3) {
       this.nominatimService.addressLookup(address).subscribe(results => {
-        this.searchResults = results;
+        const aux: Array<{point: IMapPoint, saved: boolean}> = results.map(r => ({
+          point: {
+            id: 0,
+            label: r.displayName,
+            longitude: r.longitude,
+            latitude: r.latitude,
+            tags: []
+          },
+          saved: false
+        }));
+        this.searchResults = [...this.searchResults, ...aux];
       });
+      this.store.select(LocationState.searchPositionByName)
+        .pipe(map(query => query(address))).subscribe(data => {
+          const aux = data.map(d => ({point: d, saved: true}));
+          this.searchResults = [...this.searchResults, ...aux];
+      });
+
     } else {
       this.searchResults = [];
     }
@@ -306,8 +380,10 @@ export class MapComponent implements OnInit {
     setTimeout(() => {
       this.searchBar.setFocus();
     },  822);
+    this.modalService.dismissAll();
   }
   getDirection() {
+    return;
     this.geolocation.getCurrentPosition().then((resp) => {
       if (this.map.hasLayer(this.lastSelectedLayer)) {
         this.map.removeLayer(this.lastSelectedLayer);
@@ -317,6 +393,9 @@ export class MapComponent implements OnInit {
           M.latLng(resp.coords.latitude, resp.coords.longitude),
           M.latLng(this.selectedPoint.point.latitude, this.selectedPoint.point.longitude),
         ],
+        router: new L.Routing.OSRMv1({
+          serviceUrl: 'http://router.project-osrm.org/route/v1'
+        }),
         icon: M.icon({
           iconSize: [ 25, 41 ],
           iconAnchor: [ 13, 41 ],

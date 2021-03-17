@@ -1,4 +1,5 @@
 import {IMapPoint} from '../../@entities/IMapPoint';
+import {ITag} from '../../@entities/ITag';
 
 export class GetUserMapPoint {
   static readonly type = '[location/map] get user map point';
@@ -85,4 +86,14 @@ export class DeletePositionFail {
   constructor(public payload: string) {
   }
 }
+export class SearchByTags {
+  static readonly type = '[location/map] search by tags';
+  constructor(public payload: Array<ITag>) {
+  }
+}
 
+export class SearchByTagsSuccess {
+  static readonly type = '[location/map] Search By Tags success';
+  constructor(public payload: Array<IMapPoint>) {
+  }
+}
