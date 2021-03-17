@@ -35,6 +35,10 @@ public class TagEntity {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserDao userDao;
 
+    @ManyToMany
+    @JoinTable(inverseJoinColumns=@JoinColumn(name="access_user_id"))
+    private List<UserDao> accessUserEntities;
+
     public TagEntity(String title)
     {
         this.title = title;

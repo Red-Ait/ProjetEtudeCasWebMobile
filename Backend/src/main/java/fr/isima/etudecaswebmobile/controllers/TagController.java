@@ -51,7 +51,7 @@ public class TagController {
         return new ResponseEntity<>(this.tagService.addTagToLocation(location_id, tag), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/tag/{tag_id}/location/{location_id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/tag/{tag_id}/location/{location_id}", method = RequestMethod.PUT)
     public ResponseEntity<Tag> addExistedTagToLocation(@PathVariable long location_id, @PathVariable long tag_id)
     {
         return new ResponseEntity<>(this.tagService.addExistedTagToLocation(location_id, tag_id), HttpStatus.OK);

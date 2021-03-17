@@ -58,4 +58,15 @@ public class LocationController {
         return new ResponseEntity<>(locationService.findAllLocationsByUserId(id), HttpStatus.OK);
     }
 
+    @GetMapping("location/owner_user/{owner_username}/tags/{tag_titles}")
+    public ResponseEntity<List<Location>> getAllLocationsByTagNames(
+            @PathVariable("owner_username") String ownerUsername,
+            @PathVariable("tag_titles") List<String> tagTitles
+    ) {
+        return new ResponseEntity<>(
+                locationService.findAllLocationsOfAnotherUserByTagTitles(ownerUsername, tagTitles),
+                HttpStatus.OK
+        );
+    }
+
 }

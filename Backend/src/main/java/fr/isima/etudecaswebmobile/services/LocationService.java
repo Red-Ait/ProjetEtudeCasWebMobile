@@ -13,5 +13,6 @@ public interface LocationService {
     public void deleteLocationById(Long id) ;
     public List<Location> getLocationsByTag(@PathVariable long tag_id);
     public List<Location> findAllLocationsByUserId(Long id);
+    public List<Location> findAllLocationsOfAnotherUserByTagTitles(String ownerUsername, List<String> tagTitles);
 
 }

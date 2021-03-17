@@ -2,7 +2,6 @@ package fr.isima.etudecaswebmobile.services.impl;
 
 
 import fr.isima.etudecaswebmobile.entities.location.LocationEntity;
-import fr.isima.etudecaswebmobile.entities.location.LocationMapper;
 import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
 import fr.isima.etudecaswebmobile.entities.tag.TagMapper;
 import fr.isima.etudecaswebmobile.exception.NoContentException;
@@ -30,11 +29,7 @@ public class TagImpl implements TagService {
     @Autowired
     private TagRepository tagRepository;
     @Autowired
-    private LocationImpl locationService;
-    @Autowired
     private LocationRepository locationRepository;
-    @Autowired
-    private LocationMapper locationMapper;
     @Autowired
     private TagMapper tagMapper;
     @Autowired

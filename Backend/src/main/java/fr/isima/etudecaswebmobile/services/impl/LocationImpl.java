@@ -3,19 +3,21 @@ package fr.isima.etudecaswebmobile.services.impl;
 import fr.isima.etudecaswebmobile.entities.location.LocationEntity;
 import fr.isima.etudecaswebmobile.entities.location.LocationMapper;
 import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
+import fr.isima.etudecaswebmobile.entities.user.UserDao;
 import fr.isima.etudecaswebmobile.exception.NoContentException;
 import fr.isima.etudecaswebmobile.exception.NotFoundException;
 import fr.isima.etudecaswebmobile.exception.UnauthorizedException;
 import fr.isima.etudecaswebmobile.models.Location;
 import fr.isima.etudecaswebmobile.repositories.LocationRepository;
+import fr.isima.etudecaswebmobile.repositories.TagRepository;
+import fr.isima.etudecaswebmobile.services.JwtUserDetailsService;
 import fr.isima.etudecaswebmobile.services.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -28,17 +30,20 @@ public class LocationImpl implements LocationService {
     private LocationRepository locationRepository;
     @Autowired
     private LocationMapper locationMapper;
+    @Autowired
+    private JwtUserDetailsService userDetailsService;
+    @Autowired
+    private TagRepository tagRepository;
 
     @Override
     public Location addLocation(Location location, String tag_title) {
         if(location.getId_location()== null) {
             TagEntity tag = new TagEntity(tag_title);
+
             LocationEntity locationEntity = locationMapper.fromModel(location);
+            locationEntity.setTagEntities(new ArrayList<>(Arrays.asList(tag)));
 
-            List<TagEntity> tagEntities = locationEntity.getTagEntities();
-            tagEntities.add(tag);
-            locationEntity.setTagEntities(tagEntities);
-
+            tagRepository.save(tag);
             return locationMapper.toModel(locationRepository.save(locationEntity));
         }else
             throw new UnauthorizedException("Location exist");
@@ -114,6 +119,33 @@ public class LocationImpl implements LocationService {
 
         return locationRepository.findAllLocationsByUserId(id)
                 .orElseThrow(() -> new NoContentException("There are no Location for this user"))
+                .stream()
+                .map(locationMapper::toModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Location> findAllLocationsOfAnotherUserByTagTitles(String ownerUsername, List<String> tagTitles) {
+        //remove duplicates
+        Set<String> set = new HashSet<>(tagTitles);
+        tagTitles.clear();
+        tagTitles.addAll(set);
+
+        tagTitles.stream().map(title -> tagRepository.findByTitleAndUserDaoUsername(title, ownerUsername))
+                .forEach(tagEntityOptional -> {
+                    if (tagEntityOptional.isPresent()) {
+                        if (
+                                !tagEntityOptional.get().getAccessUserEntities()
+                                        .stream().map(UserDao::getId).collect(Collectors.toList())
+                                        .contains(userDetailsService.getCurrentUser().getId())
+                        )
+                            throw new UnauthorizedException("This user does not have access to one of the tags");
+                    } else
+                        throw new NotFoundException("One of tags does not exist");
+                });
+
+        return locationRepository.findAllLocationsByTagTitles(tagTitles)
+                .orElseThrow(() -> new NoContentException("There are no Locations"))
                 .stream()
                 .map(locationMapper::toModel)
                 .collect(Collectors.toList());

@@ -1,12 +1,10 @@
 package fr.isima.etudecaswebmobile.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import fr.isima.etudecaswebmobile.entities.location.LocationEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Data
@@ -30,10 +28,6 @@ public class UserDao {
 
     @Column
     private String email;
-
-    @OneToMany
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private List<LocationEntity> location;
 
     public UserDao(
             String username,
