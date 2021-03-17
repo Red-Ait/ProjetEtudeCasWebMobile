@@ -1,14 +1,14 @@
 package fr.isima.etudecaswebmobile.repositories;
 
-import fr.isima.etudecaswebmobile.models.User;
+
+import fr.isima.etudecaswebmobile.entities.user.UserDao;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
+public interface UserRepository extends JpaRepository<UserDao, Integer> {
 
-
-@Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-
-    public Optional<User> findByUsername(String username);
+    @Query("select u from UserDao u where u.username= :username")
+    UserDao findByUsername(@Param("username") String username);
+    UserDao findById(Long id);
 }
