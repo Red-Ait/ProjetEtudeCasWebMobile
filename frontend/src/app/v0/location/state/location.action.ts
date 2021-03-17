@@ -1,4 +1,5 @@
 import {IMapPoint} from '../../@entities/IMapPoint';
+import {ITag} from '../../@entities/ITag';
 
 export class GetUserMapPoint {
   static readonly type = '[location/map] get user map point';
@@ -35,3 +36,64 @@ export class GetUserMapPointByTagFail {
   }
 }
 
+export class SavePosition {
+  static readonly type = '[location/map] save position';
+  constructor(public payload: IMapPoint) {
+  }
+}
+
+export class SavePositionSuccess {
+  static readonly type = '[location/map] save position success';
+  constructor(public payload: IMapPoint) {
+  }
+}
+export class SavePositionFail {
+  static readonly type = '[location/map] save position fail';
+  constructor(public payload: string) {
+  }
+}
+
+export class UpdatePosition {
+  static readonly type = '[location/map] update position';
+  constructor(public payload: IMapPoint) {
+  }
+}
+
+export class UpdatePositionSuccess {
+  static readonly type = '[location/map] update position success';
+  constructor(public payload: IMapPoint) {
+  }
+}
+export class UpdatePositionFail {
+  static readonly type = '[location/map] update position fail';
+  constructor(public payload: string) {
+  }
+}
+
+export class DeletePosition {
+  static readonly type = '[location/map] delete position';
+  constructor(public payload: IMapPoint) {
+  }
+}
+
+export class DeletePositionSuccess {
+  static readonly type = '[location/map] delete position success';
+  constructor(public payload: IMapPoint) {
+  }
+}
+export class DeletePositionFail {
+  static readonly type = '[location/map] delete position fail';
+  constructor(public payload: string) {
+  }
+}
+export class SearchByTags {
+  static readonly type = '[location/map] search by tags';
+  constructor(public payload: Array<ITag>) {
+  }
+}
+
+export class SearchByTagsSuccess {
+  static readonly type = '[location/map] Search By Tags success';
+  constructor(public payload: Array<IMapPoint>) {
+  }
+}

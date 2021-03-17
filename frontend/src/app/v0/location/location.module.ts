@@ -17,10 +17,12 @@ import {LocationState} from './state/location.state';
 import {LeafletMarkerClusterModule} from '@asymmetrik/ngx-leaflet-markercluster';
 import {services} from './service';
 import {TagState} from "./state/tag.state";
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import {pipes} from './pipes';
 
 
 @NgModule({
-  declarations: [...containers, ...components],
+  declarations: [...containers, ...components, ...pipes],
   imports: [
     CommonModule,
     LocationRoutingModule,
@@ -36,7 +38,7 @@ import {TagState} from "./state/tag.state";
     LeafletMarkerClusterModule,
     LeafletModule
   ],
-  providers: [...services],
+  providers: [...services, Geolocation],
   exports: [CollectionComponent]
 })
 export class LocationModule { }
