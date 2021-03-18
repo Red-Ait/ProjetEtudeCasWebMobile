@@ -1,0 +1,23 @@
+<app-header [title]="'Tags'"></app-header>
+
+
+<ion-content [fullscreen]="true">
+  <div id="container">
+    <mat-form-field class="example-chip-list" style="width: 100%;">
+      <mat-label>My tags</mat-label>
+      <mat-chip-list #chipList aria-label="Color selection">
+        <mat-chip class="ship" *ngFor="let tag of tags" [selectable]="selectable"
+                  [removable]="removable" (removed)="remove(tag)" selected [color]="tag.color">
+          {{tag.label}}
+          <mat-icon matChipRemove *ngIf="removable">X</mat-icon>
+        </mat-chip>
+        <input placeholder="New tag..."
+               style="color: black !important;"
+               [matChipInputFor]="chipList"
+               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+               [matChipInputAddOnBlur]="addOnBlur"
+               (matChipInputTokenEnd)="add($event)">
+      </mat-chip-list>
+    </mat-form-field>
+  </div>
+</ion-content>
