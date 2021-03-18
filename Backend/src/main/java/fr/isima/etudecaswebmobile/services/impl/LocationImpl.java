@@ -41,7 +41,7 @@ public class LocationImpl implements LocationService {
 
     @Override
     public Location addLocation(Location location, String tag_title) {
-        if(location.getId_location()== null) {
+        if(location.getId()== null) {
             TagEntity tag = new TagEntity(tag_title);
 
             LocationEntity locationEntity = locationMapper.fromModel(location);

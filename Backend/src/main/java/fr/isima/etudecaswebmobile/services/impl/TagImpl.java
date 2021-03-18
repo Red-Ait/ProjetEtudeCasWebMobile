@@ -38,7 +38,7 @@ public class TagImpl implements TagService {
     @Override
     public Tag addTag(Tag tag) {
 
-        if(tag.getId_tag() == null) {
+        if(tag.getId() == null) {
             TagEntity tagEntity = tagMapper.fromModel(tag);
             tagEntity.setUserDao(userDetailsService.getCurrentUser());
             return tagMapper.toModel(tagRepository.save(tagEntity));
@@ -71,7 +71,7 @@ public class TagImpl implements TagService {
         Optional<TagEntity> optionalTagEntity = tagRepository.findById(id);
         if (optionalTagEntity.isPresent()) {
             TagEntity oldTagEntity = optionalTagEntity.get();
-            oldTagEntity.setTitle(newTag.getTitle());
+            oldTagEntity.setTitle(newTag.getLabel());
             return tagMapper.toModel(tagRepository.save(oldTagEntity));
         }else
             throw new NotFoundException("Tag not found");
