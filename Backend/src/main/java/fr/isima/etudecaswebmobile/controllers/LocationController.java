@@ -69,4 +69,15 @@ public class LocationController {
         );
     }
 
+    @PutMapping("location/other_user/{other_username}/tags/{tag_titles}")
+    public ResponseEntity<String> shareLocationsWithAnotherUserByTagTitles(
+            @PathVariable("other_username") String otherUsername,
+            @PathVariable("tag_titles") List<String> tagTitles
+    ) {
+        return new ResponseEntity<>(
+                locationService.shareLocationsWithAnotherUserByTagTitles(otherUsername, tagTitles),
+                HttpStatus.OK
+        );
+    }
+
 }

@@ -29,7 +29,7 @@ public interface LocationRepository extends JpaRepository<LocationEntity, Long>
             "where t.title IN :tagTitles"
             , nativeQuery = true
     )
-    Optional<List<LocationEntity>> findAllLocationsByTagTitles(
+    List<LocationEntity> findAllLocationsByTagTitles(
             @Param("tagTitles") List<String> tagTitles
     );
 }
