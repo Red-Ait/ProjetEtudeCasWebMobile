@@ -5,7 +5,6 @@ import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
 import lombok.Data;
 import lombok.Generated;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Arrays;
