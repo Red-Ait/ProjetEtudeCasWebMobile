@@ -3,11 +3,13 @@ package fr.isima.etudecaswebmobile.services.impl;
 import fr.isima.etudecaswebmobile.entities.location.LocationEntity;
 import fr.isima.etudecaswebmobile.entities.location.LocationMapper;
 import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
+import fr.isima.etudecaswebmobile.entities.tag.TagMapper;
 import fr.isima.etudecaswebmobile.entities.user.UserDao;
 import fr.isima.etudecaswebmobile.exception.NoContentException;
 import fr.isima.etudecaswebmobile.exception.NotFoundException;
 import fr.isima.etudecaswebmobile.exception.UnauthorizedException;
 import fr.isima.etudecaswebmobile.models.Location;
+import fr.isima.etudecaswebmobile.models.Tag;
 import fr.isima.etudecaswebmobile.repositories.LocationRepository;
 import fr.isima.etudecaswebmobile.repositories.TagRepository;
 import fr.isima.etudecaswebmobile.repositories.UserRepository;
@@ -37,18 +39,107 @@ public class LocationImpl implements LocationService {
     @Autowired
     private TagRepository tagRepository;
     @Autowired
+    private TagMapper tagMapper;
+    @Autowired
     private UserRepository userRepository;
 
     @Override
     public Location addLocation(Location location, String tag_title) {
         if(location.getId()== null) {
-            TagEntity tag = new TagEntity(tag_title);
-
             LocationEntity locationEntity = locationMapper.fromModel(location);
-            locationEntity.setTagEntities(new ArrayList<>(Arrays.asList(tag)));
 
-            tagRepository.save(tag);
-            return locationMapper.toModel(locationRepository.save(locationEntity));
+            // create default tag for user if it does not exist
+            Optional<TagEntity> tagEntityOptional = tagRepository.findByTitleAndUserDaoUsername(
+                    "default tag",
+                    userDetailsService.getCurrentUser().getUsername()
+            );
+            TagEntity tag;
+            if (tagEntityOptional.isPresent()) {
+                tag = tagEntityOptional.get();
+            } else {
+                tag = new TagEntity(tag_title);
+                tag.setUserDao(userDetailsService.getCurrentUser());
+            }
+            locationEntity.setTagEntities(new ArrayList<>(Arrays.asList(tag)));
+            System.out.println("locationEntity after tag");
+            System.out.println(locationEntity);
+
+            //set tags for location entity
+            List<Tag> tags = location.getTags();
+            List<Tag> tagsNotToCreate = new ArrayList<>();
+            List<TagEntity> tagEntitiesNotToCreate = new ArrayList<>();
+            if (!tags.isEmpty()) {
+                //getting tags that already have been created
+                tagsNotToCreate = tags.stream()
+                        .filter(tag1 -> tag1.getId()!= null && !tag1.getLabel().equals("default tag"))
+                        .collect(Collectors.toList());
+                if (!tagsNotToCreate.isEmpty()) {
+                    tagsNotToCreate.stream().map(Tag::getLabel)
+                            .map(title -> tagRepository.findByTitleAndUserDaoUsername(
+                                title,
+                                userDetailsService.getCurrentUser().getUsername()
+                            )).forEach(optionalTagEntity -> {
+                                if (optionalTagEntity.isPresent())
+                                    tagEntitiesNotToCreate.add(optionalTagEntity.get());
+                                else
+                                    throw new NotFoundException("One or all the user tags do not exist");
+                            });
+
+                    List<TagEntity> tagEntityList = locationEntity.getTagEntities();
+                    if (tagEntityList.isEmpty())
+                        tagEntityList = new ArrayList<>();
+                    tagEntityList.addAll(tagEntitiesNotToCreate);
+                    locationEntity.setTagEntities(tagEntityList);
+
+                }
+
+                System.out.println("locationEntity after tagsNotToCreate");
+                System.out.println(locationEntity);
+
+                //getting new tags to save with location
+                List<Tag> newTags = tags.stream()
+                        .filter(tag1 -> tag1.getId()==null && !tag1.getLabel().equals("default tag"))
+                        .collect(Collectors.toList());
+                System.out.println("newTags");
+                System.out.println(newTags);
+                if (!newTags.isEmpty()) {
+                    List<TagEntity> tagEntities = newTags.stream()
+                            .map(tagMapper::fromModel)
+                            .collect(Collectors.toList());
+                    tagEntities.forEach(tagEntity -> tagEntity.setUserDao(userDetailsService.getCurrentUser()));
+
+                    List<TagEntity> tagEntityList = locationEntity.getTagEntities();
+                    if (tagEntityList.isEmpty())
+                        tagEntityList = new ArrayList<>();
+                    tagEntityList.addAll(tagEntities);
+                    locationEntity.setTagEntities(tagEntityList);
+                }
+            }
+
+            System.out.println("locationEntity");
+            System.out.println(locationEntity);
+            LocationEntity savedLocation = locationRepository.save(locationEntity);
+
+/*
+            //add the new location to the tags that already have been created
+            if (!tagEntitiesNotToCreate.isEmpty()) {
+                for (int i = 0; i < tagEntitiesNotToCreate.size() ; i++) {
+                    List<LocationEntity> locationEntities = tagEntitiesNotToCreate.get(i).getLocationEntities();
+                    locationEntities.add(savedLocation);
+                    tagEntitiesNotToCreate.get(i).setLocationEntities(locationEntities);
+
+                    List<TagEntity> tagEntities1 = savedLocation.getTagEntities();
+                    tagEntitiesNotToCreate.add(tagEntitiesNotToCreate.get(i));
+                    savedLocation.setTagEntities(tagEntities1);
+
+                }
+                savedLocation = locationRepository.save(savedLocation);
+                tagRepository.saveAll(tagEntitiesNotToCreate);
+            }
+*/
+
+            //return locationMapper.toModel(locationRepository.findById(savedLocation.getId_location()).get());
+            return locationMapper.toModel(savedLocation);
         }else
             throw new UnauthorizedException("Location exist");
     }
