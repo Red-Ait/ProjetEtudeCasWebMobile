@@ -30,6 +30,8 @@ import {InsertAuthTokenInterceptorService} from './v0/interceptors/insert-auth-t
     HttpClientModule,
     NgxsReduxDevtoolsPluginModule.forRoot(),
     NgxsLoggerPluginModule,
+    BrowserAnimationsModule,
+    StoreModule.forRoot({}, {}),
     NgxsModule.forRoot([]),
     BrowserAnimationsModule
   ],

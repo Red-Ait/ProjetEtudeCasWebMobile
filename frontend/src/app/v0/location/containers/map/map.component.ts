@@ -67,11 +67,11 @@ export class MapComponent implements OnInit {
   newTagLabel = '';
   // TODO get tags from api
   tags: ITag[] = [
-    {label: 'Hotel'},
-    {label: 'Resto'},
-    {label: 'School'},
-    {label: 'Plage'},
-    {label: 'Ville'},
+    {id: 1 ,label: 'Hotel'},
+    {id: 2 ,label: 'Resto'},
+    {id: 3 ,label: 'School'},
+    {id: 4 ,label: 'Plage'},
+    {id: 5 ,label: 'Ville'},
   ];
 
   // Selectors
@@ -157,7 +157,7 @@ export class MapComponent implements OnInit {
     }
 
     if ((this.searchedTagLabel || '').trim()) {
-      this.searchedTags.unshift({label: this.searchedTagLabel.trim()});
+      this.searchedTags.unshift({id:0,label: this.searchedTagLabel.trim()});
     }
     this.searchedTagLabel = '';
     this.store.dispatch(new SearchByTags(this.searchedTags));
@@ -177,7 +177,7 @@ export class MapComponent implements OnInit {
     }
 
     if ((this.newTagLabel || '').trim()) {
-      this.selectedPoint.point.tags.push({label: this.newTagLabel.trim()});
+      this.selectedPoint.point.tags.push({id:null,label: this.newTagLabel.trim()});
     }
     this.newTagLabel = '';
   }
