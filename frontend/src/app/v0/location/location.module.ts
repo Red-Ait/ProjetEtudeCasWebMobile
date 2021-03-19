@@ -16,6 +16,7 @@ import {NgxsModule} from '@ngxs/store';
 import {LocationState} from './state/location.state';
 import {LeafletMarkerClusterModule} from '@asymmetrik/ngx-leaflet-markercluster';
 import {services} from './service';
+import {TagState} from "./state/tag.state";
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import {pipes} from './pipes';
 
@@ -33,7 +34,7 @@ import {pipes} from './pipes';
     FormsModule,
     MatIconModule,
     NgbModule,
-    NgxsModule.forFeature([LocationState]),
+    NgxsModule.forFeature([LocationState,TagState]),
     LeafletMarkerClusterModule,
     LeafletModule
   ],
