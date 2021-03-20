@@ -13,6 +13,8 @@ import fr.isima.etudecaswebmobile.repositories.TagRepository;
 import fr.isima.etudecaswebmobile.services.JwtUserDetailsService;
 import fr.isima.etudecaswebmobile.services.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,7 +80,7 @@ public class TagImpl implements TagService {
     }
 
     @Override
-    public void deleteTagById(Long id) {
+    public ResponseEntity<Boolean> deleteTagById(Long id) {
         Optional<TagEntity> tagEntityOptional = tagRepository.findById(id);
         if (tagEntityOptional.isPresent()) {
             TagEntity tagEntity = tagEntityOptional.get();
@@ -92,8 +94,9 @@ public class TagImpl implements TagService {
                 tagEntity.setLocationEntities(null);
             }
             tagRepository.deleteById(id);
+            return new ResponseEntity<>(true, HttpStatus.OK);
         } else
-            throw new NotFoundException("Tag Not Found");
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
     @Override

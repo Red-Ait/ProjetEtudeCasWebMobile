@@ -41,10 +41,9 @@ public class LocationController {
     }
 
     @RequestMapping(value = "/location/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteLocationById(@PathVariable long id)
+    public ResponseEntity<Boolean> deleteLocationById(@PathVariable long id)
     {
-        locationService.deleteLocationById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return locationService.deleteLocationById(id);
     }
 
     @RequestMapping(value = "/locations/tag/{tag_id}", method = RequestMethod.GET)

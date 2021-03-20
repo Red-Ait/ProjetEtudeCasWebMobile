@@ -16,6 +16,8 @@ import fr.isima.etudecaswebmobile.repositories.UserRepository;
 import fr.isima.etudecaswebmobile.services.JwtUserDetailsService;
 import fr.isima.etudecaswebmobile.services.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -194,7 +196,7 @@ public class LocationImpl implements LocationService {
     }
 
     @Override
-    public void deleteLocationById(Long id) {
+    public ResponseEntity<Boolean> deleteLocationById(Long id) {
 
         Optional<LocationEntity> locationEntityOptional = locationRepository.findById(id);
         if (locationEntityOptional.isPresent()) {
@@ -209,8 +211,9 @@ public class LocationImpl implements LocationService {
                 locationEntity.setTagEntities(null);
             }
             locationRepository.deleteById(id);
+            return new ResponseEntity<>(true, HttpStatus.OK);
         } else
-            throw new NotFoundException("Location Not Found");
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
     @Override
