@@ -2,22 +2,45 @@
 
 
 <ion-content [fullscreen]="true">
-  <div id="container">
-    <mat-form-field class="example-chip-list" style="width: 100%;">
-      <mat-label>My tags</mat-label>
-      <mat-chip-list #chipList aria-label="Color selection">
-        <mat-chip class="ship" *ngFor="let tag of tags" [selectable]="selectable"
-                  [removable]="removable" (removed)="remove(tag)" selected [color]="tag.color">
-          {{tag.label}}
-          <mat-icon matChipRemove *ngIf="removable">X</mat-icon>
-        </mat-chip>
-        <input placeholder="New tag..."
-               style="color: black !important;"
-               [matChipInputFor]="chipList"
-               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               [matChipInputAddOnBlur]="addOnBlur"
-               (matChipInputTokenEnd)="add($event)">
-      </mat-chip-list>
-    </mat-form-field>
+
+  <div *ngIf="!edit">
+    <div class="modal-body" style="height: 440px;">
+    <span class="badge badge-pill badge-info" style="margin: 6px; font-size: 14px" *ngFor="let tag of tags" (click)="edit=true;select(tag)">
+
+            <ion-label style="display: inline-block; vertical-align: middle" >
+             {{tag.label}}
+            </ion-label>
+            <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px" name="close-circle" (click)="remove(tag)"></ion-icon>
+          </span>
+
+      <span style="color: red" *ngIf="tags.length === 0">* You have to add at least one Tag !</span>
+      <input list="tags" style="width: 100%; text-align: left" type="text" [(ngModel)]="newTagLabel" (keydown.enter)="addTag()"
+             class="second text-input-save"  placeholder="Tag Label">
+      <datalist  id="tags">
+        <option [value]="tag.label" *ngFor="let tag of tags | filterTagSuggestion : tags ">{{tag.label}}</option>
+      </datalist>
+    </div>
   </div>
+
+  <div *ngIf="edit">
+    <div class="modal-body" style="height: 440px;">
+  <span class="badge badge-pill badge-info" style="margin: 6px; font-size: 14px" *ngFor="let tag of tags" >
+
+            <ion-label style="display: inline-block; vertical-align: middle">
+             {{tag.label}}
+            </ion-label>
+            <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px" name="close-circle" (click)="remove(tag)"></ion-icon>
+          </span>
+      <span style="color: red" *ngIf="tags.length === 0">* You have to add at least one Tag !</span>
+      <br>
+      <label style="width: 100%; text-align: left">
+        Update
+      </label>
+      <input style="width: 100%; text-align: left" type="text" [(ngModel)]="newTagLabel"  (keydown.enter)="update(selectedTag);edit=false"
+             class="second text-input-save" placeholder="{{selectedTag.label}}" >
+      <ion-button (click)="update(selectedTag);edit=false" style=" margin-left:60px">Update</ion-button>
+      <ion-button (click)="edit = false" color="light">Cancel</ion-button>
+    </div>
+  </div>
+
 </ion-content>
