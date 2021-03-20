@@ -1,4 +1,4 @@
-import {IMapPoint} from '../../@entities/IMapPoint';
+import {ILocation} from '../../@entities/ILocation';
 import {ITag} from '../../@entities/ITag';
 
 export class GetUserMapPoint {
@@ -9,7 +9,7 @@ export class GetUserMapPoint {
 
 export class GetUserMapPointSuccess {
   static readonly type = '[location/map] get user map point success';
-  constructor(public payload: Array<IMapPoint>) {
+  constructor(public payload: Array<ILocation>) {
   }
 }
 
@@ -27,7 +27,7 @@ export class GetUserMapPointByTag {
 
 export class GetUserMapPointByTagSuccess {
   static readonly type = '[location/map] get user map point by tag success';
-  constructor(public payload: Array<IMapPoint>) {
+  constructor(public payload: Array<ILocation>) {
   }
 }
 export class GetUserMapPointByTagFail {
@@ -38,13 +38,13 @@ export class GetUserMapPointByTagFail {
 
 export class SavePosition {
   static readonly type = '[location/map] save position';
-  constructor(public payload: IMapPoint) {
+  constructor(public payload: ILocation) {
   }
 }
 
 export class SavePositionSuccess {
   static readonly type = '[location/map] save position success';
-  constructor(public payload: IMapPoint) {
+  constructor(public payload: ILocation) {
   }
 }
 export class SavePositionFail {
@@ -55,13 +55,13 @@ export class SavePositionFail {
 
 export class UpdatePosition {
   static readonly type = '[location/map] update position';
-  constructor(public payload: IMapPoint) {
+  constructor(public payload: ILocation) {
   }
 }
 
 export class UpdatePositionSuccess {
   static readonly type = '[location/map] update position success';
-  constructor(public payload: IMapPoint) {
+  constructor(public payload: ILocation) {
   }
 }
 export class UpdatePositionFail {
@@ -72,13 +72,13 @@ export class UpdatePositionFail {
 
 export class DeletePosition {
   static readonly type = '[location/map] delete position';
-  constructor(public payload: IMapPoint) {
+  constructor(public payload: ILocation) {
   }
 }
 
 export class DeletePositionSuccess {
   static readonly type = '[location/map] delete position success';
-  constructor(public payload: IMapPoint) {
+  constructor(public payload: ILocation) {
   }
 }
 export class DeletePositionFail {
@@ -94,6 +94,6 @@ export class SearchByTags {
 
 export class SearchByTagsSuccess {
   static readonly type = '[location/map] Search By Tags success';
-  constructor(public payload: Array<IMapPoint>) {
+  constructor(public payload: Array<ILocation>) {
   }
 }

@@ -1,4 +1,4 @@
-import {IMapPoint} from '../../@entities/IMapPoint';
+import {ILocation} from '../../@entities/ILocation';
 import {Action, Selector, State, StateContext} from '@ngxs/store';
 import {Injectable} from '@angular/core';
 import {ITag} from '../../@entities/ITag';
@@ -13,8 +13,8 @@ import {
 import {LocationApi} from '../service/location.api';
 
 export class LocationStateModel {
-  mapPoints: Array<IMapPoint>;
-  pointsSearchedByTags: Array<IMapPoint>;
+  mapPoints: Array<ILocation>;
+  pointsSearchedByTags: Array<ILocation>;
   tags: Array<ITag>;
 }
 
