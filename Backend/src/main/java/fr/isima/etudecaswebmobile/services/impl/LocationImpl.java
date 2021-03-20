@@ -43,8 +43,10 @@ public class LocationImpl implements LocationService {
     @Autowired
     private UserRepository userRepository;
 
+    private static final String tag_title = "default tag";
+
     @Override
-    public Location addLocation(Location location, String tag_title) {
+    public Location addLocation(Location location) {
         if(location.getId()== null) {
             LocationEntity locationEntity = locationMapper.fromModel(location);
 
@@ -53,17 +55,7 @@ public class LocationImpl implements LocationService {
 
             //set tags for location entity
             List<Tag> tags = location.getTags();
-            if (!tags.isEmpty()) {
-                //setting tags that already have been created
-                locationEntity = setting_tags_that_already_have_been_created(
-                        locationEntity,
-                        tag_title,
-                        tags
-                );
-
-                //setting new tags to save with location
-                locationEntity = setting_new_tags(locationEntity, tag_title, tags);
-            }
+            locationEntity = settingOldAndNewTags(locationEntity, tags);
 
             return locationMapper.toModel(locationRepository.save(locationEntity));
         }else
@@ -88,7 +80,6 @@ public class LocationImpl implements LocationService {
 
     private LocationEntity setting_tags_that_already_have_been_created(
             LocationEntity locationEntity,
-            String tag_title,
             List<Tag> tags
     ) {
         List<TagEntity> tagEntitiesNotToCreate = new ArrayList<>();
@@ -119,7 +110,6 @@ public class LocationImpl implements LocationService {
 
     private LocationEntity setting_new_tags(
             LocationEntity locationEntity,
-            String tag_title,
             List<Tag> tags
     ) {
         List<Tag> newTags = tags.stream()
@@ -136,6 +126,23 @@ public class LocationImpl implements LocationService {
                 tagEntityList = new ArrayList<>();
             tagEntityList.addAll(tagEntities);
             locationEntity.setTagEntities(tagEntityList);
+        }
+        return locationEntity;
+    }
+
+    private LocationEntity settingOldAndNewTags(
+            LocationEntity locationEntity,
+            List<Tag> tags
+    ) {
+        if (!tags.isEmpty()) {
+            //setting tags that already have been created
+            locationEntity = setting_tags_that_already_have_been_created(
+                    locationEntity,
+                    tags
+            );
+
+            //setting new tags to save with location
+            locationEntity = setting_new_tags(locationEntity, tags);
         }
         return locationEntity;
     }
@@ -167,6 +174,16 @@ public class LocationImpl implements LocationService {
         if (optionalLocationEntity.isPresent()) {
             LocationEntity oldLocationEntity = optionalLocationEntity.get();
 
+            //set tags for location entity
+            TagEntity defaultTag = oldLocationEntity.getTagEntities().stream()
+                    .filter(tag -> tag.getTitle().equals(tag_title)).findFirst().orElse(null);
+            if (defaultTag == null)
+                throw new UnauthorizedException("location must have a default tag");
+            oldLocationEntity.setTagEntities(new ArrayList<>(Arrays.asList(defaultTag)));
+            List<Tag> tags = newLocation.getTags();
+            oldLocationEntity = settingOldAndNewTags(oldLocationEntity, tags);
+
+            //setting new values
             oldLocationEntity.setLabel(newLocation.getLabel());
             oldLocationEntity.setLongitude(newLocation.getLongitude());
             oldLocationEntity.setLongitude(newLocation.getLatitude());

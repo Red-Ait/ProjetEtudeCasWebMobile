@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
 public interface LocationService {
-    public Location addLocation(Location location, String tag_title) throws Exception;
+    public Location addLocation(Location location) throws Exception;
     public List<Location> getAllLocations();
     public Location getLocationById(Long id) ;
     public Location updateLocationById(Location location, Long id) ;

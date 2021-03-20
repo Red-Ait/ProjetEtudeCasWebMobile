@@ -21,7 +21,7 @@ public class LocationController {
     @PostMapping(path = "/location")
     public ResponseEntity<Location> addLocation(@Validated @RequestBody Location location) throws Exception
     {
-        return new ResponseEntity<>(this.locationService.addLocation(location, "default tag"), HttpStatus.CREATED);
+        return new ResponseEntity<>(this.locationService.addLocation(location), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/locations", method = RequestMethod.GET)
