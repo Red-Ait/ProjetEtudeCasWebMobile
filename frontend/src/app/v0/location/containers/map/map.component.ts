@@ -168,6 +168,7 @@ export class MapComponent implements OnInit {
     });
   }
   addTag(): void {
+    // OK
     for (const tag of this.selectedPoint.point.tags) {
       if (tag.label === this.newTagLabel.trim() ||  tag.label === '') {
         return;
