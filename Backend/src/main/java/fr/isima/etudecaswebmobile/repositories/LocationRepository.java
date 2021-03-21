@@ -17,13 +17,13 @@ public interface LocationRepository extends JpaRepository<LocationEntity, Long>
     Optional<List<LocationEntity>> getLocationsByTag(@Param("tag_id") long tag_id);
 
     @Query(value = "SELECT l.id_location, l.label, l.longitude, l.latitude " +
-            "from Location l " +
+            "from location l " +
             "INNER JOIN locations_tags tl on l.id_location = tl.location_id " +
             "INNER JOIN tag t on tl.tag_id = t.id_tag where t.user_id = ?1", nativeQuery = true)
     Optional<List<LocationEntity>> findAllLocationsByUserId(Long id);
 
     @Query(value = "SELECT l.id_location, l.label, l.longitude, l.latitude " +
-            "from Location l " +
+            "from location l " +
             "INNER JOIN locations_tags tl on l.id_location = tl.location_id " +
             "INNER JOIN tag t on tl.tag_id = t.id_tag " +
             "where t.title IN :tagTitles"
