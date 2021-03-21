@@ -21,7 +21,7 @@ public class LocationController {
     @PostMapping(path = "/location")
     public ResponseEntity<Location> addLocation(@Validated @RequestBody Location location) throws Exception
     {
-        return new ResponseEntity<>(this.locationService.addLocation(location, "default tag"), HttpStatus.CREATED);
+        return new ResponseEntity<>(this.locationService.addLocation(location), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/locations", method = RequestMethod.GET)
@@ -41,10 +41,9 @@ public class LocationController {
     }
 
     @RequestMapping(value = "/location/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteLocationById(@PathVariable long id)
+    public ResponseEntity<Boolean> deleteLocationById(@PathVariable long id)
     {
-        locationService.deleteLocationById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return locationService.deleteLocationById(id);
     }
 
     @RequestMapping(value = "/locations/tag/{tag_id}", method = RequestMethod.GET)
@@ -65,6 +64,17 @@ public class LocationController {
     ) {
         return new ResponseEntity<>(
                 locationService.findAllLocationsOfAnotherUserByTagTitles(ownerUsername, tagTitles),
+                HttpStatus.OK
+        );
+    }
+
+    @PutMapping("location/other_user/{other_username}/tags/{tag_titles}")
+    public ResponseEntity<String> shareLocationsWithAnotherUserByTagTitles(
+            @PathVariable("other_username") String otherUsername,
+            @PathVariable("tag_titles") List<String> tagTitles
+    ) {
+        return new ResponseEntity<>(
+                locationService.shareLocationsWithAnotherUserByTagTitles(otherUsername, tagTitles),
                 HttpStatus.OK
         );
     }

@@ -13,6 +13,8 @@ import fr.isima.etudecaswebmobile.repositories.TagRepository;
 import fr.isima.etudecaswebmobile.services.JwtUserDetailsService;
 import fr.isima.etudecaswebmobile.services.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +40,7 @@ public class TagImpl implements TagService {
     @Override
     public Tag addTag(Tag tag) {
 
-        if(tag.getId_tag() == null) {
+        if(tag.getId() == null) {
             TagEntity tagEntity = tagMapper.fromModel(tag);
             tagEntity.setUserDao(userDetailsService.getCurrentUser());
             return tagMapper.toModel(tagRepository.save(tagEntity));
@@ -71,14 +73,14 @@ public class TagImpl implements TagService {
         Optional<TagEntity> optionalTagEntity = tagRepository.findById(id);
         if (optionalTagEntity.isPresent()) {
             TagEntity oldTagEntity = optionalTagEntity.get();
-            oldTagEntity.setTitle(newTag.getTitle());
+            oldTagEntity.setTitle(newTag.getLabel());
             return tagMapper.toModel(tagRepository.save(oldTagEntity));
         }else
             throw new NotFoundException("Tag not found");
     }
 
     @Override
-    public void deleteTagById(Long id) {
+    public ResponseEntity<Boolean> deleteTagById(Long id) {
         Optional<TagEntity> tagEntityOptional = tagRepository.findById(id);
         if (tagEntityOptional.isPresent()) {
             TagEntity tagEntity = tagEntityOptional.get();
@@ -92,8 +94,9 @@ public class TagImpl implements TagService {
                 tagEntity.setLocationEntities(null);
             }
             tagRepository.deleteById(id);
+            return new ResponseEntity<>(true, HttpStatus.OK);
         } else
-            throw new NotFoundException("Tag Not Found");
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
     @Override
