@@ -4,11 +4,15 @@ import fr.isima.etudecaswebmobile.models.Location;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
+import java.util.ArrayList;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class LocationMapperTest {
 
     private final LocationMapper locationMapper = new LocationMapper();
-    private final Location LOCATION = new Location();
+    private final Location LOCATION = new Location(1L, "testLabel", 1.1 ,2.2, new ArrayList<>());
     private final LocationEntity LOCATIONENTITY = new LocationEntity(1L,"testLabel", 1.1,2.2);
 
     @Test
@@ -18,12 +22,8 @@ public class LocationMapperTest {
 
     @Test
     public void when_fromModel_expect_tagEntity() {
-        Assertions.assertEquals(LOCATIONENTITY.getId_location(), locationMapper.fromModel(LOCATION).getId_location());
-        Assertions.assertEquals(LOCATIONENTITY.getLabel(), locationMapper.fromModel(LOCATION).getLabel());
-        Assertions.assertEquals(LOCATIONENTITY.getLongitude(), locationMapper.fromModel(LOCATION).getLongitude());
-        Assertions.assertEquals(LOCATIONENTITY.getLatitude(), locationMapper.fromModel(LOCATION).getLatitude());
-
-
+        assertThat(LOCATIONENTITY)
+                .isEqualToComparingFieldByFieldRecursively(locationMapper.fromModel(LOCATION));
     }
 
 }
