@@ -47,7 +47,7 @@ export class LocationApi {
   updateMapPoint(point: ILocation): Observable<ILocation> {
     return of(point);
   }
-  searchByTags(point: Array<ITag>): Observable<Array<ILocation>> {
+  searchByTags(point: Array<string>): Observable<Array<ILocation>> {
     return of(this.mapPoints.slice(2, 7));
   }
 }

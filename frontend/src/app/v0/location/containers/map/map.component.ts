@@ -60,7 +60,7 @@ export class MapComponent implements OnInit {
   currentPosition = SearchMode.currentPosition;
   searchPlace = SearchMode.searchPlace;
   advancedSearch = SearchMode.advancedSearch;
-  searchedTags = new Array<ITag>();
+  searchedTags = new Array<string>();
   searchedTagLabel = '';
 
   // Save Form params
@@ -113,7 +113,7 @@ export class MapComponent implements OnInit {
       this.selectedPoint.point.tags.splice(index, 1);
     }
   }
-  removeSearchedTag(tag: ITag): void {
+  removeSearchedTag(tag: string): void {
     const index = this.searchedTags.indexOf(tag);
 
     if (index >= 0) {
@@ -149,13 +149,13 @@ export class MapComponent implements OnInit {
       return;
     }
     for (const tag of this.searchedTags) {
-      if (tag.label === this.searchedTagLabel.trim() ||  tag.label === '') {
+      if (tag.trim().toLowerCase() === this.searchedTagLabel.trim().toLowerCase() ||  tag === '') {
         return;
       }
     }
 
     if ((this.searchedTagLabel || '').trim()) {
-      this.searchedTags.unshift({id: 0, label: this.searchedTagLabel.trim()});
+      this.searchedTags.unshift(this.searchedTagLabel.trim().toLowerCase());
     }
     this.searchedTagLabel = '';
     this.store.dispatch(new SearchByTags(this.searchedTags));

@@ -88,7 +88,7 @@ export class DeletePositionFail {
 }
 export class SearchByTags {
   static readonly type = '[location/map] search by tags';
-  constructor(public payload: Array<ITag>) {
+  constructor(public payload: Array<string>) {
   }
 }
 
