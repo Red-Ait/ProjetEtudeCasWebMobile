@@ -175,6 +175,7 @@ public class LocationImpl implements LocationService {
         Optional<LocationEntity> optionalLocationEntity = locationRepository.findById(id);
         if (optionalLocationEntity.isPresent()) {
             LocationEntity oldLocationEntity = optionalLocationEntity.get();
+            System.out.println(oldLocationEntity);
 
             //set tags for location entity
             TagEntity defaultTag = oldLocationEntity.getTagEntities().stream()

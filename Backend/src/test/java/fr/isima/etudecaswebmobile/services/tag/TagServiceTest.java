@@ -1,4 +1,4 @@
-package fr.isima.etudecaswebmobile.services;
+package fr.isima.etudecaswebmobile.services.tag;
 
 import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
 import fr.isima.etudecaswebmobile.entities.tag.TagMapper;
@@ -35,11 +35,11 @@ public class TagServiceTest {
     @InjectMocks
     TagImpl tagImpl;
 
+
     TagEntity tagEntity1 = new TagEntity(1L,"TitleTest");
     TagEntity tagEntity2 = new TagEntity(2L,"TitleTest2");
     Tag tag1 = new Tag(1L,"TitleTest");
     Tag tag2 = new Tag(2L,"TitleTest2");
-
     @Before
     public void setup(){
 
