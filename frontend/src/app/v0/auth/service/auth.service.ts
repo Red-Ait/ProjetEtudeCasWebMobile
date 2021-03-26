@@ -20,7 +20,8 @@ export class AuthService {
   }
 
   addUser(user: IUser): Observable<any> {
-    return this.http.post(this.userUrl , user);
+    console.log(user);
+    return this.http.post('http://localhost:8080/register' , user);
   }
 
   isAuthenticated() {
