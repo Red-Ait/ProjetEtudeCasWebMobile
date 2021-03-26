@@ -7,7 +7,7 @@ import {
   AddTagSuccess,
   DeleteTagSuccess,
   GetTagByLabelFail,
-  GetTagByLabelSuccess,
+  GetTagByLabelSuccess, GetTagsSuccess,
   UpdateTagFail,
   UpdateTagSuccess
 } from './tag.action';
@@ -93,6 +93,24 @@ export class TagState {
     ctx.patchState({
       ...state,
       tag: payload
+    });
+  }
+
+  @Action(tagAction.GetTags)
+  getTags(ctx: StateContext<TagStateModel>) {
+    this.tagApi.getAllTag().subscribe(data => {
+      ctx.dispatch(new GetTagsSuccess(data));
+    }, error => {
+      ctx.dispatch(new GetTagByLabelFail(error));
+    });
+  }
+
+  @Action(tagAction.GetTagsSuccess)
+  getTagSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.GetTagsSuccess) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
+      tags: payload
     });
   }
 

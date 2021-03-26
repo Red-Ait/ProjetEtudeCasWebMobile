@@ -7,6 +7,9 @@ export const environment = {
   backendApiUrl: 'http://localhost:8080',
   apiUrl: '/api',
   resourceUri: {
+    authenticate: '/authenticate',
+    location: '/location',
+    tag: '/tag',
     register: '/register',
     user: '/user'
   }

@@ -72,13 +72,13 @@ export class UpdatePositionFail {
 
 export class DeletePosition {
   static readonly type = '[location/map] delete position';
-  constructor(public payload: ILocation) {
+  constructor(public payload: number) {
   }
 }
 
 export class DeletePositionSuccess {
   static readonly type = '[location/map] delete position success';
-  constructor(public payload: ILocation) {
+  constructor(public payload: number) {
   }
 }
 export class DeletePositionFail {

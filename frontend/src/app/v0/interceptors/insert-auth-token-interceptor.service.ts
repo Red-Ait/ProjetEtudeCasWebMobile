@@ -1,18 +1,19 @@
 import {Injectable} from '@angular/core';
 import {HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 
+const TOKEN_HEADER_KEY = 'Authorization';
+
 @Injectable({
   providedIn: 'root'
 })
 export class InsertAuthTokenInterceptorService implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
+    let authReq = req;
     const token = localStorage.getItem('token');
-    let newHeaders = req.headers;
-    if (token) {
-      newHeaders = newHeaders.append('authtoken', token);
+    if (token != null) {
+      authReq = req.clone({ headers: req.headers.set(TOKEN_HEADER_KEY, 'Bearer ' + token) });
     }
-    const authReq = req.clone({headers: newHeaders});
     return next.handle(authReq);
   }
 }

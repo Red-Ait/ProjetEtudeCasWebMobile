@@ -22,7 +22,7 @@ public class TagController {
         return new ResponseEntity<>(this.tagService.addTag(tag), HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/tags", method = RequestMethod.GET)
+    @RequestMapping(value = "/tag", method = RequestMethod.GET)
     public ResponseEntity<List<Tag>> getAll() {
         return new ResponseEntity<>(this.tagService.getAllTags(), HttpStatus.OK);
     }

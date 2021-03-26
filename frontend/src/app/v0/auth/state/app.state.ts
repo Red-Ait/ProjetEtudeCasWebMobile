@@ -48,16 +48,30 @@ export class AppState {
     this.authService.addUser(payload)
       .subscribe(result => {
         console.log(result);
-        ctx.dispatch(new authAction.RegisterSuccess());
+        ctx.dispatch(new authAction.LoginSuccess(result));
       });
   }
 
-  @Action(authAction.RegisterSuccess)
-  registerSuccess(ctx: StateContext<AppState>) {
+  @Action(authAction.Login)
+  login(ctx: StateContext<AppState>, {payload}: authAction.Login) {
+    console.log(payload);
+    this.authService.login(payload)
+      .subscribe(result => {
+        console.log(result);
+        ctx.dispatch(new authAction.LoginSuccess(result));
+      });
+  }
+
+  @Action(authAction.LoginSuccess)
+  registerSuccess(ctx: StateContext<AppState>, {payload}: authAction.LoginSuccess) {
+    this.authService.setToken(payload.jwttoken);
+    this.router.navigate(['/location/map']);
+  }
+
+  @Action(authAction.Logout)
+  logout(ctx: StateContext<AppState>) {
+    this.authService.logout();
     this.router.navigate(['/auth/login']);
   }
 
-  @Action(authAction.RegisterFailed)
-  async registerFail(ctx: StateContext<AppState>) {
-  }
 }

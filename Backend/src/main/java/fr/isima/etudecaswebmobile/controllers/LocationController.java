@@ -18,13 +18,13 @@ public class LocationController {
     @Autowired
     private LocationService locationService;
 
-    @PostMapping(path = "/location")
+    @RequestMapping(path = "/location", method = RequestMethod.POST)
     public ResponseEntity<Location> addLocation(@Validated @RequestBody Location location) throws Exception
     {
         return new ResponseEntity<>(this.locationService.addLocation(location), HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/locations", method = RequestMethod.GET)
+    @RequestMapping(value = "/location", method = RequestMethod.GET)
     public ResponseEntity<List<Location>> getAll() {
         return new ResponseEntity<>(this.locationService.getAllLocations(), HttpStatus.OK);
     }
@@ -46,7 +46,7 @@ public class LocationController {
         return locationService.deleteLocationById(id);
     }
 
-    @RequestMapping(value = "/locations/tag/{tag_id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/location/tag/{tag_id}", method = RequestMethod.GET)
     public ResponseEntity<List<Location>> getLocationsByTag(@PathVariable long tag_id)
     {
         return new ResponseEntity<>(this.locationService.getLocationsByTag(tag_id), HttpStatus.OK);

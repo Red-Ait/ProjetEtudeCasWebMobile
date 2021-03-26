@@ -56,6 +56,7 @@ export class LocationState {
   @Action(locationAction.GetUserMapPoint)
   getUserMapPoint(ctx: StateContext<LocationStateModel>) {
     this.locationApi.getUserMapPoint().subscribe(data => {
+      console.log(data);
       ctx.dispatch(new GetUserMapPointSuccess(data));
     }, error => {
       ctx.dispatch(new GetUserMapPointFail(error));
@@ -93,7 +94,9 @@ export class LocationState {
   @Action(locationAction.DeletePosition)
   deleteMapPoint(ctx: StateContext<LocationStateModel>, {payload}: locationAction.DeletePosition) {
     this.locationApi.deleteMapPoint(payload).subscribe(data => {
-      ctx.dispatch(new DeletePositionSuccess(payload));
+      if (data) {
+        ctx.dispatch(new DeletePositionSuccess(payload));
+      }
     }, error => {
     });
   }
@@ -103,7 +106,7 @@ export class LocationState {
     const state = ctx.getState();
     ctx.patchState({
       ...state,
-      mapPoints: state.mapPoints.filter(p => p.id !== payload.id)
+      mapPoints: state.mapPoints.filter(p => p.id !== payload)
     });
   }
   @Action(locationAction.UpdatePosition)

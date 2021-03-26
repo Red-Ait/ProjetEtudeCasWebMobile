@@ -4,6 +4,9 @@ export const environment = {
   apiUrl: '/api',
   resourceUri: {
     register: '/register',
+    authenticate: '/authenticate',
+    location: '/location',
+    tag: '/tag',
     user: '/user'
   }
 };

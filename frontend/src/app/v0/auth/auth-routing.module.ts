@@ -3,6 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from './component';
 import {RegisterComponent} from './component/register/register.component';
 import {AuthContainerComponent} from './container/auth-container/auth-container.component';
+import {LoggedGuard} from '../interceptors/logged.guard';
 
 const routes: Routes = [
   { path: '', component: AuthContainerComponent, children: [
@@ -13,7 +14,9 @@ const routes: Routes = [
         redirectTo: 'login',
         pathMatch: 'full'
       }
-    ] },
+    ],
+    canActivate: [LoggedGuard]
+  },
 ];
 
 @NgModule({

@@ -24,7 +24,6 @@
     "@angular/router": "~11.0.5",
     "@asymmetrik/ngx-leaflet": "^8.1.0",
     "@asymmetrik/ngx-leaflet-markercluster": "^5.0.1",
-    "@auth0/angular-jwt": "^5.0.2",
     "@capacitor/core": "2.4.6",
     "@ionic-native/core": "^5.31.1",
     "@ionic-native/geolocation": "^5.31.1",

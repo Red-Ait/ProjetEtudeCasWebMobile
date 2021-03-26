@@ -23,6 +23,8 @@ import {Geolocation} from '@ionic-native/geolocation/ngx';
 import {OsmRoutingService} from '../../service/osm-routing.service';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {TagState} from '../../state/tag.state';
+import {GetTags} from '../../state/tag.action';
 
 @Component({
   selector: 'app-map',
@@ -65,15 +67,11 @@ export class MapComponent implements OnInit {
 
   // Save Form params
   newTagLabel = '';
-  // TODO get tags from api
-  tags: ITag[] = [
-    {id: 1, label: 'Hotel'},
-    {id: 2, label: 'Resto'},
-    {id: 3, label: 'School'},
-  ];
+  tags: ITag[] = [];
 
   // Selectors
   @Select(LocationState.getMapPoints) $mapPoints;
+  @Select(TagState.getTags) $getTags;
   @Select(LocationState.getPointsSearchedByTags) $pointsSearchedByTags;
 
   // View Child
@@ -95,6 +93,9 @@ export class MapComponent implements OnInit {
     this.store.dispatch(new GetUserMapPoint());
     this.$mapPoints.subscribe(data => {
       this.mapPoints = data;
+      if (this.mapPoints.length > 0) {
+        this.map.panTo(latLng(this.mapPoints[0].latitude, this.mapPoints[0].longitude));
+      }
       this.markerClusterData = this.setMarkers();
       if (this.selectedPoint !== null) {
         if (this.selectedPoint.onSave) {
@@ -103,6 +104,11 @@ export class MapComponent implements OnInit {
           this.removeUnknownMarker();
         }
       }
+    });
+    this.store.dispatch(new GetTags());
+    this.$getTags.subscribe(t => {
+      this.tags = t;
+      console.log(t);
     });
   }
 
@@ -131,7 +137,7 @@ export class MapComponent implements OnInit {
         {
         text: 'Yes',
         handler: () => {
-          this.store.dispatch(new DeletePosition(this.selectedPoint.point));
+          this.store.dispatch(new DeletePosition(this.selectedPoint.point.id));
         }
       },
         {
@@ -168,17 +174,18 @@ export class MapComponent implements OnInit {
     });
   }
   addTag(): void {
-    // OK
     for (const tag of this.selectedPoint.point.tags) {
       if (tag.label === this.newTagLabel.trim() ||  tag.label === '') {
         return;
       }
     }
 
-    if ((this.newTagLabel || '').trim()) {
-      this.selectedPoint.point.tags.push({id: 0, label: this.newTagLabel.trim()});
+    for (const tag of this.tags) {
+      if (tag.label.trim().toLowerCase() === this.newTagLabel.trim().toLowerCase() ||  tag.label === '') {
+        this.selectedPoint.point.tags.push(tag);
+        this.newTagLabel = '';
+      }
     }
-    this.newTagLabel = '';
   }
   saveNewPosition() {
     this.addTag();
