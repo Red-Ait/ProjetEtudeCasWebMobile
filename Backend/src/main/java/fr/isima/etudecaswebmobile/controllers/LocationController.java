@@ -24,7 +24,7 @@ public class LocationController {
         return new ResponseEntity<>(this.locationService.addLocation(location), HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/locations", method = RequestMethod.GET)
+    @RequestMapping(value = "/location", method = RequestMethod.GET)
     public ResponseEntity<List<Location>> getAll() {
         return new ResponseEntity<>(this.locationService.getAllLocations(), HttpStatus.OK);
     }
