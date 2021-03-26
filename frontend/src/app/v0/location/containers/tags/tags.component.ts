@@ -21,7 +21,9 @@ export class TagsComponent implements OnInit {
 
 
   }
-  selectedTag: ITag;
+  selectedTagid: number ;
+  selectedTagLabel: string;
+  updatedTag: string;
 
   tag = {} as ITag;
   visible = true;
@@ -91,35 +93,69 @@ export class TagsComponent implements OnInit {
     }
   }
 
-  select(tag: ITag): ITag {
-    this.selectedTag = tag;
-    return this.selectedTag;
+  select(tag: ITag) {
+    console.log('select');
+    console.log(tag);
+    this.selectedTagid = tag.id;
+    this.selectedTagLabel =tag.label;
+    return this.selectedTagLabel;
 
   }
 
-  update(tag: ITag): void{
-    console.log('  this.newTagLabel');  console.log(  this.newTagLabel);
+  update(): void{
     for (const tags of this.tags) {
-      if (tags.label.toLowerCase().trim() === this.newTagLabel.toLowerCase().trim()) {
-        this.newTagLabel = '';
-        this.selectedTag = null;
+      if (tags.label.toLowerCase().trim() === this.selectedTagLabel.toLowerCase().trim()) {
+        this.selectedTagLabel = '';
+        this.selectedTagid = null;
         this.edit = false;
-        console.log('fail');
         return;
-        // tslint:disable-next-line:triple-equals
-      } else if (tags.id == tag.id) {
+
+      }
+
+    }
+    for (const tags of this.tags) {
+      // tslint:disable-next-line:triple-equals
+      if (tags.id == this.selectedTagid) {
+        this.remove(tags);
+      }
+    }
+    if ((this.selectedTagLabel || '').trim()) {
+      console.log(this.selectedTagLabel);
+      this.tags.push({id: this.selectedTagid, label: this.selectedTagLabel.trim()});
+    }
+    this.updatedTag = '';
+    this.selectedTagid = null;
+    this.selectedTagLabel = '';
+/*    console.log(  'update tag');
+    console.log(this.updatedTag);
+    console.log(  'selected tag ');
+    console.log(this.selectedTag.label);
+    console.log(this.selectedTag.label.toLowerCase().trim());
+    for (const tags of this.tags) {
+      console.log('tags'); console.log(tags);
+      // tslint:disable-next-line:triple-equals
+      if (tags.label.toLowerCase().trim() == this.selectedTag.label.toLowerCase().trim()) {
+          console.log(tags.label.toLowerCase().trim() ); console.log(this.selectedTag.label.toLowerCase().trim());
+          console.log('what');
+          this.updatedTag = '';
+          this.selectedTag = null;
+          this.edit = false;
+          console.log('fail');
+          return;
+
+      }
+      if (tags.id === tag.id) {
+        console.log('what 2');
         console.log('ok');
         this.remove(tags);
       }
     }
 
-    if ((this.newTagLabel || '').trim()) {
-      this.tags.push({id: tag.id, label: this.newTagLabel.trim()});
-    }
-
+    console.log('push');
+    // this.tags.push({id: tag.id, label: this.selectedTag.label.trim()});
 
     this.newTagLabel = '';
-    this.selectedTag = null;
+    this.selectedTag = null;*/
 
   }
 

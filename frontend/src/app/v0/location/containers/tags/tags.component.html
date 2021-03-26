@@ -17,7 +17,7 @@
       <input list="tags" style="width: 100%; text-align: left" type="text" [(ngModel)]="newTagLabel" (keydown.enter)="addTag()"
              class="second text-input-save"  placeholder="Tag Label">
       <datalist  id="tags">
-        <option [value]="tag.label" *ngFor="let tag of tags | filterTagSuggestion : tags ">{{tag.label}}</option>
+        <option [value]="tag.label" *ngFor="let tag of tags ">{{tag.label}}</option>
       </datalist>
     </div>
   </div>
@@ -36,9 +36,9 @@
       <label style="width: 100%; text-align: left">
         Update
       </label>
-      <input style="width: 100%; text-align: left" type="text" [(ngModel)]="newTagLabel"   value="{{selectedTag.label}}" (keydown.enter)="update(selectedTag);edit=false"
+      <input style="width: 100%; text-align: left" type="text" [(ngModel)]="selectedTagLabel" (keydown.enter)="update();edit=false"
              class="second text-input-save" >
-      <ion-button (click)="update(selectedTag);edit=false" style=" margin-left:60px">Update</ion-button>
+      <ion-button (click)="update();edit=false" style=" margin-left:60px">Update</ion-button>
       <ion-button (click)="edit = false" color="light">Cancel</ion-button>
     </div>
   </div>
