@@ -16,7 +16,7 @@ import {NgxsModule} from '@ngxs/store';
 import {LocationState} from './state/location.state';
 import {LeafletMarkerClusterModule} from '@asymmetrik/ngx-leaflet-markercluster';
 import {services} from './service';
-import { Geolocation } from '@ionic-native/geolocation/ngx';
+import {Geolocation} from '@ionic-native/geolocation/ngx';
 import {pipes} from './pipes';
 
 

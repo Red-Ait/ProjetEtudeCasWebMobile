@@ -36,8 +36,8 @@
       <label style="width: 100%; text-align: left">
         Update
       </label>
-      <input style="width: 100%; text-align: left" type="text" [(ngModel)]="newTagLabel"  (keydown.enter)="update(selectedTag);edit=false"
-             class="second text-input-save" placeholder="{{selectedTag.label}}" >
+      <input style="width: 100%; text-align: left" type="text" [(ngModel)]="newTagLabel"   value="{{selectedTag.label}}" (keydown.enter)="update(selectedTag);edit=false"
+             class="second text-input-save" >
       <ion-button (click)="update(selectedTag);edit=false" style=" margin-left:60px">Update</ion-button>
       <ion-button (click)="edit = false" color="light">Cancel</ion-button>
     </div>

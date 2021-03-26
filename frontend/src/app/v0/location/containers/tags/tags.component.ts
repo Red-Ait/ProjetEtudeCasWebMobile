@@ -98,19 +98,26 @@ export class TagsComponent implements OnInit {
   }
 
   update(tag: ITag): void{
+    console.log('  this.newTagLabel');  console.log(  this.newTagLabel);
     for (const tags of this.tags) {
-      if (tags.label.toLowerCase().trim() === this.newTagLabel.toLowerCase().trim()  ||  tag.label === '' ) {
+      if (tags.label.toLowerCase().trim() === this.newTagLabel.toLowerCase().trim()) {
         this.newTagLabel = '';
         this.selectedTag = null;
         this.edit = false;
+        console.log('fail');
         return;
+        // tslint:disable-next-line:triple-equals
+      } else if (tags.id == tag.id) {
+        console.log('ok');
+        this.remove(tags);
       }
-
     }
 
     if ((this.newTagLabel || '').trim()) {
       this.tags.push({id: tag.id, label: this.newTagLabel.trim()});
     }
+
+
     this.newTagLabel = '';
     this.selectedTag = null;
 
