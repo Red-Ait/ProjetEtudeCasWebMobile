@@ -20,13 +20,6 @@ public class UserDao {
     private long id;
     @NonNull
     @Column
-    private String username;
-    @NonNull
-    @Column
-    @JsonIgnore
-    private String password;
-    @NonNull
-    @Column
     private String firstName;
     @NonNull
     @Column
@@ -34,13 +27,20 @@ public class UserDao {
     @NonNull
     @Column
     private String email;
+    @NonNull
+    @Column
+    private String username;
+    @NonNull
+    @Column
+    @JsonIgnore
+    private String password;
 
     public UserDao(
-            String username,
-            String password,
             String firstName,
             String lastName,
-            String email
+            String email,
+            String username,
+            String password
     ) {
         this.username = username;
         this.password = password;

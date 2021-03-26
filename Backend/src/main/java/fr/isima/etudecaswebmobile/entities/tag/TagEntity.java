@@ -7,6 +7,7 @@ import fr.isima.etudecaswebmobile.entities.user.UserDao;
 import lombok.Data;
 import lombok.Generated;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -30,7 +31,8 @@ public class TagEntity {
 
     private int sequence;
 
-    @ManyToMany(mappedBy = "tagEntities", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "tagEntities")
     @JsonIgnore
     private List<LocationEntity> locationEntities;
 
