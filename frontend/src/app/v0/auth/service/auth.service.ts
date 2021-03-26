@@ -11,7 +11,7 @@ import {ERole} from '../../@entities/ERole';
 })
 export class AuthService {
 
-  userUrl = environment.apiUrl + environment.resourceUri.user;
+  userUrl = environment.backendApiUrl + environment.resourceUri.register;
 
   constructor(
     private http: HttpClient,

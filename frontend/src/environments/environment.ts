@@ -4,9 +4,10 @@
 
 export const environment = {
   production: false,
-  backendApiUrl: '',
+  backendApiUrl: 'localhost:8080',
   apiUrl: '/api',
   resourceUri: {
+    register: '/register',
     user: '/user'
   }
 };

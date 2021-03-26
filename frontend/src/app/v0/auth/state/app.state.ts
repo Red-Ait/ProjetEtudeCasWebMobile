@@ -47,6 +47,7 @@ export class AppState {
   register(ctx: StateContext<AppState>, {payload}: authAction.Register) {
     this.authService.addUser(payload)
       .subscribe(result => {
+        console.log(result);
         ctx.dispatch(new authAction.RegisterSuccess());
       });
   }
