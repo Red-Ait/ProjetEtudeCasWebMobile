@@ -1,9 +1,8 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import 'leaflet';
 import 'leaflet-routing-machine';
-declare let L;
 import * as M from 'leaflet';
-import {control, icon, latLng, MapOptions, Marker, tileLayer} from 'leaflet';
+import {icon, latLng, MapOptions, Marker, tileLayer} from 'leaflet';
 import {IMapPoint} from '../../../@entities/IMapPoint';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import 'leaflet.markercluster';
@@ -11,7 +10,6 @@ import 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/images/marker-icon.png';
 import 'leaflet/dist/images/marker-icon-2x.png';
 import {NominatimService} from '../../service/nominatim-service';
-import {NominatimResponse} from '../../models/nominatim-response.model';
 
 import {Select, Store} from '@ngxs/store';
 import {DeletePosition, GetUserMapPoint, SavePosition, SearchByTags, UpdatePosition} from '../../state/location.action';
@@ -21,8 +19,9 @@ import {AlertController} from '@ionic/angular';
 import {SearchMode} from '../../../@entities/SearchMode';
 import {Geolocation} from '@ionic-native/geolocation/ngx';
 import {OsmRoutingService} from '../../service/osm-routing.service';
-import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+
+declare let L;
 
 @Component({
   selector: 'app-map',
@@ -67,11 +66,11 @@ export class MapComponent implements OnInit {
   newTagLabel = '';
   // TODO get tags from api
   tags: ITag[] = [
-    {label: 'Hotel'},
-    {label: 'Resto'},
-    {label: 'School'},
-    {label: 'Plage'},
-    {label: 'Ville'},
+    {id: 6 ,label: 'Hotel'},
+    {id: 7 ,label: 'Resto'},
+    {id: 3 ,label: 'School'},
+    {id: 4 ,label: 'Plage'},
+    {id: 5 ,label: 'Ville'},
   ];
 
   // Selectors
@@ -157,7 +156,7 @@ export class MapComponent implements OnInit {
     }
 
     if ((this.searchedTagLabel || '').trim()) {
-      this.searchedTags.unshift({label: this.searchedTagLabel.trim()});
+      this.searchedTags.unshift({ id : 0 , label: this.searchedTagLabel.trim()});
     }
     this.searchedTagLabel = '';
     this.store.dispatch(new SearchByTags(this.searchedTags));
@@ -177,7 +176,7 @@ export class MapComponent implements OnInit {
     }
 
     if ((this.newTagLabel || '').trim()) {
-      this.selectedPoint.point.tags.push({label: this.newTagLabel.trim()});
+      this.selectedPoint.point.tags.push({ id : null , label: this.newTagLabel.trim()});
     }
     this.newTagLabel = '';
   }
