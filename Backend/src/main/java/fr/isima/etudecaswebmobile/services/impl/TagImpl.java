@@ -51,7 +51,7 @@ public class TagImpl implements TagService {
 
     @Override
     public List<Tag> getAllTags() {
-        List<TagEntity> tagEntities = tagRepository.findAll();
+        //List<TagEntity> tagEntities = tagRepository.findAll();
         UserDao user = userDetailsService.getCurrentUser();
         List<TagEntity> tagEntitiesUser = tagRepository.getUserTags(user.getId());
 
