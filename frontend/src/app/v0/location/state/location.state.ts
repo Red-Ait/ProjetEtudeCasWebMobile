@@ -11,6 +11,7 @@ import {
   SavePositionSuccess, SearchByTagsSuccess, UpdatePosition, UpdatePositionSuccess
 } from './location.action';
 import {LocationApi} from '../service/location.api';
+import {GetTags} from './tag.action';
 
 export class LocationStateModel {
   mapPoints: Array<ILocation>;
@@ -74,7 +75,7 @@ export class LocationState {
   @Action(locationAction.SavePosition)
   saveMapPoint(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SavePosition) {
     this.locationApi.saveMapPoint(payload).subscribe(data => {
-      ctx.dispatch(new SavePositionSuccess(data));
+      ctx.dispatch([new SavePositionSuccess(data), new GetTags()]);
     }, error => {
       ctx.dispatch(new SavePositionFail(error));
     });
@@ -94,6 +95,7 @@ export class LocationState {
   @Action(locationAction.DeletePosition)
   deleteMapPoint(ctx: StateContext<LocationStateModel>, {payload}: locationAction.DeletePosition) {
     this.locationApi.deleteMapPoint(payload).subscribe(data => {
+      console.log(data);
       if (data) {
         ctx.dispatch(new DeletePositionSuccess(payload));
       }
@@ -112,7 +114,7 @@ export class LocationState {
   @Action(locationAction.UpdatePosition)
   updateMapPoint(ctx: StateContext<LocationStateModel>, {payload}: locationAction.UpdatePosition) {
     this.locationApi.updateMapPoint(payload).subscribe(data => {
-      ctx.dispatch(new UpdatePositionSuccess(payload));
+      ctx.dispatch([new UpdatePositionSuccess(payload), new GetTags()]);
     }, error => {
     });
   }

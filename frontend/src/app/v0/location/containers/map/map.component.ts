@@ -174,6 +174,10 @@ export class MapComponent implements OnInit {
     });
   }
   addTag(): void {
+    if (this.newTagLabel === '') {
+      return;
+    }
+
     for (const tag of this.selectedPoint.point.tags) {
       if (tag.label === this.newTagLabel.trim() ||  tag.label === '') {
         return;
@@ -185,6 +189,10 @@ export class MapComponent implements OnInit {
         this.selectedPoint.point.tags.push(tag);
         this.newTagLabel = '';
       }
+    }
+    if (this.newTagLabel !== '') {
+      this.selectedPoint.point.tags.push({id: null, label: this.newTagLabel});
+      this.newTagLabel = '';
     }
   }
   saveNewPosition() {

@@ -18,11 +18,10 @@ export class LocationApi {
   }
 
   deleteMapPoint(locationId: number): Observable<any> {
-    return this.http.get(this.locationUri + '/' + locationId);
+    return this.http.delete(this.locationUri + '/' + locationId);
   }
 
   saveMapPoint(point: ILocation): Observable<any> {
-    console.log(point);
     return this.http.post(this.locationUri, point);
   }
   updateMapPoint(point: ILocation): Observable<any> {
