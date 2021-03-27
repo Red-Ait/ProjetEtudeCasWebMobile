@@ -4,6 +4,7 @@ package fr.isima.etudecaswebmobile.services.impl;
 import fr.isima.etudecaswebmobile.entities.location.LocationEntity;
 import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
 import fr.isima.etudecaswebmobile.entities.tag.TagMapper;
+import fr.isima.etudecaswebmobile.entities.user.UserDao;
 import fr.isima.etudecaswebmobile.exception.NoContentException;
 import fr.isima.etudecaswebmobile.exception.NotFoundException;
 import fr.isima.etudecaswebmobile.exception.UnauthorizedException;
@@ -51,8 +52,11 @@ public class TagImpl implements TagService {
     @Override
     public List<Tag> getAllTags() {
         List<TagEntity> tagEntities = tagRepository.findAll();
-        if (!tagEntities.isEmpty())
-            return tagEntities.stream()
+        UserDao user = userDetailsService.getCurrentUser();
+        List<TagEntity> tagEntitiesUser = tagRepository.getUserTags(user.getId());
+
+        if (!tagEntitiesUser.isEmpty())
+            return tagEntitiesUser.stream()
                     .map(tagMapper::toModel)
                     .collect(Collectors.toList());
         else
