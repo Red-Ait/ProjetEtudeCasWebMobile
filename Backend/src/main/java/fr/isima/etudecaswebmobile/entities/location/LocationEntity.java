@@ -2,6 +2,7 @@ package fr.isima.etudecaswebmobile.entities.location;
 
 
 import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Generated;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
 
 @Generated
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "location")
@@ -26,22 +28,24 @@ public class LocationEntity {
 
     private String label;
 
+    private double latitude;
+
+    private double longitude;
+
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "locations_tags",
+            joinColumns = @JoinColumn(name = "location_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<TagEntity> tagEntities;
+
     public LocationEntity(String label) {
         Assert.hasText(label, "label cannot be null, empty or blank");
         Assert.isTrue(Pattern.matches("[a-zA-Z][a-zA-Z0-9_-]*", label), "label must start with a letter and contain only letters, digits, - or _");
 
         this.label = label;
     }
-
-    public String getLabel() {
-        return label;
-    }
-
-    private double latitude;
-
-    private double longitude;
-
-
 
     public LocationEntity(Double longitude, Double latitude) {
         Assert.notNull(longitude, "longitude cannot be null");
@@ -51,23 +55,6 @@ public class LocationEntity {
         this.latitude = latitude;
 
     }
-
-    public double getLongitude(){
-        return longitude;
-    }
-
-    public double getLatitude(){
-        return latitude;
-    }
-
-
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(
-            name = "locations_tags",
-            joinColumns = @JoinColumn(name = "location_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private List<TagEntity> tagEntities;
 
     public LocationEntity(Long id_location, String label, double latitude, double longitude)
     {

@@ -53,7 +53,7 @@ public class LocationImpl implements LocationService {
             LocationEntity locationEntity = locationMapper.fromModel(location);
 
             // create default tag for user if it does not exist
-            locationEntity = createOrSetDefaultTag(locationEntity, tag_title);
+            locationEntity = createOrSetDefaultTag(locationEntity);
 
             //set tags for location entity
             List<Tag> tags = location.getTags();
@@ -64,7 +64,7 @@ public class LocationImpl implements LocationService {
             throw new UnauthorizedException("Location exist");
     }
 
-    private LocationEntity createOrSetDefaultTag(LocationEntity locationEntity, String tag_title) {
+    private LocationEntity createOrSetDefaultTag(LocationEntity locationEntity) {
         Optional<TagEntity> tagEntityOptional = tagRepository.findByTitleAndUserDaoUsername(
                 tag_title,
                 userDetailsService.getCurrentUser().getUsername()

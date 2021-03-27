@@ -49,10 +49,11 @@ public class TagEntity {
 
     public TagEntity(String title) {
         Assert.hasText(title, "title cannot be null, empty or blank");
-        Assert.isTrue(Pattern.matches("[a-zA-Z][a-zA-Z0-9_-]*", title), "title must start with a letter and contain only letters, digits, - or _");
+        Assert.isTrue(Pattern.matches("[ a-zA-Z][ a-zA-Z0-9_-]*", title), "title must start with a letter and contain only letters, digits, - or _");
 
         this.title = title;
         this.locationEntities = new ArrayList<>();
+        this.accessUserEntities = new ArrayList<>();
     }
 
     @Override
@@ -71,6 +72,7 @@ public class TagEntity {
         this.id_tag = id_tag;
         this.title = title;
         this.locationEntities = new ArrayList<>();
+        this.accessUserEntities = new ArrayList<>();
     }
 
 }

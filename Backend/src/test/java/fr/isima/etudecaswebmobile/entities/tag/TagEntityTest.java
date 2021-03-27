@@ -38,7 +38,7 @@ public class TagEntityTest {
     @Test
     void cannotBuildWithTitleContainingSpaces() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new TagEntity("THE tag");
+            new TagEntity("THE, tag");
         });
     }
 
