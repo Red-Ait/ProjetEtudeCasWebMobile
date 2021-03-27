@@ -65,7 +65,7 @@ public class TagImpl implements TagService {
         if (tagEntity.isPresent())
             return tagMapper.toModel(tagEntity.get());
         else
-            throw new NoContentException("The tag selected not Found");
+            throw new NotFoundException("The tag selected not Found");
     }
 
     @Override

@@ -3,6 +3,7 @@ package fr.isima.etudecaswebmobile.services.tag;
 import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
 import fr.isima.etudecaswebmobile.entities.tag.TagMapper;
 import fr.isima.etudecaswebmobile.exception.NoContentException;
+import fr.isima.etudecaswebmobile.exception.NotFoundException;
 import fr.isima.etudecaswebmobile.models.Tag;
 import fr.isima.etudecaswebmobile.repositories.TagRepository;
 import fr.isima.etudecaswebmobile.services.impl.TagImpl;
@@ -78,7 +79,7 @@ public class TagServiceTest {
 
     @Test
     public void when_getByIdNonExisting_expect_404() throws Exception {
-        Assertions.assertThrows(NoContentException.class, () -> tagImpl.getTagById(3L));
+        Assertions.assertThrows(NotFoundException.class, () -> tagImpl.getTagById(3L));
     }
 
     @Test
