@@ -14,8 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-
-@Profile({"!test"})
+@Profile("!test")
 @Component
 public class JwtTokenUtil implements Serializable {
 

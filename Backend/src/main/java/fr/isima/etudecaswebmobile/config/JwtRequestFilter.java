@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Profile({"!test"})
+@Profile("!test")
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 

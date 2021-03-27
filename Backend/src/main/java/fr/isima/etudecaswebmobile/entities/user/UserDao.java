@@ -1,6 +1,7 @@
 package fr.isima.etudecaswebmobile.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -14,6 +15,7 @@ import javax.persistence.*;
 )
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

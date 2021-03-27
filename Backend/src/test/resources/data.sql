@@ -1,12 +1,14 @@
-INSERT INTO user (id, email, first_name, last_name, password, username) VALUES
-(1, 'lidouh@gmail.com', 'mohamed', 'lidouh', '$2a$10$qqEWBP3BUTo17FThZsxMaOIu5rXWEQCEQ5v4G50GYhsCs8wCQEvCq', 'lidouh');
-INSERT INTO user (id, email, first_name, last_name, password, username) VALUES
-(2, 'cimo2@gmail.com', 'cimo2', 'cimo2', '$2a$10$DA0mu7Omul8.pBdIMX7yleQXp/2LHYS1BzZJ37HctplRfgG/QBVgG', 'cimo2');
-
 INSERT INTO location (id_location, label, latitude, longitude) VALUES
 (1, 'LOC1', 45, 45);
 INSERT INTO location (id_location, label, latitude, longitude) VALUES
 (2, 'LOC2', 55, 55);
+
+INSERT INTO user (id, email, first_name, last_name, password, username) VALUES
+(1, 'lidouh@gmail.com', 'mohamed', 'lidouh', '$2a$10$qqEWBP3BUTo17FThZsxMaOIu5rXWEQCEQ5v4G50GYhsCs8wCQEvCq', 'lidouh');
+INSERT INTO user (id, email, first_name, last_name, password, username) VALUES
+(2, 'cimo2@gmail.com', 'cimo2', 'cimo2', '$2a$10$DA0mu7Omul8.pBdIMX7yleQXp/2LHYS1BzZJ37HctplRfgG/QBVgG', 'cimo2');
+INSERT INTO user (id, email, first_name, last_name, password, username) VALUES
+(3, 'achkour@gmail.com', 'achkour', 'achkour', '$2a$10$DA0mu7Omul8.pBdIMX7yleQXp/2LHYS1BzZJ37HctplRfgG/QBVgG', 'achkour');
 
 INSERT INTO tag (id_tag, sequence, title, user_id) VALUES
 (1, 0, 'default tag', 1);
