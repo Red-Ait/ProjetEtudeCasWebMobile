@@ -1,4 +1,4 @@
-import {IMapPoint} from '../../@entities/IMapPoint';
+import {ILocation} from '../../@entities/ILocation';
 import {Action, Selector, State, StateContext} from '@ngxs/store';
 import {Injectable} from '@angular/core';
 import {ITag} from '../../@entities/ITag';
@@ -11,10 +11,11 @@ import {
   SavePositionSuccess, SearchByTagsSuccess, UpdatePosition, UpdatePositionSuccess
 } from './location.action';
 import {LocationApi} from '../service/location.api';
+import {GetTags} from './tag.action';
 
 export class LocationStateModel {
-  mapPoints: Array<IMapPoint>;
-  pointsSearchedByTags: Array<IMapPoint>;
+  mapPoints: Array<ILocation>;
+  pointsSearchedByTags: Array<ILocation>;
   tags: Array<ITag>;
 }
 
@@ -56,6 +57,7 @@ export class LocationState {
   @Action(locationAction.GetUserMapPoint)
   getUserMapPoint(ctx: StateContext<LocationStateModel>) {
     this.locationApi.getUserMapPoint().subscribe(data => {
+      console.log(data);
       ctx.dispatch(new GetUserMapPointSuccess(data));
     }, error => {
       ctx.dispatch(new GetUserMapPointFail(error));
@@ -73,7 +75,7 @@ export class LocationState {
   @Action(locationAction.SavePosition)
   saveMapPoint(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SavePosition) {
     this.locationApi.saveMapPoint(payload).subscribe(data => {
-      ctx.dispatch(new SavePositionSuccess(data));
+      ctx.dispatch([new SavePositionSuccess(data), new GetTags()]);
     }, error => {
       ctx.dispatch(new SavePositionFail(error));
     });
@@ -93,7 +95,10 @@ export class LocationState {
   @Action(locationAction.DeletePosition)
   deleteMapPoint(ctx: StateContext<LocationStateModel>, {payload}: locationAction.DeletePosition) {
     this.locationApi.deleteMapPoint(payload).subscribe(data => {
-      ctx.dispatch(new DeletePositionSuccess(payload));
+      console.log(data);
+      if (data) {
+        ctx.dispatch(new DeletePositionSuccess(payload));
+      }
     }, error => {
     });
   }
@@ -103,13 +108,13 @@ export class LocationState {
     const state = ctx.getState();
     ctx.patchState({
       ...state,
-      mapPoints: state.mapPoints.filter(p => p.id !== payload.id)
+      mapPoints: state.mapPoints.filter(p => p.id !== payload)
     });
   }
   @Action(locationAction.UpdatePosition)
   updateMapPoint(ctx: StateContext<LocationStateModel>, {payload}: locationAction.UpdatePosition) {
     this.locationApi.updateMapPoint(payload).subscribe(data => {
-      ctx.dispatch(new UpdatePositionSuccess(payload));
+      ctx.dispatch([new UpdatePositionSuccess(payload), new GetTags()]);
     }, error => {
     });
   }

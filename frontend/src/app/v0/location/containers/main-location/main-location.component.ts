@@ -1,4 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import {Store} from '@ngxs/store';
+import {Logout} from '../../../auth/state/auth.action';
 
 @Component({
   selector: 'app-main-location',
@@ -8,19 +10,20 @@ import {Component, OnInit} from '@angular/core';
 export class MainLocationComponent implements OnInit {
 
   public appPages = [
-    { title: 'Me', url: '/folder/Inbox', icon: 'person' },
     { title: 'Maps', url: '/location/map', icon: 'map' },
     { title: 'Tags', url: '/location/tags', icon: 'pricetags' },
-    { title: 'Favorites', url: '/folder/Favorites', icon: 'heart' },
     { title: 'Shared', url: '/folder/Trash', icon: 'share-social' },
-    { title: 'Setting', url: '/folder/Spam', icon: 'settings' },
     { title: 'Log out', url: '/auth/login', icon: 'log-out' },
   ];
-  public labels = ['Home', 'Work', 'Snacks'];
+  public labels = [];
 
-  constructor() { }
+  constructor(private store: Store) { }
 
   ngOnInit() {
   }
-
+  logout(p: any) {
+    if (p.title === 'Log out') {
+      this.store.dispatch(new Logout());
+    }
+  }
 }

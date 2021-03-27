@@ -5,13 +5,15 @@ import {JwtHelperService} from '@auth0/angular-jwt';
 import {IUser} from '../../@entities/IUser';
 import {Observable} from 'rxjs';
 import {ERole} from '../../@entities/ERole';
+import {ILogin} from '../../@entities/ILogin';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  userUrl = environment.apiUrl + environment.resourceUri.user;
+  registerUrl = environment.backendApiUrl + environment.resourceUri.register;
+  loginUrl = environment.backendApiUrl + environment.resourceUri.authenticate;
 
   constructor(
     private http: HttpClient,
@@ -20,7 +22,11 @@ export class AuthService {
   }
 
   addUser(user: IUser): Observable<any> {
-    return this.http.post(this.userUrl , user);
+    return this.http.post(this.registerUrl , user);
+  }
+
+  login(loginData: ILogin): Observable<any> {
+    return this.http.post(this.loginUrl, loginData);
   }
 
   isAuthenticated() {
@@ -32,4 +38,11 @@ export class AuthService {
     return localStorage.getItem('role') === ERole.ROLE_USER;
   }
 
+  setToken(token: string) {
+    localStorage.setItem('token', token);
+  }
+
+  logout() {
+    localStorage.clear();
+  }
 }

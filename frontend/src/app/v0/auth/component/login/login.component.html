@@ -3,9 +3,9 @@
 
     <!-- Login Form -->
     <form>
-      <input type="text" id="login" class="fadeIn second text-input" name="login" placeholder="Email">
-      <input type="text" id="password" class="fadeIn third text-input" name="login" placeholder="Mot de passe">
-      <input type="submit" class="fadeIn fourth" value="Connexion">
+      <input type="text" id="login" class="fadeIn second text-input" [(ngModel)]="loginData.username" name="login" placeholder="Email">
+      <input type="password" id="password" class="fadeIn third text-input" [(ngModel)]="loginData.password" name="login" placeholder="Mot de passe">
+      <input type="submit" class="fadeIn fourth" value="Connexion" (click)="login()">
     </form>
 
     <!-- Remind Passowrd -->

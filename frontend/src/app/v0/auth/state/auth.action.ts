@@ -1,4 +1,5 @@
 import {IUser} from '../../@entities/IUser';
+import {ILogin} from '../../@entities/ILogin';
 
 export class Register {
 
@@ -8,13 +9,6 @@ export class Register {
   }
 }
 
-export class RegisterSuccess {
-
-  static readonly type = '[auth/register] register success';
-
-  constructor() {
-  }
-}
 
 export class RegisterFailed {
 
@@ -28,7 +22,7 @@ export class Login {
 
   static readonly type = '[auth/login] login';
 
-  constructor(public payload: { username: string, password: string }) {
+  constructor(public payload: ILogin) {
   }
 }
 
@@ -36,7 +30,7 @@ export class LoginSuccess {
 
   static readonly type = '[auth/login] login Success';
 
-  constructor(public payload: IUser) {
+  constructor(public payload: any) {
   }
 }
 
@@ -45,5 +39,12 @@ export class LoginFailed {
   static readonly type = '[auth/login] login Failed';
 
   constructor(public payload: string) {
+  }
+}
+export class Logout {
+
+  static readonly type = '[auth/logout] logout';
+
+  constructor() {
   }
 }

@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Profile({"!test"})
 @RestController
-@CrossOrigin
 public class JwtAuthenticationController {
 
 	@Autowired

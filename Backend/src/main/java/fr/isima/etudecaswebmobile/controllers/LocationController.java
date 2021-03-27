@@ -20,7 +20,7 @@ public class LocationController {
     @Autowired
     private LocationService locationService;
 
-    @PostMapping(path = "/location")
+    @RequestMapping(path = "/location", method = RequestMethod.POST)
     public ResponseEntity<Location> addLocation(@Validated @RequestBody Location location) throws Exception
     {
         return new ResponseEntity<>(this.locationService.addLocation(location), HttpStatus.CREATED);
@@ -48,7 +48,7 @@ public class LocationController {
         return locationService.deleteLocationById(id);
     }
 
-    @RequestMapping(value = "/locations/tag/{tag_id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/location/tag/{tag_id}", method = RequestMethod.GET)
     public ResponseEntity<List<Location>> getLocationsByTag(@PathVariable long tag_id)
     {
         return new ResponseEntity<>(this.locationService.getLocationsByTag(tag_id), HttpStatus.OK);
@@ -81,7 +81,7 @@ public class LocationController {
         );
     }
 
-    @PostMapping("locations/tags")
+    @PostMapping("location/tags")
     public ResponseEntity<List<List<Location>>> getListLocationsOfListTags(@Validated @RequestBody List<TagEntity> list_tags)
     {
         List<String> str = new ArrayList<String>();

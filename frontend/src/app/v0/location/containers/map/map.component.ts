@@ -1,15 +1,17 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import 'leaflet';
 import 'leaflet-routing-machine';
+declare let L;
 import * as M from 'leaflet';
-import {icon, latLng, MapOptions, Marker, tileLayer} from 'leaflet';
-import {IMapPoint} from '../../../@entities/IMapPoint';
+import {control, icon, latLng, MapOptions, Marker, tileLayer} from 'leaflet';
+import {ILocation} from '../../../@entities/ILocation';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import 'leaflet.markercluster';
 import 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/images/marker-icon.png';
 import 'leaflet/dist/images/marker-icon-2x.png';
 import {NominatimService} from '../../service/nominatim-service';
+import {NominatimResponse} from '../../models/nominatim-response.model';
 
 import {Select, Store} from '@ngxs/store';
 import {DeletePosition, GetUserMapPoint, SavePosition, SearchByTags, UpdatePosition} from '../../state/location.action';
@@ -19,9 +21,10 @@ import {AlertController} from '@ionic/angular';
 import {SearchMode} from '../../../@entities/SearchMode';
 import {Geolocation} from '@ionic-native/geolocation/ngx';
 import {OsmRoutingService} from '../../service/osm-routing.service';
+import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-
-declare let L;
+import {TagState} from '../../state/tag.state';
+import {GetTags} from '../../state/tag.action';
 
 @Component({
   selector: 'app-map',
@@ -44,37 +47,31 @@ export class MapComponent implements OnInit {
   markerClusterGroup: M.MarkerClusterGroup;
 
   // Map points
-  mapPoints: Array<IMapPoint> = new Array<IMapPoint>();
+  mapPoints: Array<ILocation> = new Array<ILocation>();
   selectedPoint: {
-    point: IMapPoint,
+    point: ILocation,
     saved: boolean,
     onSave: boolean
   } = null;
 
   // Search params
-  searchResults: {point: IMapPoint, saved: boolean}[] = [];
+  searchResults: {point: ILocation, saved: boolean}[] = [];
   searchValue = '';
   onSearch = false;
   searchMode: SearchMode = SearchMode.searchPlace;
   currentPosition = SearchMode.currentPosition;
   searchPlace = SearchMode.searchPlace;
   advancedSearch = SearchMode.advancedSearch;
-  searchedTags = new Array<ITag>();
+  searchedTags = new Array<string>();
   searchedTagLabel = '';
 
   // Save Form params
   newTagLabel = '';
-  // TODO get tags from api
-  tags: ITag[] = [
-    {id: 6 ,label: 'Hotel'},
-    {id: 7 ,label: 'Resto'},
-    {id: 3 ,label: 'School'},
-    {id: 4 ,label: 'Plage'},
-    {id: 5 ,label: 'Ville'},
-  ];
+  tags: ITag[] = [];
 
   // Selectors
   @Select(LocationState.getMapPoints) $mapPoints;
+  @Select(TagState.getTags) $getTags;
   @Select(LocationState.getPointsSearchedByTags) $pointsSearchedByTags;
 
   // View Child
@@ -96,6 +93,9 @@ export class MapComponent implements OnInit {
     this.store.dispatch(new GetUserMapPoint());
     this.$mapPoints.subscribe(data => {
       this.mapPoints = data;
+      if (this.mapPoints.length > 0) {
+        this.map.panTo(latLng(this.mapPoints[0].latitude, this.mapPoints[0].longitude));
+      }
       this.markerClusterData = this.setMarkers();
       if (this.selectedPoint !== null) {
         if (this.selectedPoint.onSave) {
@@ -104,6 +104,11 @@ export class MapComponent implements OnInit {
           this.removeUnknownMarker();
         }
       }
+    });
+    this.store.dispatch(new GetTags());
+    this.$getTags.subscribe(t => {
+      this.tags = t;
+      console.log(t);
     });
   }
 
@@ -114,7 +119,7 @@ export class MapComponent implements OnInit {
       this.selectedPoint.point.tags.splice(index, 1);
     }
   }
-  removeSearchedTag(tag: ITag): void {
+  removeSearchedTag(tag: string): void {
     const index = this.searchedTags.indexOf(tag);
 
     if (index >= 0) {
@@ -132,7 +137,7 @@ export class MapComponent implements OnInit {
         {
         text: 'Yes',
         handler: () => {
-          this.store.dispatch(new DeletePosition(this.selectedPoint.point));
+          this.store.dispatch(new DeletePosition(this.selectedPoint.point.id));
         }
       },
         {
@@ -150,18 +155,18 @@ export class MapComponent implements OnInit {
       return;
     }
     for (const tag of this.searchedTags) {
-      if (tag.label === this.searchedTagLabel.trim() ||  tag.label === '') {
+      if (tag.trim().toLowerCase() === this.searchedTagLabel.trim().toLowerCase() ||  tag === '') {
         return;
       }
     }
 
     if ((this.searchedTagLabel || '').trim()) {
-      this.searchedTags.unshift({ id : 0 , label: this.searchedTagLabel.trim()});
+      this.searchedTags.unshift(this.searchedTagLabel.trim().toLowerCase());
     }
     this.searchedTagLabel = '';
     this.store.dispatch(new SearchByTags(this.searchedTags));
     this.$pointsSearchedByTags.subscribe(results => {
-      const aux: Array<{point: IMapPoint, saved: boolean}> = results.map(r => ({
+      const aux: Array<{point: ILocation, saved: boolean}> = results.map(r => ({
         point: r,
         saved: false
       }));
@@ -169,16 +174,26 @@ export class MapComponent implements OnInit {
     });
   }
   addTag(): void {
+    if (this.newTagLabel === '') {
+      return;
+    }
+
     for (const tag of this.selectedPoint.point.tags) {
       if (tag.label === this.newTagLabel.trim() ||  tag.label === '') {
         return;
       }
     }
 
-    if ((this.newTagLabel || '').trim()) {
-      this.selectedPoint.point.tags.push({ id : null , label: this.newTagLabel.trim()});
+    for (const tag of this.tags) {
+      if (tag.label.trim().toLowerCase() === this.newTagLabel.trim().toLowerCase() ||  tag.label === '') {
+        this.selectedPoint.point.tags.push(tag);
+        this.newTagLabel = '';
+      }
     }
-    this.newTagLabel = '';
+    if (this.newTagLabel !== '') {
+      this.selectedPoint.point.tags.push({id: null, label: this.newTagLabel});
+      this.newTagLabel = '';
+    }
   }
   saveNewPosition() {
     this.addTag();
@@ -241,7 +256,7 @@ export class MapComponent implements OnInit {
     this.markerClusterData = this.setMarkers();
   }
 
-  createMarker(p: IMapPoint): Marker{
+  createMarker(p: ILocation): Marker{
     // tslint:disable-next-line:no-shadowed-variable
     const icon = M.icon({
       iconSize: [ 25, 41 ],
@@ -264,7 +279,7 @@ export class MapComponent implements OnInit {
     return data;
   }
 
-  onClickOnMarker(pt: IMapPoint) {
+  onClickOnMarker(pt: ILocation) {
     this.selectedPoint = {
       point: pt,
       saved: true,
@@ -275,7 +290,7 @@ export class MapComponent implements OnInit {
     this.openModal(this.positionDetail, false);
     this.onSearch = false;
   }
-  selectResult(result: { point: IMapPoint, saved: boolean }) {
+  selectResult(result: { point: ILocation, saved: boolean }) {
     if (!result.saved) {
       this.showNewMarker(result.point.latitude, result.point.longitude, result.point.label, result.saved);
     }
@@ -327,7 +342,7 @@ export class MapComponent implements OnInit {
     this.searchResults = [];
     if (address.length > 3) {
       this.nominatimService.addressLookup(address).subscribe(results => {
-        const aux: Array<{point: IMapPoint, saved: boolean}> = results.map(r => ({
+        const aux: Array<{point: ILocation, saved: boolean}> = results.map(r => ({
           point: {
             id: 0,
             label: r.displayName,

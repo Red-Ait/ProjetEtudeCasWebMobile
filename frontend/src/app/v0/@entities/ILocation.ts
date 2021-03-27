@@ -1,6 +1,6 @@
 import {ITag} from './ITag';
 
-export interface IMapPoint {
+export interface ILocation {
   id: number;
   label: string;
   latitude: number;
