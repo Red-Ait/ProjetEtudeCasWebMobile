@@ -28,8 +28,8 @@ public class LocationMapper implements Mapper<Location, LocationEntity> {
         return new Location(
                 entity.getId_location(),
                 entity.getLabel(),
-                entity.getLongitude(),
                 entity.getLatitude(),
+                entity.getLongitude(),
                 tags
         );
     }
@@ -40,8 +40,8 @@ public class LocationMapper implements Mapper<Location, LocationEntity> {
         return new LocationEntity(
                 model.getId(),
                 model.getLabel(),
-                model.getLongitude(),
-                model.getLatitude()
+                model.getLatitude(),
+                model.getLongitude()
         );
     }
 }

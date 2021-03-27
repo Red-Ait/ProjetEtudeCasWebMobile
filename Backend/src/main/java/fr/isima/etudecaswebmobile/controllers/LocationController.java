@@ -1,6 +1,7 @@
 package fr.isima.etudecaswebmobile.controllers;
 
 
+import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
 import fr.isima.etudecaswebmobile.models.Location;
 import fr.isima.etudecaswebmobile.services.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -77,6 +79,21 @@ public class LocationController {
                 locationService.shareLocationsWithAnotherUserByTagTitles(otherUsername, tagTitles),
                 HttpStatus.OK
         );
+    }
+
+    @PostMapping("location/tags")
+    public ResponseEntity<List<List<Location>>> getListLocationsOfListTags(@Validated @RequestBody List<TagEntity> list_tags)
+    {
+        List<String> str = new ArrayList<String>();
+        List<List<Location>> locations = new ArrayList<List<Location>>();
+
+        for(int i = 0; i<list_tags.size(); i++)
+        {
+           List<Location> locat = this.locationService.getLocationsByTag(list_tags.get(i).getId_tag());
+           locations.add(locat);
+        }
+
+        return new ResponseEntity<>(locations, HttpStatus.OK);
     }
 
 }

@@ -28,6 +28,6 @@ export class LocationApi {
     return this.http.get(this.locationUri);
   }
   searchByTags(point: Array<string>): Observable<any> {
-    return this.http.get(this.locationUri);
+    return this.http.get(this.locationUri + '/tags');
   }
 }
