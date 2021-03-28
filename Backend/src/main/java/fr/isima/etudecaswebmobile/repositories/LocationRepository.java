@@ -32,4 +32,14 @@ public interface LocationRepository extends JpaRepository<LocationEntity, Long>
     List<LocationEntity> findAllLocationsByTagTitles(
             @Param("tagTitles") List<String> tagTitles
     );
+
+    @Query(value = "SELECT l.id_location, l.label, l.longitude, l.latitude " +
+            "FROM location l " +
+            "INNER JOIN locations_tags tl on l.id_location = tl.location_id " +
+            "INNER JOIN tag t on tl.tag_id = t.id_tag " +
+            "INNER JOIN tag_access_user_entities taue on taue.tag_entity_id_tag = t.id_tag " +
+            "WHERE taue.access_user_id = :userId"
+            , nativeQuery = true
+    )
+    Optional<List<LocationEntity>> findAllSharedLocationsByUserId(@Param("userId") Long userId);
 }
