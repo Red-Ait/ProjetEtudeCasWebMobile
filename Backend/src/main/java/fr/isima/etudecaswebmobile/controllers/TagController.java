@@ -17,40 +17,40 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
-    @RequestMapping(value = "/tag", method = RequestMethod.POST)
+    @PostMapping("/tag")
     public ResponseEntity<Tag> addTag(@Validated @RequestBody Tag tag) {
         return new ResponseEntity<>(this.tagService.addTag(tag), HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/tag", method = RequestMethod.GET)
+    @GetMapping("/tag")
     public ResponseEntity<List<Tag>> getAll() {
         return new ResponseEntity<>(this.tagService.getAllTags(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/tag/{id}", method = RequestMethod.GET)
+    @GetMapping("/tag/{id}")
     public ResponseEntity<Tag> getTagById(@PathVariable long id) {
         return new ResponseEntity<>(this.tagService.getTagById(id), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/tag/{id}", method = RequestMethod.PUT)
+    @PutMapping("/tag/{id}")
     public ResponseEntity<Tag> updateTagById(@Validated @RequestBody Tag newTag, @PathVariable long id)
     {
         return new ResponseEntity<>(this.tagService.updateTagById(newTag, id),HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/tag/{id}", method = RequestMethod.DELETE)
+    @DeleteMapping("/tag/{id}")
     public ResponseEntity<Boolean> deleteTagById(@PathVariable long id)
     {
         return tagService.deleteTagById(id);
     }
 
-    @RequestMapping(value = "/tag/location/{location_id}", method = RequestMethod.POST)
+    @PostMapping("/tag/location/{location_id}")
     public ResponseEntity<Tag> addTagToLocation(@PathVariable long location_id, @Validated @RequestBody Tag tag)
     {
         return new ResponseEntity<>(this.tagService.addTagToLocation(location_id, tag), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/tag/{tag_id}/location/{location_id}", method = RequestMethod.PUT)
+    @PutMapping("/tag/{tag_id}/location/{location_id}")
     public ResponseEntity<Tag> addExistedTagToLocation(@PathVariable long location_id, @PathVariable long tag_id)
     {
         return new ResponseEntity<>(this.tagService.addExistedTagToLocation(location_id, tag_id), HttpStatus.OK);
