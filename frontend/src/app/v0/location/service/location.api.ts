@@ -25,9 +25,9 @@ export class LocationApi {
     return this.http.post(this.locationUri, point);
   }
   updateMapPoint(point: ILocation): Observable<any> {
-    return this.http.get(this.locationUri);
+    return this.http.put(this.locationUri + '/' + point.id, point);
   }
-  searchByTags(point: Array<string>): Observable<any> {
-    return this.http.get(this.locationUri + '/tags');
+  searchByTags(tags: Array<ITag>): Observable<any> {
+    return this.http.post(this.locationUri + '/tags', tags);
   }
 }

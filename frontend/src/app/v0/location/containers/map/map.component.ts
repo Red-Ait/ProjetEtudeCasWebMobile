@@ -1,9 +1,8 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import 'leaflet';
 import 'leaflet-routing-machine';
-declare let L;
 import * as M from 'leaflet';
-import {control, icon, latLng, MapOptions, Marker, tileLayer} from 'leaflet';
+import {icon, latLng, MapOptions, Marker, tileLayer} from 'leaflet';
 import {ILocation} from '../../../@entities/ILocation';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import 'leaflet.markercluster';
@@ -11,20 +10,21 @@ import 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/images/marker-icon.png';
 import 'leaflet/dist/images/marker-icon-2x.png';
 import {NominatimService} from '../../service/nominatim-service';
-import {NominatimResponse} from '../../models/nominatim-response.model';
 
 import {Select, Store} from '@ngxs/store';
-import {DeletePosition, GetUserMapPoint, SavePosition, SearchByTags, UpdatePosition} from '../../state/location.action';
+import {DeletePosition, GetUserMapPoint, SavePosition, SearchByTagsOrMode, UpdatePosition} from '../../state/location.action';
 import {LocationState} from '../../state/location.state';
 import {ITag} from '../../../@entities/ITag';
 import {AlertController} from '@ionic/angular';
 import {SearchMode} from '../../../@entities/SearchMode';
 import {Geolocation} from '@ionic-native/geolocation/ngx';
 import {OsmRoutingService} from '../../service/osm-routing.service';
-import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {TagState} from '../../state/tag.state';
 import {GetTags} from '../../state/tag.action';
+import {SearchByTagMode} from '../../../@entities/SearchByTagMode';
+
+declare let L;
 
 @Component({
   selector: 'app-map',
@@ -52,17 +52,31 @@ export class MapComponent implements OnInit {
     point: ILocation,
     saved: boolean,
     onSave: boolean
-  } = null;
+  } = {
+    point: {
+      id: null,
+      tags: [],
+      label: '',
+      longitude: 0,
+      latitude: 0
+    },
+    onSave: false,
+    saved: false
+  };
 
   // Search params
   searchResults: {point: ILocation, saved: boolean}[] = [];
   searchValue = '';
   onSearch = false;
+  searchByTagMode: SearchByTagMode = SearchByTagMode.OR;
+  orModeSearch = SearchByTagMode.OR;
+  andModeSearch = SearchByTagMode.AND;
   searchMode: SearchMode = SearchMode.searchPlace;
   currentPosition = SearchMode.currentPosition;
   searchPlace = SearchMode.searchPlace;
   advancedSearch = SearchMode.advancedSearch;
-  searchedTags = new Array<string>();
+  searchedTags = new Array<ITag>();
+  suggestedTags = new Array<ITag>();
   searchedTagLabel = '';
 
   // Save Form params
@@ -110,6 +124,14 @@ export class MapComponent implements OnInit {
       this.tags = t;
       console.log(t);
     });
+    this.$pointsSearchedByTags.subscribe(data => {
+      this.searchResults = [];
+      data.forEach(list => {
+        const aux = list.map(d => ({point: d, saved: true}));
+        this.searchResults = [...this.searchResults, ...aux];
+      });
+      console.log('serch rslt', this.searchResults);
+    });
   }
 
   removeTag(tag: ITag): void {
@@ -119,14 +141,15 @@ export class MapComponent implements OnInit {
       this.selectedPoint.point.tags.splice(index, 1);
     }
   }
-  removeSearchedTag(tag: string): void {
+  removeSearchedTag(tag: ITag): void {
     const index = this.searchedTags.indexOf(tag);
 
     if (index >= 0) {
       this.searchedTags.splice(index, 1);
     }
-    this.addSearchTag();
+    this.store.dispatch(new SearchByTagsOrMode(this.searchedTags));
   }
+
   async deleteConfirmAlert() {
     this.modalService.dismissAll();
     const alert = await this.alertController.create({
@@ -149,29 +172,14 @@ export class MapComponent implements OnInit {
     });
     await alert.present();
   }
-  addSearchTag() {
-    if (this.searchedTags.length === 0 && this.searchedTagLabel === '') {
-      this.searchResults = [];
-      return;
-    }
-    for (const tag of this.searchedTags) {
-      if (tag.trim().toLowerCase() === this.searchedTagLabel.trim().toLowerCase() ||  tag === '') {
-        return;
-      }
-    }
+  addSearchTag(tag: ITag) {
+    this.searchedTags.push(tag);
+    const index = this.suggestedTags.indexOf(tag);
 
-    if ((this.searchedTagLabel || '').trim()) {
-      this.searchedTags.unshift(this.searchedTagLabel.trim().toLowerCase());
+    if (index >= 0) {
+      this.suggestedTags.splice(index, 1);
     }
-    this.searchedTagLabel = '';
-    this.store.dispatch(new SearchByTags(this.searchedTags));
-    this.$pointsSearchedByTags.subscribe(results => {
-      const aux: Array<{point: ILocation, saved: boolean}> = results.map(r => ({
-        point: r,
-        saved: false
-      }));
-      this.searchResults = [...aux];
-    });
+    this.store.dispatch(new SearchByTagsOrMode(this.searchedTags));
   }
   addTag(): void {
     if (this.newTagLabel === '') {
@@ -388,8 +396,28 @@ export class MapComponent implements OnInit {
 
 
   }
+  onChangeSearchByTagInput() {
+    this.suggestedTags = new Array<ITag>();
+    console.log('sugg', this.suggestedTags);
+    console.log('sea   res', this.searchResults);
+    for (const tag of this.tags) {
+      if (tag.label.trim().toLowerCase().includes( this.searchedTagLabel.toLowerCase().trim())) {
+        let exist = false;
+        for (const exTag of this.searchedTags) {
+          if (tag.label.trim().toLowerCase() === exTag.label.trim().toLowerCase()) {
+            exist = true;
+          }
+        }
+        if (!exist) {
+          this.suggestedTags.push(tag);
+        }
+      }
+    }
+  }
   searchFocus() {
+    console.log(this.onSearch);
     this.onSearch = true;
+    console.log(this.onSearch);
     this.searchMode = this.searchPlace;
     setTimeout(() => {
       this.searchBar.setFocus();

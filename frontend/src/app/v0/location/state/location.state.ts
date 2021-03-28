@@ -8,7 +8,7 @@ import {
   GetUserMapPointFail,
   GetUserMapPointSuccess,
   SavePositionFail,
-  SavePositionSuccess, SearchByTagsSuccess, UpdatePosition, UpdatePositionSuccess
+  SavePositionSuccess, SearchByTagsOrModeSuccess, UpdatePosition, UpdatePositionSuccess
 } from './location.action';
 import {LocationApi} from '../service/location.api';
 import {GetTags} from './tag.action';
@@ -127,16 +127,16 @@ export class LocationState {
       mapPoints: state.mapPoints.map(p => p.id === payload.id ? payload : p)
     });
   }
-  @Action(locationAction.SearchByTags)
-  searchByTags(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTags) {
+  @Action(locationAction.SearchByTagsOrMode)
+  searchByTags(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTagsOrMode) {
     this.locationApi.searchByTags(payload).subscribe(data => {
-      ctx.dispatch(new SearchByTagsSuccess(data));
+      ctx.dispatch(new SearchByTagsOrModeSuccess(data));
     }, error => {
     });
   }
 
-  @Action(locationAction.SearchByTagsSuccess)
-  searchByTagsSuccess(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTagsSuccess) {
+  @Action(locationAction.SearchByTagsOrModeSuccess)
+  searchByTagsSuccess(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTagsOrModeSuccess) {
     const state = ctx.getState();
     ctx.patchState({
       ...state,

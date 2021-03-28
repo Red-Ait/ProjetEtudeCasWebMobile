@@ -18,7 +18,7 @@
           <ng-template  ngFor let-tag [ngForOf]="searchedTags" let-i="index">
               <span class="badge badge-pill badge-info" style="margin: 6px; font-size: 14px" *ngIf="i < 2" (click)="removeSearchedTag(tag)">
                 <ion-label style="display: inline-block; vertical-align: middle">
-                  {{tag}}
+                  {{tag.label}}
                 </ion-label>
                 <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px" name="close-circle"></ion-icon>
             </span>
@@ -28,11 +28,42 @@
               </span>
         </ion-item>
         <ion-item>
-          <ion-searchbar [(ngModel)]="searchedTagLabel" (keydown.enter)="addSearchTag()"
-                         placeholder="Tag Label"
-                         showCancelButton="always">
+          <ion-radio-group  [(ngModel)]="searchByTagMode">
+            <ion-row>
+              <ion-col>
+                <ion-item>
+                  <ion-radio mode="md" item-left [value]="orModeSearch"></ion-radio>
+                  <ion-label style="margin-left: 12px">OR</ion-label>
+                </ion-item>
+              </ion-col>
+
+              <ion-col>
+                <ion-item>
+                  <ion-radio mode="md" item-left [value]="andModeSearch"></ion-radio>
+                  <ion-label style="margin-left: 12px">AND</ion-label>
+                </ion-item>
+              </ion-col>
+
+            </ion-row>
+          </ion-radio-group>
+        </ion-item>
+        <ion-item >
+          <ion-searchbar [(ngModel)]="searchedTagLabel"
+                         (keydown)="onChangeSearchByTagInput()"
+                         placeholder="Tag Label">
           </ion-searchbar>
         </ion-item>
+        <ion-item *ngIf="suggestedTags.length > 0" style="overflow-x: scroll">
+          <span class="badge badge-pill badge-info"
+                style="margin: 6px; font-size: 14px"
+                *ngFor="let tag of suggestedTags"
+                (click)="addSearchTag(tag)">
+                <ion-label style="display: inline-block; vertical-align: middle">
+                  {{tag.label}}
+                </ion-label>
+            </span>
+        </ion-item>
+
       </ion-radio-group>
       <ion-radio-group [(ngModel)]="searchMode" (ngModelChange)="switchSearchMod()" *ngIf="searchMode !== advancedSearch">
         <ion-list-header>
@@ -69,7 +100,11 @@
                    [value]="searchMode === currentPosition ? 'Current Posistion' : searchValue"
                    (ionClear)="addressLookup('')">
     </ion-searchbar>
-    <ion-list class="search-suggestions" *ngIf="searchResults.length > 0 && (searchMode === searchPlace || searchMode === advancedSearch )&& onSearch">
+    <ion-list
+      [class]="searchMode === searchPlace ? 'search-place-suggestions'
+                                          : (suggestedTags.length === 0) ?  'search-by-tags-suggestions'
+                                                                        : 'search-by-tags-suggestions-extra' "
+      *ngIf="searchResults.length > 0 && (searchMode === searchPlace || searchMode === advancedSearch )&& onSearch">
       <ion-item *ngFor="let result of searchResults" (click)="selectResult(result)">
         <div style="width: 100%; display: flex">
           <div style="width: 80%">
@@ -225,8 +260,11 @@
             <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px" name="close-circle"></ion-icon>
           </span>
           <span style="color: red" *ngIf="selectedPoint.point.tags.length === 0">* You have to add at least one Tag !</span>
-          <input list="tags" style="width: 100%; text-align: left" type="text" [(ngModel)]="newTagLabel" (keydown.enter)="addTag()"
-                 class="second text-input-save"  placeholder="Tag Label">
+          <div style="width: 100%; display: flex">
+            <input list="tags" style="width: 80%; text-align: left" type="text" [(ngModel)]="newTagLabel" (keydown.enter)="addTag()"
+                   class="second text-input-save"  placeholder="Tag Label">
+            <button (click)="addTag()" size="small" class="add-tag" style="width: 20%">+</button>
+          </div>
           <datalist id="tags">
             <option [value]="tag.label" *ngFor="let tag of tags | filterTagSuggestion : selectedPoint.point.tags">{{tag.label}}</option>
           </datalist>
