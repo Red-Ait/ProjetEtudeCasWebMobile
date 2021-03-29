@@ -59,15 +59,30 @@ export class TagsComponent implements OnInit {
   }
 
 
-  addTag(): void {
+  async addTag() {
+
     for (const tag of this.tags) {
       if (tag.label === this.newTagLabel.trim() || tag.label === '') {
+        const alert = await this.alertController.create({
+          cssClass: 'my-custom-class',
+          header: '  Alert ! ',
+          subHeader: ' ',
+          message: 'this tag already exists !'
+        });
+        await alert.present();
         return;
       }
     }
 
     if ((this.newTagLabel || '').trim()) {
       this.store.dispatch(new AddTag({id: null, label: this.newTagLabel.trim()}));
+      const alert = await this.alertController.create({
+        cssClass: 'my-custom-class',
+        header: ' Great ',
+        subHeader: ' ',
+        message: 'tag created  !'
+      });
+      await alert.present();
     }
     this.newTagLabel = '';
   }
@@ -102,12 +117,19 @@ export class TagsComponent implements OnInit {
 
   }
 
-  update(): void {
+  async update() {
     for (const tags of this.tags) {
       if (tags.label.toLowerCase().trim() === this.selectedTagLabel.toLowerCase().trim()) {
         this.selectedTagLabel = '';
         this.selectedTagid = null;
         this.edit = false;
+        const alert = await this.alertController.create({
+          cssClass: 'my-custom-class',
+          header: '  Alert ! ',
+          subHeader: ' ',
+          message: 'this tag already exists !'
+        });
+        await alert.present();
         return;
 
       }
@@ -118,6 +140,13 @@ export class TagsComponent implements OnInit {
         id: this.selectedTagid,
         label: this.selectedTagLabel.trim()
       }));
+      const alert = await this.alertController.create({
+        cssClass: 'my-custom-class',
+        header: '  Great  ',
+        subHeader: ' ',
+        message: 'tag updated !'
+      });
+      await alert.present();
     }
     this.updatedTag = '';
     this.selectedTagid = null;
