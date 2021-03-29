@@ -128,12 +128,14 @@ public class LocationServiceTest {
 
     @Test
     public void when_getAll_expect_locations() throws Exception {
+        when(userDetailsService.getCurrentUser()).thenReturn(connectedUser);
         Assertions.assertTrue(locationImpl.getAllLocations().size() == 2);
     }
 
     @Test
     public void when_getAllNonExisting_expect_204() throws Exception {
-        when(locationRepository.findAll()).thenReturn(new ArrayList<>());
+        when(userDetailsService.getCurrentUser()).thenReturn(connectedUser);
+        when(locationRepository.findAllLocationsByUserId(connectedUser.getId())).thenReturn(Optional.empty());
         Assertions.assertThrows(NoContentException.class, () -> locationImpl.getAllLocations());
     }
 
