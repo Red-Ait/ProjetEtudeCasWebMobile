@@ -1,4 +1,5 @@
 import {ITag} from '../../@entities/ITag';
+import {ILocation} from '../../@entities/ILocation';
 
 export class GetTags {
   static readonly type = '[tags] get tags';
@@ -39,13 +40,13 @@ export class AddTagFail {
 
 export class UpdateTag {
   static readonly type = '[Tag] Update tag';
-  constructor(public payload: string) {
+  constructor(public id: number, public payload: ITag) {
   }
 }
 
 export class UpdateTagSuccess {
   static readonly type = '[Tag] Update tag success';
-  constructor(public payload: any) {
+  constructor(public id: any, public payload: any) {
   }
 }
 
@@ -89,6 +90,7 @@ export class  GetTagByLabelFail {
   constructor(public payload: string) {
   }
 }
+
 
 
 

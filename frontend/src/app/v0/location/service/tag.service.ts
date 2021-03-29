@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
 import {environment} from '../../../../environments/environment';
 
 @Injectable({
@@ -9,12 +8,14 @@ import {environment} from '../../../../environments/environment';
 })
 export class TagService {
 
-  tagUri = environment.backendApiUrl + environment.apiUrl + environment.resourceUri.tag;
-
   constructor(private http: HttpClient) { }
+  tagUri = environment.backendApiUrl + environment.apiUrl + environment.resourceUri.tag;
+  locationUri = environment.backendApiUrl + environment.apiUrl + environment.resourceUri.location;
+
+
 
   addTag(tag){
-    return this.http.post(this.tagUri, tag).pipe(map(resp => resp));
+    return this.http.post(this.tagUri, tag);
   }
 
   getAllTag(): Observable<any> {
@@ -22,17 +23,16 @@ export class TagService {
   }
 
   deleteTag(idTag: number){
-    return this.http.delete(this.tagUri + idTag).pipe(map(resp => resp));
+    return this.http.delete(this.tagUri + '/' +  idTag);
   }
 
-  updateTag(tag){
-    return this.http.put(this.tagUri, tag).pipe(map(resp => resp));
+  updateTag(id, tag){
+    return this.http.put(this.tagUri + '/' + id, tag);
 
   }
-
 
   getTagBylabel(label){
-    return this.http.get(this.tagUri, label).pipe(map(resp => resp));
+    return this.http.get(this.tagUri, label);
 
   }
 }

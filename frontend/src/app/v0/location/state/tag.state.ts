@@ -7,7 +7,7 @@ import {
   AddTagSuccess,
   DeleteTagSuccess,
   GetTagByLabelFail,
-  GetTagByLabelSuccess, GetTagsSuccess,
+  GetTagByLabelSuccess, GetTags, GetTagsFail, GetTagsSuccess,
   UpdateTagFail,
   UpdateTagSuccess
 } from './tag.action';
@@ -15,6 +15,7 @@ import {TagService} from '../service/tag.service';
 
 export class TagStateModel {
   tags: Array<ITag>;
+  searchedtags: Array<ITag>;
   tag: {
     id: number,
     label: string
@@ -25,6 +26,7 @@ export class TagStateModel {
   name: 'tagState',
   defaults: {
     tags: [],
+    searchedtags: [],
     tag : null
   }
 })
@@ -40,6 +42,26 @@ export class TagState {
   @Selector()
   static getTags(state: TagStateModel) {
     return state.tags;
+  }
+
+
+
+  @Action(tagAction.GetTags)
+  getTags(ctx: StateContext<TagStateModel>) {
+    this.tagApi.getAllTag().subscribe(data => {
+      ctx.dispatch(new GetTagsSuccess(data));
+    }, error => {
+      ctx.dispatch(new GetTagsFail(error));
+    });
+  }
+
+  @Action(tagAction.GetTagsSuccess)
+  getTagSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.GetTagsSuccess) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
+      tags: payload
+    });
   }
 
   @Action(tagAction.AddTag)
@@ -61,7 +83,7 @@ export class TagState {
   }
 
   @Action(tagAction.DeleteTag)
-  deleteFile(ctx: StateContext<TagStateModel>, {payload}: tagAction.DeleteTag) {
+  deleteTag(ctx: StateContext<TagStateModel>, {payload}: tagAction.DeleteTag) {
     this.tagApi.deleteTag(payload)
       .subscribe(r => {
         ctx.dispatch(new DeleteTagSuccess({ deletedTag: payload}));
@@ -69,7 +91,7 @@ export class TagState {
   }
 
   @Action(tagAction.DeleteTagSuccess)
-  deleteFileSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.DeleteTagSuccess) {
+  deleteTagSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.DeleteTagSuccess) {
     const state = ctx.getState();
     ctx.patchState({
       ...state,
@@ -77,9 +99,9 @@ export class TagState {
   }
 
   @Action(tagAction.UpdateTag)
-  updateUploadProgress(ctx: StateContext<TagStateModel>, {payload}: tagAction.UpdateTag) {
-    this.tagApi.updateTag(payload).subscribe(data => {
-      ctx.dispatch(new UpdateTagSuccess(data));
+  updateTag(ctx: StateContext<TagStateModel>, {payload}: tagAction.UpdateTag) {
+    this.tagApi.updateTag(payload.id, payload).subscribe(data => {
+      ctx.dispatch(new UpdateTagSuccess(payload.id, payload));
     }, error => {
       ctx.dispatch(new UpdateTagFail(error));
     });
@@ -87,30 +109,11 @@ export class TagState {
 
 
   @Action(tagAction.UpdateTagSuccess)
-  updateUploadStatus(ctx: StateContext<TagStateModel>, {payload}: tagAction.UpdateTagSuccess) {
-
+  updateTagSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.UpdateTagSuccess) {
     const state = ctx.getState();
     ctx.patchState({
       ...state,
-      tag: payload
-    });
-  }
-
-  @Action(tagAction.GetTags)
-  getTags(ctx: StateContext<TagStateModel>) {
-    this.tagApi.getAllTag().subscribe(data => {
-      ctx.dispatch(new GetTagsSuccess(data));
-    }, error => {
-      ctx.dispatch(new GetTagByLabelFail(error));
-    });
-  }
-
-  @Action(tagAction.GetTagsSuccess)
-  getTagSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.GetTagsSuccess) {
-    const state = ctx.getState();
-    ctx.patchState({
-      ...state,
-      tags: payload
+      tags: state.tags.map(p => p.id === payload.id ? payload : p)
     });
   }
 
@@ -131,7 +134,6 @@ export class TagState {
       tag: payload
     });
   }
-
 
 
 
