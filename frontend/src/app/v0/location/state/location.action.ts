@@ -72,7 +72,7 @@ export class UpdatePositionFail {
 
 export class DeletePosition {
   static readonly type = '[location/map] delete position';
-  constructor(public payload: number) {
+  constructor(public payload: ILocation) {
   }
 }
 
@@ -86,14 +86,26 @@ export class DeletePositionFail {
   constructor(public payload: string) {
   }
 }
-export class SearchByTags {
-  static readonly type = '[location/map] search by tags';
-  constructor(public payload: Array<string>) {
+export class SearchByTagsOrMode {
+  static readonly type = '[location/map] search by tags or mode';
+  constructor(public payload: Array<ITag>) {
   }
 }
 
-export class SearchByTagsSuccess {
-  static readonly type = '[location/map] Search By Tags success';
+export class SearchByTagsOrModeSuccess {
+  static readonly type = '[location/map] Search By Tags or mode success';
+  constructor(public payload: Array<ILocation>) {
+  }
+}
+
+export class SearchByTagsAndMode {
+  static readonly type = '[location/map] search by tags and mode';
+  constructor(public payload: Array<ITag>) {
+  }
+}
+
+export class SearchByTagsAndModeSuccess {
+  static readonly type = '[location/map] Search By Tags and mode success';
   constructor(public payload: Array<ILocation>) {
   }
 }

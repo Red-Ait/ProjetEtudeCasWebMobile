@@ -13,6 +13,7 @@
   },
   "private": true,
   "dependencies": {
+    "@auth0/angular-jwt": "^5.0.2",
     "@angular/animations": "~11.0.5",
     "@angular/cdk": "^11.1.2",
     "@angular/common": "~11.0.5",

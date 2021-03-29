@@ -8,7 +8,7 @@ import {
   GetUserMapPointFail,
   GetUserMapPointSuccess,
   SavePositionFail,
-  SavePositionSuccess, SearchByTagsSuccess, UpdatePosition, UpdatePositionSuccess
+  SavePositionSuccess, SearchByTagsAndModeSuccess, SearchByTagsOrModeSuccess, UpdatePosition, UpdatePositionSuccess
 } from './location.action';
 import {LocationApi} from '../service/location.api';
 import {GetTags} from './tag.action';
@@ -57,7 +57,6 @@ export class LocationState {
   @Action(locationAction.GetUserMapPoint)
   getUserMapPoint(ctx: StateContext<LocationStateModel>) {
     this.locationApi.getUserMapPoint().subscribe(data => {
-      console.log(data);
       ctx.dispatch(new GetUserMapPointSuccess(data));
     }, error => {
       ctx.dispatch(new GetUserMapPointFail(error));
@@ -69,7 +68,7 @@ export class LocationState {
     const state = ctx.getState();
     ctx.patchState({
       ...state,
-      mapPoints: payload
+      mapPoints: payload === null ? [] : payload
     });
   }
   @Action(locationAction.SavePosition)
@@ -94,10 +93,17 @@ export class LocationState {
   }
   @Action(locationAction.DeletePosition)
   deleteMapPoint(ctx: StateContext<LocationStateModel>, {payload}: locationAction.DeletePosition) {
-    this.locationApi.deleteMapPoint(payload).subscribe(data => {
-      console.log(data);
+    let aux = payload;
+    if (payload.id === null) {
+      for (const pt of ctx.getState().mapPoints) {
+        if (pt.latitude === payload.latitude && pt.longitude === payload.longitude) {
+          aux = pt;
+        }
+      }
+    }
+    this.locationApi.deleteMapPoint(aux.id).subscribe(data => {
       if (data) {
-        ctx.dispatch(new DeletePositionSuccess(payload));
+        ctx.dispatch(new DeletePositionSuccess(payload.id));
       }
     }, error => {
     });
@@ -127,16 +133,58 @@ export class LocationState {
       mapPoints: state.mapPoints.map(p => p.id === payload.id ? payload : p)
     });
   }
-  @Action(locationAction.SearchByTags)
-  searchByTags(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTags) {
+  @Action(locationAction.SearchByTagsOrMode)
+  searchByTagsOrMode(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTagsOrMode) {
     this.locationApi.searchByTags(payload).subscribe(data => {
-      ctx.dispatch(new SearchByTagsSuccess(data));
+      let aux = new Array<ILocation>();
+      let map = new Map();
+      data.forEach(list => {
+        list.forEach(l => {
+          if (!map.has(l.id)) {
+            map.set(l.id, true);
+            aux.push(l);
+          }
+        });
+      });
+      ctx.dispatch(new SearchByTagsOrModeSuccess(aux));
     }, error => {
     });
   }
 
-  @Action(locationAction.SearchByTagsSuccess)
-  searchByTagsSuccess(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTagsSuccess) {
+  @Action(locationAction.SearchByTagsOrModeSuccess)
+  searchByTagsOrModeSuccess(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTagsOrModeSuccess) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
+      pointsSearchedByTags: payload
+    });
+  }
+  @Action(locationAction.SearchByTagsAndMode)
+  searchByTagsAndMode(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTagsAndMode) {
+    const state = ctx.getState();
+    let data = new Array<ILocation>();
+    data = [...state.mapPoints];
+    for (const tag of payload) {
+      for (const pt of data) {
+        let exist = false;
+        for (const ptTag of pt.tags) {
+          if (ptTag.label.toLowerCase().trim() === tag.label.trim().toLowerCase()) {
+            exist = true;
+          }
+        }
+        if (!exist) {
+          const index = data.indexOf(pt);
+          if (index >= 0) {
+            data.splice(index, 1);
+          }
+        }
+      }
+    }
+    ctx.dispatch(new SearchByTagsAndModeSuccess(data));
+  }
+
+  @Action(locationAction.SearchByTagsAndModeSuccess)
+  searchByTagsAndModeSuccess(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTagsAndModeSuccess) {
     const state = ctx.getState();
     ctx.patchState({
       ...state,

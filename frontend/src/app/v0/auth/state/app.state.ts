@@ -47,17 +47,14 @@ export class AppState {
   register(ctx: StateContext<AppState>, {payload}: authAction.Register) {
     this.authService.addUser(payload)
       .subscribe(result => {
-        console.log(result);
         ctx.dispatch(new authAction.LoginSuccess(result));
       });
   }
 
   @Action(authAction.Login)
   login(ctx: StateContext<AppState>, {payload}: authAction.Login) {
-    console.log(payload);
     this.authService.login(payload)
       .subscribe(result => {
-        console.log(result);
         ctx.dispatch(new authAction.LoginSuccess(result));
       });
   }
