@@ -237,6 +237,16 @@ public class LocationImpl implements LocationService {
     }
 
     @Override
+    public List<Location> findAllSharedLocations() {
+
+        return locationRepository.findAllSharedLocationsByUserId(userDetailsService.getCurrentUser().getId())
+                .orElseThrow(() -> new NoContentException("There are no Location for this user"))
+                .stream()
+                .map(locationMapper::toModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<Location> findAllLocationsOfAnotherUserByTagTitles(String ownerUsername, List<String> tagTitles) {
         //remove duplicates
         Set<String> set = new HashSet<>(tagTitles);

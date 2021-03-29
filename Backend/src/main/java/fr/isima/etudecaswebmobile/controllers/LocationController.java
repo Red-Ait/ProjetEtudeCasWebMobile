@@ -1,7 +1,6 @@
 package fr.isima.etudecaswebmobile.controllers;
 
 
-import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
 import fr.isima.etudecaswebmobile.models.Location;
 import fr.isima.etudecaswebmobile.models.Tag;
 import fr.isima.etudecaswebmobile.services.LocationService;
@@ -58,6 +57,11 @@ public class LocationController {
     @GetMapping("location/user/{id_user}")
     public ResponseEntity<List<Location>> getAllLocationsByUserID(@PathVariable("id_user") Long id) {
         return new ResponseEntity<>(locationService.findAllLocationsByUserId(id), HttpStatus.OK);
+    }
+
+    @GetMapping("location/shared")
+    public ResponseEntity<List<Location>> getAllSharedLocations() {
+        return new ResponseEntity<>(locationService.findAllSharedLocations(), HttpStatus.OK);
     }
 
     @GetMapping("location/owner_user/{owner_username}/tags/{tag_titles}")

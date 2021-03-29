@@ -84,6 +84,13 @@ public class LocationIT {
 
     @Test
     @Transactional
+    public void when_findAllSharedLocations_expect_locations() {
+        when(userDetailsService.getCurrentUser()).thenReturn(connectedUser2);
+        Assertions.assertTrue(locationImpl.findAllSharedLocations().size() > 0);
+    }
+
+    @Test
+    @Transactional
     public void when_findAllLocationsOfAnotherUserByTagTitles_expect_locations() {
         when(userDetailsService.getCurrentUser()).thenReturn(connectedUser2);
         Assertions.assertTrue(
