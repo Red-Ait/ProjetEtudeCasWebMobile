@@ -1,5 +1,5 @@
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
 import {ITag} from '../../../@entities/ITag';
 import {AddTag, DeleteTag, GetTags, UpdateTag} from '../../state/tag.action';
@@ -7,8 +7,8 @@ import {Select, Store} from '@ngxs/store';
 import {TagState} from '../../state/tag.state';
 import {DeletePosition} from '../../state/location.action';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {AlertController} from '@ionic/angular';
-
+import {AlertController, PopoverController} from '@ionic/angular';
+import {MatDialog} from '@angular/material/dialog';
 
 export interface Tag {
   label: string;
@@ -23,7 +23,8 @@ export interface Tag {
 
 export class TagsComponent implements OnInit {
 
-  constructor(private store: Store, private modalService: NgbModal, public alertController: AlertController) {
+  constructor(private store: Store, private modalService: NgbModal, public alertController: AlertController,
+              public popoverController: PopoverController, public dialog: MatDialog) {
 
 
   }
@@ -31,6 +32,7 @@ export class TagsComponent implements OnInit {
   selectedTagid: number;
   selectedTagLabel: string;
   updatedTag: string;
+  deletedTag: ITag;
 
 
   tag = {} as ITag;
@@ -47,6 +49,7 @@ export class TagsComponent implements OnInit {
 
   // Selectors
   @Select(TagState.getTags) $tags;
+  @ViewChild('list') list;
 
 
   ngOnInit() {
@@ -65,9 +68,17 @@ export class TagsComponent implements OnInit {
       if (tag.label === this.newTagLabel.trim() || tag.label === '') {
         const alert = await this.alertController.create({
           cssClass: 'my-custom-class',
-          header: '  Alert ! ',
-          subHeader: ' ',
-          message: 'this tag already exists !'
+          header: '  ',
+          subHeader: ' this tag already exists !',
+          message: '',
+          buttons : [
+            {
+              text: 'Close',
+              role: 'cancel',
+              handler: () => {
+              }}
+          ]
+
         });
         await alert.present();
         return;
@@ -80,13 +91,20 @@ export class TagsComponent implements OnInit {
         cssClass: 'my-custom-class',
         header: ' Great ',
         subHeader: ' ',
-        message: 'tag created  !'
+        message: 'tag created  !',
+        buttons : [
+          {
+            text: 'Close',
+            role: 'cancel',
+            handler: () => {
+            }}
+        ]
       });
       await alert.present();
     }
     this.newTagLabel = '';
   }
-  async remove(tag: ITag) {
+  async remove() {
     this.modalService.dismissAll();
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
@@ -96,7 +114,9 @@ export class TagsComponent implements OnInit {
         {
           text: 'Yes',
           handler: () => {
-                this.store.dispatch(new DeleteTag(tag.id));
+                this.store.dispatch(new DeleteTag(this.deletedTag.id));
+                this.deletedTag.id = null;
+                this.deletedTag.label = '';
           }
         },
         {
@@ -110,12 +130,15 @@ export class TagsComponent implements OnInit {
   }
 
 
+/*
   select(tag: ITag) {
     this.selectedTagid = tag.id;
     this.selectedTagLabel = tag.label;
+    console.log(this.selectedTagLabel);
     return this.selectedTagLabel;
 
   }
+*/
 
   async update() {
     for (const tags of this.tags) {
@@ -127,7 +150,14 @@ export class TagsComponent implements OnInit {
           cssClass: 'my-custom-class',
           header: '  Alert ! ',
           subHeader: ' ',
-          message: 'this tag already exists !'
+          message: 'this tag already exists !',
+          buttons : [
+            {
+              text: 'Close',
+              role: 'cancel',
+              handler: () => {
+              }}
+          ]
         });
         await alert.present();
         return;
@@ -144,7 +174,14 @@ export class TagsComponent implements OnInit {
         cssClass: 'my-custom-class',
         header: '  Great  ',
         subHeader: ' ',
-        message: 'tag updated !'
+        message: 'tag updated !',
+        buttons : [
+          {
+            text: 'Close',
+            role: 'cancel',
+            handler: () => {
+            }}
+        ]
       });
       await alert.present();
     }
@@ -153,7 +190,33 @@ export class TagsComponent implements OnInit {
     this.selectedTagLabel = '';
 
   }
+  /*openDialog(): void {
+    const dialogRef = this.dialog.open(ListComponent, {
+      width: '250px',
+      data: 'okay'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }*/
+
+  openModal(template: any, extended: boolean) {
+    this.modalService.open(template, {
+      size: 'sm',
+      windowClass: extended ? 'extended-modal-class' : 'short-modal-class',
+      backdropClass: 'backdrop-class'
+    });
+  }
+open(tag: ITag) {
+  this.selectedTagid = tag.id;
+  this.selectedTagLabel = tag.label;
+  this.deletedTag = tag;
+  this.openModal(this.list, false);
+}
 
 
+  share() {
 
+  }
 }
