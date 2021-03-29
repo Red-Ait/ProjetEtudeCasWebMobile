@@ -13,7 +13,7 @@ import {NominatimService} from '../../service/nominatim-service';
 
 import {Select, Store} from '@ngxs/store';
 import {
-  DeletePosition,
+  DeletePosition, GetSharedWithMeLocation,
   GetUserMapPoint,
   SavePosition,
   SearchByTagsAndMode,
@@ -55,6 +55,7 @@ export class MapComponent implements OnInit {
 
   // Map points
   mapPoints: Array<ILocation> = new Array<ILocation>();
+  sharedWithMeLocation: Array<ILocation> = new Array<ILocation>();
   selectedPoint: {
     point: ILocation,
     saved: boolean,
@@ -92,11 +93,13 @@ export class MapComponent implements OnInit {
 
   // Selectors
   @Select(LocationState.getMapPoints) $mapPoints;
+  @Select(LocationState.getSharedWithMeLocations) $sharedWithMeLocations;
   @Select(TagState.getTags) $getTags;
   @Select(LocationState.getPointsSearchedByTags) $pointsSearchedByTags;
 
   // View Child
   @ViewChild('positionDetail') positionDetail;
+  @ViewChild('sharedPositionDetail') sharedPositionDetail;
   @ViewChild('positionDetailExtended') positionDetailExtended;
   @ViewChild('searchbar') searchBar;
   @ViewChild('routeDetail') routeDetail;
@@ -111,7 +114,7 @@ export class MapComponent implements OnInit {
 
   ngOnInit() {
     this.initializeMapOptions();
-    this.store.dispatch(new GetUserMapPoint());
+    this.store.dispatch([new GetUserMapPoint(), new GetSharedWithMeLocation(), new GetTags()]);
     this.$mapPoints.subscribe(data => {
       this.mapPoints = data;
       if (this.mapPoints.length > 0) {
@@ -126,7 +129,6 @@ export class MapComponent implements OnInit {
         }
       }
     });
-    this.store.dispatch(new GetTags());
     this.$getTags.subscribe(t => {
       this.tags = t;
     });
@@ -134,6 +136,11 @@ export class MapComponent implements OnInit {
       this.searchResults = [];
       const aux = data.map(d => ({point: d, saved: true}));
       this.searchResults = [...this.searchResults, ...aux];
+    });
+    this.$sharedWithMeLocations.subscribe(data => {
+      console.log(data);
+      this.sharedWithMeLocation = data;
+      this.markerClusterData = this.setMarkers();
     });
   }
 
@@ -148,9 +155,9 @@ export class MapComponent implements OnInit {
     const index = this.searchedTags.indexOf(tag);
 
     if (index >= 0) {
-      this.searchedTags.splice(index, 1);
+        this.searchedTags.splice(index, 1);
+        this.searchByTag();
     }
-    this.searchByTag();
   }
 
   async deleteConfirmAlert() {
@@ -279,16 +286,16 @@ export class MapComponent implements OnInit {
     this.markerClusterData = this.setMarkers();
   }
 
-  createMarker(p: ILocation): Marker{
+  createMarker(p: ILocation, shared: boolean): Marker{
     // tslint:disable-next-line:no-shadowed-variable
     const icon = M.icon({
       iconSize: [ 25, 41 ],
       iconAnchor: [ 13, 41 ],
-      iconUrl: 'assets/marker-icon.png'
+      iconUrl: shared ? 'assets/red-marker.png' : 'assets/marker-icon.png'
     });
 
     const marker: Marker = M.marker([ p.latitude, p.longitude], { icon });
-    marker.on('click', () => {this.onClickOnMarker(p); });
+    marker.on('click', () => {this.onClickOnMarker(p, shared); });
 
     return marker;
   }
@@ -297,20 +304,23 @@ export class MapComponent implements OnInit {
     const data: Marker[] = [];
 
     this.mapPoints.forEach(p => {
-      data.push(this.createMarker(p));
+      data.push(this.createMarker(p, false));
+    });
+    this.sharedWithMeLocation.forEach(p => {
+      data.push(this.createMarker(p, true));
     });
     return data;
   }
 
-  onClickOnMarker(pt: ILocation) {
+  onClickOnMarker(pt: ILocation, shared: boolean) {
     this.selectedPoint = {
       point: pt,
-      saved: true,
+      saved: !shared,
       onSave: false
     };
     this.modalService.dismissAll();
     this.unselectPoint();
-    this.openModal(this.positionDetail, false);
+    this.openModal(shared ? this.sharedPositionDetail : this.positionDetail, false);
     this.onSearch = false;
   }
   selectResult(result: { point: ILocation, saved: boolean }) {

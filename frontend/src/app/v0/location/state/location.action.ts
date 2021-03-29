@@ -13,6 +13,18 @@ export class GetUserMapPointSuccess {
   }
 }
 
+export class GetSharedWithMeLocation {
+  static readonly type = '[location/map] shared with me location';
+  constructor() {
+  }
+}
+
+export class GetSharedWithMeLocationSuccess {
+  static readonly type = '[location/map] shared with me location success';
+  constructor(public payload: Array<ILocation>) {
+  }
+}
+
 export class GetUserMapPointFail {
   static readonly type = '[location/map] get user map point fail';
   constructor(public payload: string) {

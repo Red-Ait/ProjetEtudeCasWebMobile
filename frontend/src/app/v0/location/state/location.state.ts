@@ -4,7 +4,7 @@ import {Injectable} from '@angular/core';
 import {ITag} from '../../@entities/ITag';
 import * as locationAction from './location.action';
 import {
-  DeletePositionSuccess,
+  DeletePositionSuccess, GetSharedWithMeLocation, GetSharedWithMeLocationSuccess,
   GetUserMapPointFail,
   GetUserMapPointSuccess,
   SavePositionFail,
@@ -15,6 +15,7 @@ import {GetTags} from './tag.action';
 
 export class LocationStateModel {
   mapPoints: Array<ILocation>;
+  sharedWithMePoints: Array<ILocation>;
   pointsSearchedByTags: Array<ILocation>;
   tags: Array<ITag>;
 }
@@ -23,6 +24,7 @@ export class LocationStateModel {
   name: 'locationState',
   defaults: {
     mapPoints: [],
+    sharedWithMePoints: [],
     pointsSearchedByTags: [],
     tags: []
   }
@@ -41,6 +43,11 @@ export class LocationState {
   }
 
   @Selector()
+  static getSharedWithMeLocations(state: LocationStateModel) {
+    return state.sharedWithMePoints;
+  }
+
+  @Selector()
   static getTags(state: LocationStateModel) {
     return state.tags;
   }
@@ -54,6 +61,11 @@ export class LocationState {
     return (query: string) =>
       state.mapPoints.filter(pt => pt.label.trim().toLowerCase().includes(query.trim().toLowerCase()));
   }
+
+
+  /************       Handling actions         ********************/
+
+
   @Action(locationAction.GetUserMapPoint)
   getUserMapPoint(ctx: StateContext<LocationStateModel>) {
     this.locationApi.getUserMapPoint().subscribe(data => {
@@ -71,6 +83,23 @@ export class LocationState {
       mapPoints: payload === null ? [] : payload
     });
   }
+
+  @Action(locationAction.GetSharedWithMeLocation)
+  getSharedWithMeLocation(ctx: StateContext<LocationStateModel>) {
+    this.locationApi.getSharedWithMeLocation().subscribe(data => {
+      ctx.dispatch(new GetSharedWithMeLocationSuccess(data));
+    });
+  }
+
+  @Action(locationAction.GetSharedWithMeLocationSuccess)
+  getSharedWithMeLocationSuccess(ctx: StateContext<LocationStateModel>, {payload}: locationAction.GetSharedWithMeLocationSuccess) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
+      sharedWithMePoints: payload === null ? [] : payload
+    });
+  }
+
   @Action(locationAction.SavePosition)
   saveMapPoint(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SavePosition) {
     this.locationApi.saveMapPoint(payload).subscribe(data => {
@@ -136,8 +165,8 @@ export class LocationState {
   @Action(locationAction.SearchByTagsOrMode)
   searchByTagsOrMode(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTagsOrMode) {
     this.locationApi.searchByTags(payload).subscribe(data => {
-      let aux = new Array<ILocation>();
-      let map = new Map();
+      const aux = new Array<ILocation>();
+      const map = new Map();
       data.forEach(list => {
         list.forEach(l => {
           if (!map.has(l.id)) {
