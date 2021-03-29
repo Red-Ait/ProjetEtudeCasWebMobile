@@ -151,13 +151,11 @@ public class LocationImpl implements LocationService {
 
     @Override
     public List<Location> getAllLocations() {
-        List<LocationEntity> locationEntities = locationRepository.findAll();
-        if (!locationEntities.isEmpty())
-            return locationEntities.stream()
-                    .map(locationMapper::toModel)
-                    .collect(Collectors.toList());
-        else
-            throw new NoContentException("Locations Not Found");
+        return locationRepository.findAllLocationsByUserId(userDetailsService.getCurrentUser().getId())
+                .orElseThrow(() -> new NoContentException("There are no Location for this user"))
+                .stream()
+                .map(locationMapper::toModel)
+                .collect(Collectors.toList());
     }
 
     @Override
