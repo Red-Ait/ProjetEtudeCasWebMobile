@@ -3,6 +3,7 @@ package fr.isima.etudecaswebmobile.controllers;
 
 import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
 import fr.isima.etudecaswebmobile.models.Location;
+import fr.isima.etudecaswebmobile.models.Tag;
 import fr.isima.etudecaswebmobile.services.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -82,14 +83,14 @@ public class LocationController {
     }
 
     @PostMapping("location/tags")
-    public ResponseEntity<List<List<Location>>> getListLocationsOfListTags(@Validated @RequestBody List<TagEntity> list_tags)
+    public ResponseEntity<List<List<Location>>> getListLocationsOfListTags(@Validated @RequestBody List<Tag> list_tags)
     {
         List<String> str = new ArrayList<String>();
         List<List<Location>> locations = new ArrayList<List<Location>>();
 
         for(int i = 0; i<list_tags.size(); i++)
         {
-           List<Location> locat = this.locationService.getLocationsByTag(list_tags.get(i).getId_tag());
+           List<Location> locat = this.locationService.getLocationsByTag(list_tags.get(i).getId());
            locations.add(locat);
         }
 

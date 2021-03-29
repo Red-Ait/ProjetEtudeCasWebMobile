@@ -12,7 +12,14 @@ import 'leaflet/dist/images/marker-icon-2x.png';
 import {NominatimService} from '../../service/nominatim-service';
 
 import {Select, Store} from '@ngxs/store';
-import {DeletePosition, GetUserMapPoint, SavePosition, SearchByTagsOrMode, UpdatePosition} from '../../state/location.action';
+import {
+  DeletePosition,
+  GetUserMapPoint,
+  SavePosition,
+  SearchByTagsAndMode,
+  SearchByTagsOrMode,
+  UpdatePosition
+} from '../../state/location.action';
 import {LocationState} from '../../state/location.state';
 import {ITag} from '../../../@entities/ITag';
 import {AlertController} from '@ionic/angular';
@@ -122,15 +129,11 @@ export class MapComponent implements OnInit {
     this.store.dispatch(new GetTags());
     this.$getTags.subscribe(t => {
       this.tags = t;
-      console.log(t);
     });
     this.$pointsSearchedByTags.subscribe(data => {
       this.searchResults = [];
-      data.forEach(list => {
-        const aux = list.map(d => ({point: d, saved: true}));
-        this.searchResults = [...this.searchResults, ...aux];
-      });
-      console.log('serch rslt', this.searchResults);
+      const aux = data.map(d => ({point: d, saved: true}));
+      this.searchResults = [...this.searchResults, ...aux];
     });
   }
 
@@ -147,7 +150,7 @@ export class MapComponent implements OnInit {
     if (index >= 0) {
       this.searchedTags.splice(index, 1);
     }
-    this.store.dispatch(new SearchByTagsOrMode(this.searchedTags));
+    this.searchByTag();
   }
 
   async deleteConfirmAlert() {
@@ -160,7 +163,7 @@ export class MapComponent implements OnInit {
         {
         text: 'Yes',
         handler: () => {
-          this.store.dispatch(new DeletePosition(this.selectedPoint.point.id));
+          this.store.dispatch(new DeletePosition(this.selectedPoint.point));
         }
       },
         {
@@ -179,7 +182,19 @@ export class MapComponent implements OnInit {
     if (index >= 0) {
       this.suggestedTags.splice(index, 1);
     }
-    this.store.dispatch(new SearchByTagsOrMode(this.searchedTags));
+    this.searchByTag();
+  }
+  searchByTag() {
+    this.searchResults = [];
+    if (this.searchedTags.length === 0) {
+      return;
+    }
+    if (this.searchByTagMode === this.orModeSearch) {
+      this.store.dispatch(new SearchByTagsOrMode(this.searchedTags));
+    }
+    if (this.searchByTagMode === this.andModeSearch) {
+      this.store.dispatch(new SearchByTagsAndMode(this.searchedTags));
+    }
   }
   addTag(): void {
     if (this.newTagLabel === '') {
@@ -239,7 +254,7 @@ export class MapComponent implements OnInit {
       zoomControl: false,
       layers: [
         tileLayer(
-          'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
           {
             maxZoom: 18,
             attribution: 'Etude des cas Web et Mobile'
@@ -398,8 +413,6 @@ export class MapComponent implements OnInit {
   }
   onChangeSearchByTagInput() {
     this.suggestedTags = new Array<ITag>();
-    console.log('sugg', this.suggestedTags);
-    console.log('sea   res', this.searchResults);
     for (const tag of this.tags) {
       if (tag.label.trim().toLowerCase().includes( this.searchedTagLabel.toLowerCase().trim())) {
         let exist = false;
@@ -414,13 +427,16 @@ export class MapComponent implements OnInit {
       }
     }
   }
+  changeJoinMode() {
+    this.searchByTag();
+  }
   searchFocus() {
-    console.log(this.onSearch);
     this.onSearch = true;
-    console.log(this.onSearch);
     this.searchMode = this.searchPlace;
     setTimeout(() => {
-      this.searchBar.setFocus();
+      if (this.searchBar !== undefined) {
+        this.searchBar.setFocus();
+      }
     },  822);
     this.modalService.dismissAll();
   }
@@ -476,7 +492,6 @@ export class MapComponent implements OnInit {
         },
       }).addTo(this.map);
       myRouting.on('routesfound', (e) => {
-        console.log('routing distance: ', e.routes[0].instructions);
         this.routeInstructions = e.routes[0].instructions.map(i => {
           i.type = this.routingService.getIconClass(i.type);
           return i;

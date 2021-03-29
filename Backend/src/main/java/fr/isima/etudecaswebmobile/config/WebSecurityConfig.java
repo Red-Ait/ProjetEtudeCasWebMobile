@@ -14,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -59,8 +60,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		// We don't need CSRF for this example
 
-		httpSecurity.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
 		httpSecurity.csrf().disable()
+				.addFilterBefore(new CorsFilter(), ChannelProcessingFilter.class)
 				// dont authenticate this particular request
 				.authorizeRequests().antMatchers("/authenticate", "/register","/v2/api-docs", "/configuration/ui",
 				"/swagger-resources",

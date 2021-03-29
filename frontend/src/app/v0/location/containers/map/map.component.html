@@ -2,9 +2,8 @@
 <ion-content [fullscreen]="true">
 
   <div id="container" style="color: black">
-    <ion-list class="search-mode" *ngIf="onSearch">
-      <ion-radio-group [(ngModel)]="searchMode" (ngModelChange)="switchSearchMod()" *ngIf="searchMode === advancedSearch">
-        <ion-list-header>
+    <ion-list class="search-mode" *ngIf="onSearch && searchMode === advancedSearch">
+        <ion-list-header >
           <ion-label>Advanced Search</ion-label>
           <ion-button fill="outline" size="small" (click)="searchMode = searchPlace">
             <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px"
@@ -13,6 +12,11 @@
               Simple search
             </ion-label>
           </ion-button>
+          <ion-button size="small" (click)="onSearch = false">
+            <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px"
+                      name="close-circle"></ion-icon>
+          </ion-button>
+
         </ion-list-header>
         <ion-item>
           <ng-template  ngFor let-tag [ngForOf]="searchedTags" let-i="index">
@@ -28,15 +32,19 @@
               </span>
         </ion-item>
         <ion-item>
-          <ion-radio-group  [(ngModel)]="searchByTagMode">
+          <ion-radio-group  [(ngModel)]="searchByTagMode" (ngModelChange)="changeJoinMode()">
             <ion-row>
+              <ion-col>
+                <ion-list-header>
+                  Join Mode
+                </ion-list-header>
+              </ion-col>
               <ion-col>
                 <ion-item>
                   <ion-radio mode="md" item-left [value]="orModeSearch"></ion-radio>
                   <ion-label style="margin-left: 12px">OR</ion-label>
                 </ion-item>
               </ion-col>
-
               <ion-col>
                 <ion-item>
                   <ion-radio mode="md" item-left [value]="andModeSearch"></ion-radio>
@@ -49,7 +57,7 @@
         </ion-item>
         <ion-item >
           <ion-searchbar [(ngModel)]="searchedTagLabel"
-                         (keydown)="onChangeSearchByTagInput()"
+                         (ngModelChange)="onChangeSearchByTagInput()"
                          placeholder="Tag Label">
           </ion-searchbar>
         </ion-item>
@@ -64,8 +72,9 @@
             </span>
         </ion-item>
 
-      </ion-radio-group>
-      <ion-radio-group [(ngModel)]="searchMode" (ngModelChange)="switchSearchMod()" *ngIf="searchMode !== advancedSearch">
+    </ion-list>
+      <ion-list class="search-mode" *ngIf="onSearch && searchMode !== advancedSearch">
+      <ion-radio-group [(ngModel)]="searchMode" (ngModelChange)="switchSearchMod()" >
         <ion-list-header>
           <ion-label>Search</ion-label>
           <ion-button fill="outline" size="small" (click)="searchMode = advancedSearch">
@@ -74,6 +83,10 @@
             </ion-label>
             <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px"
                        name="arrow-forward-outline"></ion-icon>
+          </ion-button>
+          <ion-button size="small" (click)="onSearch = false">
+            <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px"
+                      name="close-circle"></ion-icon>
           </ion-button>
         </ion-list-header>
         <ion-item>
