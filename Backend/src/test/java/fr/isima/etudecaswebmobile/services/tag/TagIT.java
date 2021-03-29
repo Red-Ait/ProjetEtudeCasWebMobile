@@ -44,6 +44,7 @@ public class TagIT {
     @Test
     @Transactional
     public void when_findAll_expect_tags() {
+        when(userDetailsService.getCurrentUser()).thenReturn(connectedUser);
         Assertions.assertTrue(tagImpl.getAllTags().size() > 0);
     }
 
