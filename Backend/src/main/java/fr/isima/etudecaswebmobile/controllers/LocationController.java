@@ -1,7 +1,6 @@
 package fr.isima.etudecaswebmobile.controllers;
 
 
-import fr.isima.etudecaswebmobile.entities.tag.TagEntity;
 import fr.isima.etudecaswebmobile.models.Location;
 import fr.isima.etudecaswebmobile.models.Tag;
 import fr.isima.etudecaswebmobile.services.LocationService;
@@ -60,6 +59,11 @@ public class LocationController {
         return new ResponseEntity<>(locationService.findAllLocationsByUserId(id), HttpStatus.OK);
     }
 
+    @GetMapping("location/shared")
+    public ResponseEntity<List<Location>> getAllSharedLocations() {
+        return new ResponseEntity<>(locationService.findAllSharedLocations(), HttpStatus.OK);
+    }
+
     @GetMapping("location/owner_user/{owner_username}/tags/{tag_titles}")
     public ResponseEntity<List<Location>> getAllLocationsByTagNames(
             @PathVariable("owner_username") String ownerUsername,
@@ -94,6 +98,19 @@ public class LocationController {
            locations.add(locat);
         }
 
+        return new ResponseEntity<>(locations, HttpStatus.OK);
+    }
+
+    @PostMapping("location/tags/mutual")
+    public ResponseEntity<List<List<Location>>> getMutualListLocationsOfListTags(@Validated @RequestBody List<Tag> list_tags)
+    {
+        List<List<Location>> locations = new ArrayList<List<Location>>();
+
+        for(int i = 0; i<list_tags.size(); i++)
+        {
+            List<Location> locat = this.locationService.getLocationsByTag(list_tags.get(i).getId());
+
+        }
         return new ResponseEntity<>(locations, HttpStatus.OK);
     }
 
