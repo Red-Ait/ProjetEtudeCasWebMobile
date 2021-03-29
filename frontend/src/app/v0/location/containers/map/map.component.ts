@@ -313,6 +313,8 @@ export class MapComponent implements OnInit {
       data.push(this.createMarker(p, false));
     });
     this.sharedWithMeLocation.forEach(p => {
+      p.id = null;
+      p.tags = p.tags.map(t => ({...t, id: null}));
       data.push(this.createMarker(p, true));
     });
     return data;
