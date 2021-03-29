@@ -92,6 +92,7 @@ export class MapComponent implements OnInit {
   tags: ITag[] = [];
 
   // Selectors
+  @Select(LocationState.menuToggle) $menuToggle;
   @Select(LocationState.getMapPoints) $mapPoints;
   @Select(LocationState.getSharedWithMeLocations) $sharedWithMeLocations;
   @Select(TagState.getTags) $getTags;
@@ -141,6 +142,11 @@ export class MapComponent implements OnInit {
       console.log(data);
       this.sharedWithMeLocation = data;
       this.markerClusterData = this.setMarkers();
+    });
+    this.$menuToggle.subscribe(t => {
+      if (t) {
+        this.modalService.dismissAll();
+      }
     });
   }
 

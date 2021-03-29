@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Store} from '@ngxs/store';
 import {Logout} from '../../../auth/state/auth.action';
+import {ToggleSideMenu} from '../../state/location.action';
 
 @Component({
   selector: 'app-main-location',
@@ -25,5 +26,8 @@ export class MainLocationComponent implements OnInit {
     if (p.title === 'Log out') {
       this.store.dispatch(new Logout());
     }
+  }
+  toggleMenu(t: boolean) {
+    this.store.dispatch(new ToggleSideMenu(t));
   }
 }

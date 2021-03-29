@@ -17,6 +17,7 @@ export class LocationStateModel {
   mapPoints: Array<ILocation>;
   sharedWithMePoints: Array<ILocation>;
   pointsSearchedByTags: Array<ILocation>;
+  menuToggle: boolean;
   tags: Array<ITag>;
 }
 
@@ -26,6 +27,7 @@ export class LocationStateModel {
     mapPoints: [],
     sharedWithMePoints: [],
     pointsSearchedByTags: [],
+    menuToggle: false,
     tags: []
   }
 })
@@ -60,6 +62,10 @@ export class LocationState {
   static searchPositionByName(state: LocationStateModel) {
     return (query: string) =>
       state.mapPoints.filter(pt => pt.label.trim().toLowerCase().includes(query.trim().toLowerCase()));
+  }
+  @Selector()
+  static menuToggle(state: LocationStateModel) {
+    return state.menuToggle;
   }
 
 
@@ -218,6 +224,15 @@ export class LocationState {
     ctx.patchState({
       ...state,
       pointsSearchedByTags: payload
+    });
+  }
+
+  @Action(locationAction.ToggleSideMenu)
+  toggleSideMenu(ctx: StateContext<LocationStateModel>, {payload}: locationAction.ToggleSideMenu) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
+      menuToggle: payload
     });
   }
 }

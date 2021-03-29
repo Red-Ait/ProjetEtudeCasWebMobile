@@ -121,3 +121,10 @@ export class SearchByTagsAndModeSuccess {
   constructor(public payload: Array<ILocation>) {
   }
 }
+
+export class ToggleSideMenu {
+  static readonly type = '[location] Toggle side menu';
+  constructor(public payload: boolean) {
+  }
+}
+

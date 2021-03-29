@@ -1,5 +1,5 @@
   <ion-split-pane contentId="main-content">
-    <ion-menu contentId="main-content" type="overlay">
+    <ion-menu contentId="main-content" type="overlay" (ionWillOpen)="toggleMenu(true)" (ionDidClose)="toggleMenu(false)">
       <ion-content>
         <ion-list id="inbox-list">
           <img src="/assets/user.jpg" class="user-pic"/>
