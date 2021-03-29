@@ -30,4 +30,7 @@ export class LocationApi {
   searchByTags(tags: Array<ITag>): Observable<any> {
     return this.http.post(this.locationUri + '/tags', tags);
   }
+  getSharedWithMeLocation(): Observable<any> {
+      return this.http.get(this.locationUri + '/shared');
+  }
 }
