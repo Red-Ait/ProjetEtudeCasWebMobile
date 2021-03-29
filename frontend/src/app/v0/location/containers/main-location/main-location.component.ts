@@ -13,7 +13,7 @@ export class MainLocationComponent implements OnInit {
   public appPages = [
     { title: 'Maps', url: '/location/map', icon: 'map' },
     { title: 'Tags', url: '/location/tags', icon: 'pricetags' },
-    { title: 'Shared', url: '/folder/Trash', icon: 'share-social' },
+    { title: 'Setting', url: '/location/setting', icon: 'settings' },
     { title: 'Log out', url: '/auth/login', icon: 'log-out' },
   ];
   public labels = [];

@@ -9,7 +9,7 @@
         [(ngModel)]="user.lastName"
         class="fadeIn second text-input"
         name="lastName"
-        placeholder="Nom"
+        placeholder="Last Name"
       >
       <input
         type="text"
@@ -17,7 +17,7 @@
         [(ngModel)]="user.firstName"
         class="fadeIn second text-input"
         name="firstName"
-        placeholder="Prénom"
+        placeholder="First Name"
       >
       <input
         type="text"
@@ -32,7 +32,7 @@
         id="email"
         [(ngModel)]="user.email"
         class="fadeIn second text-input"
-        name="username"
+        name="email"
         placeholder="Email"
       >
       <input
@@ -41,25 +41,25 @@
         [(ngModel)]="user.password"
         class="fadeIn third text-input"
         name="password"
-        placeholder="Mot de passe"
+        placeholder="Password"
       >
       <input
         type="password"
         id="passwordConfirmer"
         class="fadeIn third text-input"
         name="login"
-        placeholder="Confirmer"
+        placeholder="Confirm Password"
       >
       <input
         type="submit"
         class="fadeIn fourth"
-        value="Register"
+        value="Submit"
       >
     </form>
 
     <!-- Remind Passowrd -->
     <div id="formFooter">
-      <a class="underlineHover" routerLink="/auth/login">Vous avez déjà un compte ? Se connecter.</a>
+      <a class="underlineHover" routerLink="/auth/login">Already signed up  ? Log in.</a>
     </div>
 
   </div>

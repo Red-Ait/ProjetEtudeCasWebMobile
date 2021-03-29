@@ -12,6 +12,7 @@ import {
 } from './location.action';
 import {LocationApi} from '../service/location.api';
 import {GetTags} from './tag.action';
+import {Logout} from '../../auth/state/auth.action';
 
 export class LocationStateModel {
   mapPoints: Array<ILocation>;
@@ -234,5 +235,11 @@ export class LocationState {
       ...state,
       menuToggle: payload
     });
+  }
+
+  @Action(locationAction.SetBackendUri)
+  setBackendUri(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SetBackendUri) {
+    localStorage.setItem('uri', payload);
+    ctx.dispatch(new Logout());
   }
 }
