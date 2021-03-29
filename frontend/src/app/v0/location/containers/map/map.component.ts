@@ -411,6 +411,7 @@ export class MapComponent implements OnInit {
 
 
   }
+
   onChangeSearchByTagInput() {
     this.suggestedTags = new Array<ITag>();
     for (const tag of this.tags) {
