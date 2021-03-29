@@ -128,3 +128,9 @@ export class ToggleSideMenu {
   }
 }
 
+export class SetBackendUri {
+  static readonly type = '[App] Set Backend Uri';
+  constructor(public payload: string) {
+  }
+}
+

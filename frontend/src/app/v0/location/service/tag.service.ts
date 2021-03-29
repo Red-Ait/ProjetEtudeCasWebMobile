@@ -9,30 +9,39 @@ import {environment} from '../../../../environments/environment';
 })
 export class TagService {
 
-  tagUri = environment.backendApiUrl + environment.apiUrl + environment.resourceUri.tag;
 
-  constructor(private http: HttpClient) { }
+  tagUri = '';
 
+  constructor(private http: HttpClient) {
+  }
+
+  private initUri() {
+    const uri = localStorage.getItem('uri');
+    this.tagUri = uri + environment.apiUrl + environment.resourceUri.tag;
+  }
   addTag(tag){
+    this.initUri();
     return this.http.post(this.tagUri, tag).pipe(map(resp => resp));
   }
 
   getAllTag(): Observable<any> {
+    this.initUri();
     return this.http.get(this.tagUri);
   }
 
   deleteTag(idTag: number){
+    this.initUri();
     return this.http.delete(this.tagUri + idTag).pipe(map(resp => resp));
   }
 
   updateTag(tag){
+    this.initUri();
     return this.http.put(this.tagUri, tag).pipe(map(resp => resp));
-
   }
 
 
   getTagBylabel(label){
+    this.initUri();
     return this.http.get(this.tagUri, label).pipe(map(resp => resp));
-
   }
 }

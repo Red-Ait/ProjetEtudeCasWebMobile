@@ -8,7 +8,6 @@ import {components} from './components';
 import {FormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatChipsModule} from '@angular/material/chips';
-import {CollectionComponent} from './containers/collection/collection.component';
 import {MatIconModule} from '@angular/material/icon';
 import {LeafletModule} from '@asymmetrik/ngx-leaflet';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -39,6 +38,5 @@ import {TagState} from './state/tag.state';
     LeafletModule
   ],
   providers: [...services, Geolocation],
-  exports: [CollectionComponent]
 })
 export class LocationModule { }

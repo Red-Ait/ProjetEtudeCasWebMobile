@@ -12,20 +12,29 @@ import {ILogin} from '../../@entities/ILogin';
 })
 export class AuthService {
 
-  registerUrl = environment.backendApiUrl + environment.resourceUri.register;
-  loginUrl = environment.backendApiUrl + environment.resourceUri.authenticate;
+
+  registerUrl = '';
+  loginUrl = '';
 
   constructor(
     private http: HttpClient,
     public jwtHelper: JwtHelperService
   ) {
+    this.inutUri();
   }
 
+  private inutUri() {
+    const uri = localStorage.getItem('uri');
+    this.registerUrl = uri + environment.resourceUri.register;
+    this.loginUrl = uri + environment.resourceUri.authenticate;
+  }
   addUser(user: IUser): Observable<any> {
+    this.inutUri();
     return this.http.post(this.registerUrl , user);
   }
 
   login(loginData: ILogin): Observable<any> {
+    this.inutUri();
     return this.http.post(this.loginUrl, loginData);
   }
 
@@ -43,6 +52,7 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.clear();
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
   }
 }
