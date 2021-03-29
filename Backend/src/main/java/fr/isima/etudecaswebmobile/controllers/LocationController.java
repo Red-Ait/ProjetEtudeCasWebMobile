@@ -101,4 +101,17 @@ public class LocationController {
         return new ResponseEntity<>(locations, HttpStatus.OK);
     }
 
+    @PostMapping("location/tags/mutual")
+    public ResponseEntity<List<List<Location>>> getMutualListLocationsOfListTags(@Validated @RequestBody List<Tag> list_tags)
+    {
+        List<List<Location>> locations = new ArrayList<List<Location>>();
+
+        for(int i = 0; i<list_tags.size(); i++)
+        {
+            List<Location> locat = this.locationService.getLocationsByTag(list_tags.get(i).getId());
+
+        }
+        return new ResponseEntity<>(locations, HttpStatus.OK);
+    }
+
 }
