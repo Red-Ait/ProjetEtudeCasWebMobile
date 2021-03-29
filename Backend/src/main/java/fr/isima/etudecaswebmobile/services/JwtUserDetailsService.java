@@ -2,6 +2,7 @@ package fr.isima.etudecaswebmobile.services;
 
 
 import fr.isima.etudecaswebmobile.entities.user.UserDao;
+import fr.isima.etudecaswebmobile.exception.NoContentException;
 import fr.isima.etudecaswebmobile.models.UserDto;
 import fr.isima.etudecaswebmobile.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
@@ -73,6 +76,14 @@ public class JwtUserDetailsService implements UserDetailsService {
 		oldUser.setFirstName(newUser.getFirstName());
 		oldUser.setLastName(newUser.getLastName());
 		return userDao.save(oldUser);
+	}
+
+	public List<String> getUserNames() {
+		List<UserDao> userDaos = userDao.findAll();
+		if (!userDaos.isEmpty())
+			return userDaos.stream().map(UserDao::getUsername).collect(Collectors.toList());
+		else
+			throw new NoContentException("There are no users");
 	}
 
 }

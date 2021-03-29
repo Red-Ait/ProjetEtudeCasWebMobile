@@ -108,6 +108,13 @@ public class LocationServiceTest {
                         )
                 )
         );
+        when(locationRepository.findAllSharedLocationsByUserId(2L)).thenReturn(
+                Optional.of(
+                        new ArrayList<LocationEntity>(
+                                Arrays.asList(locationEntity1, locationEntity2)
+                        )
+                )
+        );
 
         when(locationRepository.findById(1L)).thenReturn(Optional.of(locationEntity1));
         when(locationRepository.findById(4L)).thenReturn(Optional.of(locationEntity4));
@@ -137,6 +144,20 @@ public class LocationServiceTest {
 
     @Test
     public void when_findAllLocationsByUserId_nonexistent_expect_noContent() {
+        when(locationRepository.findAllLocationsByUserId(-1L)).thenReturn(
+                Optional.empty()
+        );
+        Assertions.assertThrows(NoContentException.class, () -> locationImpl.findAllLocationsByUserId(-1L));
+    }
+
+    @Test
+    public void when_findAllSharedLocations_expect_locations() {
+        when(userDetailsService.getCurrentUser()).thenReturn(connectedUser2);
+        Assertions.assertTrue(locationImpl.findAllSharedLocations().size() > 0);
+    }
+
+    @Test
+    public void when_findAllSharedLocations_nonexistent_expect_noContent() {
         when(locationRepository.findAllLocationsByUserId(-1L)).thenReturn(
                 Optional.empty()
         );

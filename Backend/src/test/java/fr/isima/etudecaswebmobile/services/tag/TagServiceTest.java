@@ -60,12 +60,6 @@ public class TagServiceTest {
         when(tagMapper.toModel(tagEntity3)).thenReturn(tag3);
         when(tagMapper.fromModel(tag3)).thenReturn(tagEntity3);
 
-        when(tagRepository.findAll()).thenReturn(
-                new ArrayList<TagEntity>(
-                        Arrays.asList(tagEntity1, tagEntity2)
-                )
-        );
-
         when(tagRepository.findById(1L)).thenReturn(Optional.of(tagEntity1));
         when(tagRepository.findById(3L)).thenReturn(Optional.empty());
 
@@ -76,12 +70,19 @@ public class TagServiceTest {
 
     @Test
     public void when_getAll_expect_tags() throws Exception {
+        when(userDetailsService.getCurrentUser()).thenReturn(connectedUser);
+        when(tagRepository.getUserTags(connectedUser.getId())).thenReturn(
+                new ArrayList<TagEntity>(
+                        Arrays.asList(tagEntity1, tagEntity2)
+                )
+        );
         Assertions.assertTrue(tagImpl.getAllTags().size() == 2);
     }
 
     @Test
     public void when_getAllNonExisting_expect_204() throws Exception {
-        when(tagRepository.findAll()).thenReturn(new ArrayList<>());
+        when(userDetailsService.getCurrentUser()).thenReturn(connectedUser);
+        when(tagRepository.getUserTags(connectedUser.getId())).thenReturn(new ArrayList<>());
         Assertions.assertThrows(NoContentException.class, () -> tagImpl.getAllTags());
     }
 

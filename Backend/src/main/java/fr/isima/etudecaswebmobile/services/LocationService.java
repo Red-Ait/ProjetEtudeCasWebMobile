@@ -16,5 +16,6 @@ public interface LocationService {
     public List<Location> findAllLocationsByUserId(Long id);
     public List<Location> findAllLocationsOfAnotherUserByTagTitles(String ownerUsername, List<String> tagTitles);
     public String shareLocationsWithAnotherUserByTagTitles(String ownerUsername, List<String> tagTitles);
+    public List<Location> findAllSharedLocations();
 
 }
