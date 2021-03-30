@@ -15,6 +15,7 @@ export class AuthService {
 
   registerUrl = '';
   loginUrl = '';
+  currentUserUrl = '';
 
   constructor(
     private http: HttpClient,
@@ -27,6 +28,7 @@ export class AuthService {
     const uri = localStorage.getItem('uri');
     this.registerUrl = uri + environment.resourceUri.register;
     this.loginUrl = uri + environment.resourceUri.authenticate;
+    this.currentUserUrl = uri + environment.resourceUri.currentUser;
   }
   addUser(user: IUser): Observable<any> {
     this.inutUri();
@@ -36,6 +38,11 @@ export class AuthService {
   login(loginData: ILogin): Observable<any> {
     this.inutUri();
     return this.http.post(this.loginUrl, loginData);
+  }
+
+  currentUser(): Observable<any> {
+    this.inutUri();
+    return this.http.get(this.currentUserUrl);
   }
 
   isAuthenticated() {

@@ -26,6 +26,23 @@ export class Login {
   }
 }
 
+export class GetCurrentUser {
+
+  static readonly type = '[auth] current user';
+
+  constructor() {
+  }
+}
+
+
+export class GetCurrentUserSuccess {
+
+  static readonly type = '[auth] current user success';
+
+  constructor(public payload: IUser) {
+  }
+}
+
 export class LoginSuccess {
 
   static readonly type = '[auth/login] login Success';
