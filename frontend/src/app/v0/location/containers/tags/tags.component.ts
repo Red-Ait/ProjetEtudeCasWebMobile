@@ -1,19 +1,25 @@
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
 import {ITag} from '../../../@entities/ITag';
-import {AddTag, DeleteTag, GetTags, UpdateTag} from '../../state/tag.action';
+import {
+  AddTag,
+  DeleteTag,
+  GetTags,
+  GetUserNames,
+  ShareLocationsWithAnotherUserByTagTitles,
+  UpdateTag
+} from '../../state/tag.action';
 import {Select, Store} from '@ngxs/store';
 import {TagState} from '../../state/tag.state';
 import {DeletePosition} from '../../state/location.action';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AlertController, PopoverController} from '@ionic/angular';
 import {MatDialog} from '@angular/material/dialog';
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {TagService} from '../../service/tag.service';
 
-export interface Tag {
-  label: string;
-  color: ThemePalette;
-}
 
 @Component({
   selector: 'app-tags',
@@ -21,10 +27,12 @@ export interface Tag {
   styleUrls: ['./tags.component.scss'],
 })
 
-export class TagsComponent implements OnInit {
+export class TagsComponent implements OnInit, OnDestroy  {
+  private locations: ArrayBuffer;
+
 
   constructor(private store: Store, private modalService: NgbModal, public alertController: AlertController,
-              public popoverController: PopoverController, public dialog: MatDialog) {
+              public popoverController: PopoverController, public dialog: MatDialog, public service: TagService) {
 
 
   }
@@ -33,6 +41,9 @@ export class TagsComponent implements OnInit {
   selectedTagLabel: string;
   updatedTag: string;
   deletedTag: ITag;
+  users: any;
+  tagsSelected: string[] = [];
+   used: '';
 
 
   tag = {} as ITag;
@@ -50,14 +61,28 @@ export class TagsComponent implements OnInit {
   // Selectors
   @Select(TagState.getTags) $tags;
   @ViewChild('list') list;
+  @ViewChild('shareTag') shareTag;
+  private destroy$ = new Subject();
+  /*openDialog(): void {
+    const dialogRef = this.dialog.open(ListComponent, {
+      width: '250px',
+      data: 'okay'
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }*/
+  selectedUser: string;
 
   ngOnInit() {
     this.store.dispatch(new GetTags());
     this.$tags.subscribe(data => {
       this.tags = data;
     });
-
+    this.service.getUserNames().pipe(takeUntil(this.destroy$)).subscribe(users => {
+      this.users = users;
+    });
 
   }
 
@@ -190,16 +215,6 @@ export class TagsComponent implements OnInit {
     this.selectedTagLabel = '';
 
   }
-  /*openDialog(): void {
-    const dialogRef = this.dialog.open(ListComponent, {
-      width: '250px',
-      data: 'okay'
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-    });
-  }*/
 
   openModal(template: any, extended: boolean) {
     this.modalService.open(template, {
@@ -208,7 +223,7 @@ export class TagsComponent implements OnInit {
       backdropClass: 'backdrop-class'
     });
   }
-open(tag: ITag) {
+  open(tag: ITag) {
   this.selectedTagid = tag.id;
   this.selectedTagLabel = tag.label;
   this.deletedTag = tag;
@@ -217,6 +232,72 @@ open(tag: ITag) {
 
 
   share() {
-
+    this.openModal(this.shareTag, false);
   }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();  // trigger the unsubscribe
+    this.destroy$.complete(); // finalize & clean up the subject stream
+  }
+
+  add(): void {
+    if (this.used === '') {
+      return;
+    }
+
+    for (const tag of this.tags) {
+      if (tag.label.trim().toLowerCase() === this.used.trim().toLowerCase() ||  tag.label === '') {
+        this.tagsSelected.push(tag.label.trim());
+        this.used = '';
+      }
+    }
+    if (this.used !== '') {
+      this.tagsSelected.push(this.used);
+      this.used = '';
+    }
+  }
+
+  async ShareTag() {
+    if (this.selectedUser === undefined) {
+      const alert2 = await this.alertController.create({
+        cssClass: 'my-custom-class',
+        header: '  You should select username  ',
+        subHeader: ' ',
+        buttons: [
+          {
+            text: 'Close',
+            role: 'cancel',
+            handler: () => {
+            }
+          }
+        ]
+      });
+      await alert2.present();
+      return;
+    }
+    this.tagsSelected.push(this.selectedTagLabel);
+    console.log(this.selectedUser);
+    this.service.shareLocationsWithAnotherUserByTagTitles(this.selectedUser, this.tagsSelected);
+    // this.store.dispatch(new ShareLocationsWithAnotherUserByTagTitles(this.selectedUser, this.tagsSelected))
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: '  Great  ',
+      subHeader: ' ',
+      message: 'tag shared!',
+      buttons: [
+        {
+          text: 'Close',
+          role: 'cancel',
+          handler: () => {
+          }
+        }
+      ]
+    });
+    await alert.present();
+    this.tagsSelected = [];
+    this.selectedUser = null;
+  }
+
+
+
 }

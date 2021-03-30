@@ -90,6 +90,39 @@ export class  GetTagByLabelFail {
   constructor(public payload: string) {
   }
 }
+export class ShareLocationsWithAnotherUserByTagTitles {
+  static readonly type = '[tag] share location';
+
+  constructor(public username, public payload: string[]) {
+  }
+}
+
+export class  ShareLocationsWithAnotherUserByTagTitlesSuccess {
+  static readonly type = '[tag] share location success';
+  constructor(public payload: any) {
+  }
+}
+export class  ShareLocationsWithAnotherUserByTagTitlesFail {
+  static readonly type = '[tag] share location fail';
+  constructor(public payload: string) {
+  }
+}
+
+export class GetUserNames {
+  static readonly type = '[tag] get Usernames';
+  constructor() {
+  }
+}
+export class GetUserNamesSuccess {
+  static readonly type = '[tag] get Usernames';
+  constructor(public payload: any) {
+  }
+}
+export class GetUserNamesFail {
+  static readonly type = '[tag] get Usernames';
+  constructor(public payload: string) {
+  }
+}
 
 
 

@@ -7,11 +7,17 @@ import {
   AddTagSuccess,
   DeleteTagSuccess,
   GetTagByLabelFail,
-  GetTagByLabelSuccess, GetTags, GetTagsFail, GetTagsSuccess,
+  GetTagByLabelSuccess,
+  GetTags,
+  GetTagsFail,
+  GetTagsSuccess, GetUserNamesFail, GetUserNamesSuccess,
+  ShareLocationsWithAnotherUserByTagTitlesFail,
+  ShareLocationsWithAnotherUserByTagTitlesSuccess,
   UpdateTagFail,
   UpdateTagSuccess
 } from './tag.action';
 import {TagService} from '../service/tag.service';
+import {ILocation} from "../../@entities/ILocation";
 
 export class TagStateModel {
   tags: Array<ITag>;
@@ -20,6 +26,11 @@ export class TagStateModel {
     id: number,
     label: string
   };
+}
+export class LocationStateModel {
+  mapPoints: Array<ILocation>;
+  pointsSearchedByTags: Array<ILocation>;
+  tags: Array<ITag>;
 }
 
 @State<TagStateModel>({
@@ -135,7 +146,40 @@ export class TagState {
     });
   }
 
+  @Action(tagAction.ShareLocationsWithAnotherUserByTagTitles)
+  share(ctx: StateContext<TagStateModel>, {payload, username}: tagAction.ShareLocationsWithAnotherUserByTagTitles) {
+    this.tagApi.shareLocationsWithAnotherUserByTagTitles(username, payload).subscribe(data => {
+      ctx.dispatch(new ShareLocationsWithAnotherUserByTagTitlesSuccess(data));
+    }, error => {
+      ctx.dispatch(new ShareLocationsWithAnotherUserByTagTitlesFail(error));
+    });
+  }
 
+  @Action(tagAction.ShareLocationsWithAnotherUserByTagTitlesSuccess)
+  shareSuccess(ctx: StateContext<TagStateModel>, {payload, username}: tagAction.ShareLocationsWithAnotherUserByTagTitles) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
+
+    });
+  }
+
+  @Action(tagAction.GetUserNames)
+  GetUserNames(ctx: StateContext<TagStateModel>) {
+    this.tagApi.getUserNames().subscribe(data => {
+      ctx.dispatch(new GetUserNamesSuccess(data));
+    }, error => {
+      ctx.dispatch(new GetUserNamesFail(error));
+    });
+  }
+
+  @Action(tagAction.GetTagsSuccess)
+  GetUserNamesSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.GetTagsSuccess) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
+    });
+  }
 
 
 

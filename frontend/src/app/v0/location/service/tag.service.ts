@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {environment} from '../../../../environments/environment';
+import {ITag} from "../../@entities/ITag";
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import {environment} from '../../../../environments/environment';
 export class TagService {
 
   constructor(private http: HttpClient) { }
+  Uri = environment.backendApiUrl + environment.apiUrl;
   tagUri = environment.backendApiUrl + environment.apiUrl + environment.resourceUri.tag;
   locationUri = environment.backendApiUrl + environment.apiUrl + environment.resourceUri.location;
 
@@ -35,4 +37,14 @@ export class TagService {
     return this.http.get(this.tagUri, label);
 
   }
+
+  shareLocationsWithAnotherUserByTagTitles(otherUsername: string, tagTitles: string[]){
+  // @ts-ignore
+    return  this.http.put(this.locationUri + '/other_user' + '/' + otherUsername + '/tags/' + tagTitles);
+}
+
+  getUserNames(){
+    return this.http.get(this.Uri + '/userNames' );
+  }
+
 }
