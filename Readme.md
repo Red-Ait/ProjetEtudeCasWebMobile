@@ -1,7 +1,7 @@
 # Projet techno web et mobile
 
 ## Use case
-Ceci est le diagramme de use case
+Ceci est le diagramme de use case:
 ![Use case](Doc/conception/Conception-usecase.png)
 
 ## Diagramme  de classes
