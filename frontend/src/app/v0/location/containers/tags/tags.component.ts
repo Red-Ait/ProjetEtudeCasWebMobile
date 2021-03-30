@@ -1,13 +1,25 @@
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
 import {ITag} from '../../../@entities/ITag';
+import {
+  AddTag,
+  DeleteTag,
+  GetTags,
+  GetUserNames,
+  ShareLocationsWithAnotherUserByTagTitles,
+  UpdateTag
+} from '../../state/tag.action';
+import {Select, Store} from '@ngxs/store';
+import {TagState} from '../../state/tag.state';
+import {DeletePosition} from '../../state/location.action';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {AlertController, PopoverController} from '@ionic/angular';
+import {MatDialog} from '@angular/material/dialog';
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {TagService} from '../../service/tag.service';
 
-
-export interface Tag {
-  label: string;
-  color: ThemePalette;
-}
 
 @Component({
   selector: 'app-tags',
@@ -15,15 +27,24 @@ export interface Tag {
   styleUrls: ['./tags.component.scss'],
 })
 
-export class TagsComponent implements OnInit {
+export class TagsComponent implements OnInit, OnDestroy  {
+  private locations: ArrayBuffer;
 
-  constructor() {
+
+  constructor(private store: Store, private modalService: NgbModal, public alertController: AlertController,
+              public popoverController: PopoverController, public dialog: MatDialog, public service: TagService) {
 
 
   }
-  selectedTagid: number ;
+
+  selectedTagid: number;
   selectedTagLabel: string;
   updatedTag: string;
+  deletedTag: ITag;
+  users: any;
+  tagsSelected: string[] = [];
+   used: '';
+
 
   tag = {} as ITag;
   visible = true;
@@ -32,132 +53,251 @@ export class TagsComponent implements OnInit {
   addOnBlur = true;
   newTagLabel = '';
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
-  /* tags = [
-     {label: 'Hotel', color: 'primary'},
-     {label: 'Resto', color: 'primary'},
-     {label: 'School', color: 'accent'},
-   ];*/
-
-  tags: ITag[] = [
-    {id: 6 , label: 'Hotel'},
-    {id: 7 , label: 'Resto'},
-    {id: 3 , label: 'School'},
-    {id: 4 , label: 'Plage'},
-    {id: 5 , label: 'Ville'},
-  ];
-
-  /* add(event: MatChipInputEvent): void {
-     const input = event.input;
-     const value = event.value;
-     if ((value || '').trim()) {
-       //this.tags=this.store.dispatch(new AddTag(this.tag));
-       this.tags.push({id: this.i+1label: value.trim()});
-     }
-     if (input) {
-       input.value = '';
-     }
-   }*/
+  tags: ITag[];
 
 
-  /*  remove(tag: Tag): void {
-      if ( this.tag.id>= 0) {
-        this.store.dispatch(new DeleteTag( this.tag.id));
-      }
-    }*/
   edit = false;
 
-  ngOnInit() {
+  // Selectors
+  @Select(TagState.getTags) $tags;
+  @ViewChild('list') list;
+  @ViewChild('shareTag') shareTag;
+  private destroy$ = new Subject();
+  /*openDialog(): void {
+    const dialogRef = this.dialog.open(ListComponent, {
+      width: '250px',
+      data: 'okay'
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }*/
+  selectedUser: string;
+
+  ngOnInit() {
+    this.store.dispatch(new GetTags());
+    this.$tags.subscribe(data => {
+      this.tags = data;
+    });
+    this.service.getUserNames().pipe(takeUntil(this.destroy$)).subscribe(users => {
+      this.users = users;
+    });
 
   }
 
 
-  addTag(): void {
+  async addTag() {
+
     for (const tag of this.tags) {
       if (tag.label === this.newTagLabel.trim() || tag.label === '') {
+        const alert = await this.alertController.create({
+          cssClass: 'my-custom-class',
+          header: '  ',
+          subHeader: ' this tag already exists !',
+          message: '',
+          buttons : [
+            {
+              text: 'Close',
+              role: 'cancel',
+              handler: () => {
+              }}
+          ]
+
+        });
+        await alert.present();
         return;
       }
     }
 
     if ((this.newTagLabel || '').trim()) {
-      this.tags.push({id: null, label: this.newTagLabel.trim()});
+      this.store.dispatch(new AddTag({id: null, label: this.newTagLabel.trim()}));
+      const alert = await this.alertController.create({
+        cssClass: 'my-custom-class',
+        header: ' Great ',
+        subHeader: ' ',
+        message: 'tag created  !',
+        buttons : [
+          {
+            text: 'Close',
+            role: 'cancel',
+            handler: () => {
+            }}
+        ]
+      });
+      await alert.present();
     }
     this.newTagLabel = '';
   }
-
-  remove(tag: ITag): void {
-    const index = this.tags.indexOf(tag);
-
-    if (index >= 0) {
-      this.tags.splice(index, 1);
-    }
+  async remove() {
+    this.modalService.dismissAll();
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: ' ',
+      subHeader: 'Are you sure ?',
+      buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+                this.store.dispatch(new DeleteTag(this.deletedTag.id));
+                this.deletedTag.id = null;
+                this.deletedTag.label = '';
+          }
+        },
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: () => {
+          }
+        }]
+    });
+    await alert.present();
   }
 
+
+/*
   select(tag: ITag) {
-    console.log('select');
-    console.log(tag);
     this.selectedTagid = tag.id;
-    this.selectedTagLabel =tag.label;
+    this.selectedTagLabel = tag.label;
+    console.log(this.selectedTagLabel);
     return this.selectedTagLabel;
 
   }
+*/
 
-  update(): void{
+  async update() {
     for (const tags of this.tags) {
       if (tags.label.toLowerCase().trim() === this.selectedTagLabel.toLowerCase().trim()) {
         this.selectedTagLabel = '';
         this.selectedTagid = null;
         this.edit = false;
+        const alert = await this.alertController.create({
+          cssClass: 'my-custom-class',
+          header: '  Alert ! ',
+          subHeader: ' ',
+          message: 'this tag already exists !',
+          buttons : [
+            {
+              text: 'Close',
+              role: 'cancel',
+              handler: () => {
+              }}
+          ]
+        });
+        await alert.present();
         return;
 
       }
-
-    }
-    for (const tags of this.tags) {
-      // tslint:disable-next-line:triple-equals
-      if (tags.id == this.selectedTagid) {
-        this.remove(tags);
-      }
     }
     if ((this.selectedTagLabel || '').trim()) {
-      console.log(this.selectedTagLabel);
-      this.tags.push({id: this.selectedTagid, label: this.selectedTagLabel.trim()});
+
+      this.store.dispatch(new UpdateTag(this.selectedTagid, {
+        id: this.selectedTagid,
+        label: this.selectedTagLabel.trim()
+      }));
+      const alert = await this.alertController.create({
+        cssClass: 'my-custom-class',
+        header: '  Great  ',
+        subHeader: ' ',
+        message: 'tag updated !',
+        buttons : [
+          {
+            text: 'Close',
+            role: 'cancel',
+            handler: () => {
+            }}
+        ]
+      });
+      await alert.present();
     }
     this.updatedTag = '';
     this.selectedTagid = null;
     this.selectedTagLabel = '';
-/*    console.log(  'update tag');
-    console.log(this.updatedTag);
-    console.log(  'selected tag ');
-    console.log(this.selectedTag.label);
-    console.log(this.selectedTag.label.toLowerCase().trim());
-    for (const tags of this.tags) {
-      console.log('tags'); console.log(tags);
-      // tslint:disable-next-line:triple-equals
-      if (tags.label.toLowerCase().trim() == this.selectedTag.label.toLowerCase().trim()) {
-          console.log(tags.label.toLowerCase().trim() ); console.log(this.selectedTag.label.toLowerCase().trim());
-          console.log('what');
-          this.updatedTag = '';
-          this.selectedTag = null;
-          this.edit = false;
-          console.log('fail');
-          return;
-
-      }
-      if (tags.id === tag.id) {
-        console.log('what 2');
-        console.log('ok');
-        this.remove(tags);
-      }
-    }
-
-    console.log('push');
-    // this.tags.push({id: tag.id, label: this.selectedTag.label.trim()});
-
-    this.newTagLabel = '';
-    this.selectedTag = null;*/
 
   }
+
+  openModal(template: any, extended: boolean) {
+    this.modalService.open(template, {
+      size: 'sm',
+      windowClass: extended ? 'extended-modal-class' : 'short-modal-class',
+      backdropClass: 'backdrop-class'
+    });
+  }
+  open(tag: ITag) {
+  this.selectedTagid = tag.id;
+  this.selectedTagLabel = tag.label;
+  this.deletedTag = tag;
+  this.openModal(this.list, false);
+}
+
+
+  share() {
+    this.openModal(this.shareTag, false);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();  // trigger the unsubscribe
+    this.destroy$.complete(); // finalize & clean up the subject stream
+  }
+
+  add(): void {
+    if (this.used === '') {
+      return;
+    }
+
+    for (const tag of this.tags) {
+      if (tag.label.trim().toLowerCase() === this.used.trim().toLowerCase() ||  tag.label === '') {
+        this.tagsSelected.push(tag.label.trim());
+        this.used = '';
+      }
+    }
+    if (this.used !== '') {
+      this.tagsSelected.push(this.used);
+      this.used = '';
+    }
+  }
+
+  async ShareTag() {
+    if (this.selectedUser === undefined) {
+      const alert2 = await this.alertController.create({
+        cssClass: 'my-custom-class',
+        header: '  You should select username  ',
+        subHeader: ' ',
+        buttons: [
+          {
+            text: 'Close',
+            role: 'cancel',
+            handler: () => {
+            }
+          }
+        ]
+      });
+      await alert2.present();
+      return;
+    }
+    this.tagsSelected.push(this.selectedTagLabel);
+    console.log(this.selectedUser);
+    this.service.shareLocationsWithAnotherUserByTagTitles(this.selectedUser, this.tagsSelected);
+    // this.store.dispatch(new ShareLocationsWithAnotherUserByTagTitles(this.selectedUser, this.tagsSelected))
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: '  Great  ',
+      subHeader: ' ',
+      message: 'tag shared!',
+      buttons: [
+        {
+          text: 'Close',
+          role: 'cancel',
+          handler: () => {
+          }
+        }
+      ]
+    });
+    await alert.present();
+    this.tagsSelected = [];
+    this.selectedUser = null;
+  }
+
 
 
 }

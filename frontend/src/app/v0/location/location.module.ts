@@ -18,6 +18,8 @@ import {services} from './service';
 import {Geolocation} from '@ionic-native/geolocation/ngx';
 import {pipes} from './pipes';
 import {TagState} from './state/tag.state';
+import {MatDialogModule} from "@angular/material/dialog";
+import {MatButtonModule} from "@angular/material/button";
 
 
 @NgModule({
@@ -35,7 +37,9 @@ import {TagState} from './state/tag.state';
     NgbModule,
     NgxsModule.forFeature([LocationState, TagState]),
     LeafletMarkerClusterModule,
-    LeafletModule
+    LeafletModule,
+    MatDialogModule,
+    MatButtonModule
   ],
   providers: [...services, Geolocation],
 })

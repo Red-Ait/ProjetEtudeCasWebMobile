@@ -7,24 +7,37 @@ import {
   AddTagSuccess,
   DeleteTagSuccess,
   GetTagByLabelFail,
-  GetTagByLabelSuccess, GetTagsSuccess,
+  GetTagByLabelSuccess,
+  GetTags,
+  GetTagsFail,
+  GetTagsSuccess, GetUserNamesFail, GetUserNamesSuccess,
+  ShareLocationsWithAnotherUserByTagTitlesFail,
+  ShareLocationsWithAnotherUserByTagTitlesSuccess,
   UpdateTagFail,
   UpdateTagSuccess
 } from './tag.action';
 import {TagService} from '../service/tag.service';
+import {ILocation} from "../../@entities/ILocation";
 
 export class TagStateModel {
   tags: Array<ITag>;
+  searchedtags: Array<ITag>;
   tag: {
     id: number,
     label: string
   };
+}
+export class LocationStateModel {
+  mapPoints: Array<ILocation>;
+  pointsSearchedByTags: Array<ILocation>;
+  tags: Array<ITag>;
 }
 
 @State<TagStateModel>({
   name: 'tagState',
   defaults: {
     tags: [],
+    searchedtags: [],
     tag : null
   }
 })
@@ -40,6 +53,26 @@ export class TagState {
   @Selector()
   static getTags(state: TagStateModel) {
     return state.tags;
+  }
+
+
+
+  @Action(tagAction.GetTags)
+  getTags(ctx: StateContext<TagStateModel>) {
+    this.tagApi.getAllTag().subscribe(data => {
+      ctx.dispatch(new GetTagsSuccess(data));
+    }, error => {
+      ctx.dispatch(new GetTagsFail(error));
+    });
+  }
+
+  @Action(tagAction.GetTagsSuccess)
+  getTagSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.GetTagsSuccess) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
+      tags: payload
+    });
   }
 
   @Action(tagAction.AddTag)
@@ -61,7 +94,7 @@ export class TagState {
   }
 
   @Action(tagAction.DeleteTag)
-  deleteFile(ctx: StateContext<TagStateModel>, {payload}: tagAction.DeleteTag) {
+  deleteTag(ctx: StateContext<TagStateModel>, {payload}: tagAction.DeleteTag) {
     this.tagApi.deleteTag(payload)
       .subscribe(r => {
         ctx.dispatch(new DeleteTagSuccess({ deletedTag: payload}));
@@ -69,7 +102,7 @@ export class TagState {
   }
 
   @Action(tagAction.DeleteTagSuccess)
-  deleteFileSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.DeleteTagSuccess) {
+  deleteTagSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.DeleteTagSuccess) {
     const state = ctx.getState();
     ctx.patchState({
       ...state,
@@ -77,9 +110,9 @@ export class TagState {
   }
 
   @Action(tagAction.UpdateTag)
-  updateUploadProgress(ctx: StateContext<TagStateModel>, {payload}: tagAction.UpdateTag) {
-    this.tagApi.updateTag(payload).subscribe(data => {
-      ctx.dispatch(new UpdateTagSuccess(data));
+  updateTag(ctx: StateContext<TagStateModel>, {payload}: tagAction.UpdateTag) {
+    this.tagApi.updateTag(payload.id, payload).subscribe(data => {
+      ctx.dispatch(new UpdateTagSuccess(payload.id, payload));
     }, error => {
       ctx.dispatch(new UpdateTagFail(error));
     });
@@ -87,30 +120,11 @@ export class TagState {
 
 
   @Action(tagAction.UpdateTagSuccess)
-  updateUploadStatus(ctx: StateContext<TagStateModel>, {payload}: tagAction.UpdateTagSuccess) {
-
+  updateTagSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.UpdateTagSuccess) {
     const state = ctx.getState();
     ctx.patchState({
       ...state,
-      tag: payload
-    });
-  }
-
-  @Action(tagAction.GetTags)
-  getTags(ctx: StateContext<TagStateModel>) {
-    this.tagApi.getAllTag().subscribe(data => {
-      ctx.dispatch(new GetTagsSuccess(data));
-    }, error => {
-      ctx.dispatch(new GetTagByLabelFail(error));
-    });
-  }
-
-  @Action(tagAction.GetTagsSuccess)
-  getTagSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.GetTagsSuccess) {
-    const state = ctx.getState();
-    ctx.patchState({
-      ...state,
-      tags: payload
+      tags: state.tags.map(p => p.id === payload.id ? payload : p)
     });
   }
 
@@ -132,8 +146,40 @@ export class TagState {
     });
   }
 
+  @Action(tagAction.ShareLocationsWithAnotherUserByTagTitles)
+  share(ctx: StateContext<TagStateModel>, {payload, username}: tagAction.ShareLocationsWithAnotherUserByTagTitles) {
+    this.tagApi.shareLocationsWithAnotherUserByTagTitles(username, payload).subscribe(data => {
+      ctx.dispatch(new ShareLocationsWithAnotherUserByTagTitlesSuccess(data));
+    }, error => {
+      ctx.dispatch(new ShareLocationsWithAnotherUserByTagTitlesFail(error));
+    });
+  }
 
+  @Action(tagAction.ShareLocationsWithAnotherUserByTagTitlesSuccess)
+  shareSuccess(ctx: StateContext<TagStateModel>, {payload, username}: tagAction.ShareLocationsWithAnotherUserByTagTitles) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
 
+    });
+  }
+
+  @Action(tagAction.GetUserNames)
+  GetUserNames(ctx: StateContext<TagStateModel>) {
+    this.tagApi.getUserNames().subscribe(data => {
+      ctx.dispatch(new GetUserNamesSuccess(data));
+    }, error => {
+      ctx.dispatch(new GetUserNamesFail(error));
+    });
+  }
+
+  @Action(tagAction.GetTagsSuccess)
+  GetUserNamesSuccess(ctx: StateContext<TagStateModel>, {payload}: tagAction.GetTagsSuccess) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
+    });
+  }
 
 
 

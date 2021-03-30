@@ -17,6 +17,8 @@ import {AuthGuard} from './v0/interceptors/auth.guard';
 import {UserGuard} from './v0/interceptors/user.guard';
 import {HttpListenerService, HTTPStatus} from './v0/interceptors/http-listener.service';
 import {InsertAuthTokenInterceptorService} from './v0/interceptors/insert-auth-token-interceptor.service';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatButtonModule} from '@angular/material/button';
 
 @NgModule({
   declarations: [AppComponent],
@@ -31,7 +33,9 @@ import {InsertAuthTokenInterceptorService} from './v0/interceptors/insert-auth-t
     NgxsReduxDevtoolsPluginModule.forRoot(),
     NgxsLoggerPluginModule,
     NgxsModule.forRoot([]),
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatDialogModule,
+    MatButtonModule
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

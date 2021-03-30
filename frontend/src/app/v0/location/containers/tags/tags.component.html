@@ -2,15 +2,16 @@
 
 
 <ion-content [fullscreen]="true">
-
+ <!-- (click)="edit=true;select(tag)"-->
   <div *ngIf="!edit">
     <div class="modal-body" style="height: 440px;">
-    <span class="badge badge-pill badge-info" style="margin: 6px; font-size: 14px" *ngFor="let tag of tags" (click)="edit=true;select(tag)">
+    <span class="badge badge-pill badge-info" style="margin: 6px; font-size: 16px" *ngFor="let tag of tags" (click)="open(tag)">
 
             <ion-label style="display: inline-block; vertical-align: middle" >
              {{tag.label}}
             </ion-label>
-            <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px" name="close-circle" (click)="remove(tag)"></ion-icon>
+           <!-- <ion-icon style="display: inline-block; vertical-align: middle; margin-left:10px ;"  name="close-circle" ></ion-icon>-->
+
           </span>
 
       <span style="color: red" *ngIf="tags.length === 0">* You have to add at least one Tag !</span>
@@ -21,7 +22,66 @@
       </datalist>
     </div>
   </div>
+  <ng-template #list let-c="close" let-d="dismiss">
+    <div class="modal-body">
+      <ion-icon name="bookmark" class="saved-flag"></ion-icon>
+      <ion-button class="close-button" (click)="c('Close click')">
+        <ion-icon name="chevron-down-circle-outline" size="30px" ></ion-icon>
+      </ion-button>
+      <br>
+      <ion-button fill="outline" style=" margin-left:90px" size="small" (click)="edit=true;c('Close click')">
+        <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px"
+                  name="create-outline"></ion-icon>
+        <ion-label style="display: inline-block; vertical-align: middle">
+        Update
+        </ion-label>
+      </ion-button>
+      <br>
+      <ion-button fill="outline" style=" margin-left:90px" size="small"(click)="remove();c('Close click')" >
+        <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px"
+                  name="close-circle-outline"></ion-icon>
+        <ion-label style="display: inline-block; vertical-align: middle">
+        Delete
+        </ion-label>
 
+      </ion-button>
+      <br>
+      <ion-button fill="outline" size="small" style=" margin-left:90px" (click)="share();c('Close click')">
+        <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px"
+                  name="share-social-outline"></ion-icon>
+        <ion-label style="display: inline-block; vertical-align: middle">
+        Share
+        </ion-label>
+
+      </ion-button>
+
+    </div>
+  </ng-template>
+  <ng-template #shareTag let-e="close" let-a="dismiss">
+    <div class="modal-body" style="height: 260px;">
+      <span class="badge badge-pill badge-info" style="margin: 6px; font-size: 14px" *ngFor="let tag of tagsSelected">
+            <ion-label style="display: inline-block; vertical-align: middle">
+             {{tag}}
+            </ion-label>
+          </span>
+      <div style="width: 100%; display: flex">
+    <input list="allTags" name="tags" ngDefaultControl style="width: 80%; text-align: left" type="text" [(ngModel)]="used" (keydown.enter)="add()"
+           class="second text-input-save"  placeholder="Tag Label">
+        <button (click)="add()" size="small" class="add-tag" style="width: 20%">+</button>
+      </div>
+    <datalist id="allTags">
+      <option [value]="tag.label" *ngFor="let tag of tags ">{{tag.label}}</option>
+    </datalist>
+
+    <span style="color: red" *ngIf="tags.length === 0">* You have to add at least one Tag !</span>
+    <input list="users"  [(ngModel)]="selectedUser" style="width: 80%; text-align: left" type="text" class="second text-input-save"  placeholder="select username">
+    <datalist id="users" >
+      <option  *ngFor="let user of users " >{{user}}</option>
+    </datalist>
+    <ion-button (click)="ShareTag();e('Close click')" style=" margin-left:60px">Share</ion-button>
+    <ion-button (click)="e('Close click')" color="light">Cancel</ion-button>
+    </div>
+  </ng-template>
   <div *ngIf="edit">
     <div class="modal-body" style="height: 440px;">
   <span class="badge badge-pill badge-info" style="margin: 6px; font-size: 14px" *ngFor="let tag of tags" >
@@ -29,7 +89,9 @@
             <ion-label style="display: inline-block; vertical-align: middle">
              {{tag.label}}
             </ion-label>
+<!--
             <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px" name="close-circle" (click)="remove(tag)"></ion-icon>
+-->
           </span>
       <span style="color: red" *ngIf="tags.length === 0">* You have to add at least one Tag !</span>
       <br>
