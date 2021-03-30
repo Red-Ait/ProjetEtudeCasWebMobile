@@ -17,7 +17,7 @@ import {
   UpdateTagSuccess
 } from './tag.action';
 import {TagService} from '../service/tag.service';
-import {ILocation} from "../../@entities/ILocation";
+import {ILocation} from '../../@entities/ILocation';
 
 export class TagStateModel {
   tags: Array<ITag>;
@@ -89,7 +89,7 @@ export class TagState {
     const state = ctx.getState();
     ctx.patchState({
       ...state,
-      tag: payload
+      tags: [...state.tags, payload]
     });
   }
 
