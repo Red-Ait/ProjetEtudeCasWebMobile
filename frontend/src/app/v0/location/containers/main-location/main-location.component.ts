@@ -1,7 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {Store} from '@ngxs/store';
-import {Logout} from '../../../auth/state/auth.action';
+import {Select, Store} from '@ngxs/store';
+import {GetCurrentUser, Logout} from '../../../auth/state/auth.action';
 import {ToggleSideMenu} from '../../state/location.action';
+import {IUser} from '../../../@entities/IUser';
+import {ERole} from '../../../@entities/ERole';
+import {LocationState} from '../../state/location.state';
+import {AppState} from '../../../auth/state/app.state';
 
 @Component({
   selector: 'app-main-location',
@@ -17,10 +21,26 @@ export class MainLocationComponent implements OnInit {
     { title: 'Log out', url: '/auth/login', icon: 'log-out' },
   ];
   public labels = [];
+  currentUser: IUser = {
+    email: '',
+    firstName: '',
+    id: 0,
+    lastName: '',
+    password: '',
+    roles: new Array<ERole>(),
+    username: ''
+  };
+  @Select(AppState.getCurrentUser) $currentUser;
 
   constructor(private store: Store) { }
 
   ngOnInit() {
+    this.store.dispatch(new GetCurrentUser());
+    this.$currentUser.subscribe(u => {
+      if (u !== null) {
+        this.currentUser = u;
+      }
+    });
   }
   logout(p: any) {
     if (p.title === 'Log out') {

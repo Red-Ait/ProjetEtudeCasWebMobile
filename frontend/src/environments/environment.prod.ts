@@ -5,6 +5,7 @@ export const environment = {
   resourceUri: {
     register: '/register',
     authenticate: '/authenticate',
+    currentUser: '/user/current',
     location: '/location',
     tag: '/tag',
     user: '/user'

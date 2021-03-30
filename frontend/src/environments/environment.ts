@@ -8,6 +8,7 @@ export const environment = {
   apiUrl: '/api',
   resourceUri: {
     authenticate: '/authenticate',
+    currentUser: '/user/current',
     location: '/location',
     tag: '/tag',
     register: '/register',
