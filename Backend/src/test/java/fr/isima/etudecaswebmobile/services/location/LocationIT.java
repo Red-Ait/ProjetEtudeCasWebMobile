@@ -73,6 +73,7 @@ public class LocationIT {
     @Test
     @Transactional
     public void when_findAll_expect_locations() {
+        when(userDetailsService.getCurrentUser()).thenReturn(connectedUser);
         Assertions.assertTrue(locationImpl.getAllLocations().size() > 0);
     }
 

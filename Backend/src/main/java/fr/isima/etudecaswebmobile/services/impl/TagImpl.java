@@ -38,6 +38,8 @@ public class TagImpl implements TagService {
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
+    private static final String tag_title = "default tag";
+
     @Override
     public Tag addTag(Tag tag) {
 
@@ -88,17 +90,21 @@ public class TagImpl implements TagService {
         Optional<TagEntity> tagEntityOptional = tagRepository.findById(id);
         if (tagEntityOptional.isPresent()) {
             TagEntity tagEntity = tagEntityOptional.get();
-            List<LocationEntity> locationEntities = tagEntity.getLocationEntities();
-            if (locationEntities != null) {
-                locationEntities.forEach(locationEntity -> {
-                    List<TagEntity> tagEntities = locationEntity.getTagEntities();
-                    tagEntities.remove(locationEntity);
-                    locationEntity.setTagEntities(tagEntities);
-                });
-                tagEntity.setLocationEntities(null);
+            if (!tagEntity.getTitle().equals(tag_title)) {
+                List<LocationEntity> locationEntities = tagEntity.getLocationEntities();
+                if (locationEntities != null) {
+                    locationEntities.forEach(locationEntity -> {
+                        List<TagEntity> tagEntities = locationEntity.getTagEntities();
+                        tagEntities.remove(locationEntity);
+                        locationEntity.setTagEntities(tagEntities);
+                    });
+                    tagEntity.setLocationEntities(null);
+                }
+                tagRepository.deleteById(id);
+                return new ResponseEntity<>(true, HttpStatus.OK);
             }
-            tagRepository.deleteById(id);
-            return new ResponseEntity<>(true, HttpStatus.OK);
+            else
+                return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
         } else
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }

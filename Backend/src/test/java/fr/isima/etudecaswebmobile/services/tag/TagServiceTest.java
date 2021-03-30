@@ -43,11 +43,14 @@ public class TagServiceTest {
     @InjectMocks
     TagImpl tagImpl;
 
+    private static final String tag_title = "default tag";
+
     UserDao connectedUser = new UserDao(1L, "achkour","achkour","achkour@gmail.com", "achkour", "$2a$10$DA0mu7Omul8.pBdIMX7yleQXp/2LHYS1BzZJ37HctplRfgG/QBVgG");
 
     TagEntity tagEntity1 = new TagEntity(1L,"TitleTest");
     TagEntity tagEntity2 = new TagEntity(2L,"TitleTest2");
     TagEntity tagEntity3 = new TagEntity(3L,"TitleTest3");
+    TagEntity defaultTag = new TagEntity(5L,tag_title);
     Tag tag1 = new Tag(1L,"TitleTest");
     Tag tag2 = new Tag(2L,"TitleTest2");
     Tag tag3 = new Tag(null,"TitleTest3");
@@ -132,5 +135,10 @@ public class TagServiceTest {
         Assertions.assertEquals(tagImpl.deleteTagById(3L), new ResponseEntity<>(false, HttpStatus.NOT_FOUND));
     }
 
+    @Test
+    public void when_deleteDefault_expect_404() throws Exception {
+        when(tagRepository.findById(5L)).thenReturn(Optional.of(defaultTag));
+        Assertions.assertEquals(tagImpl.deleteTagById(5L), new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED));
+    }
 
 }

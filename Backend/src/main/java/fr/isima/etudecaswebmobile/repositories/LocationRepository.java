@@ -19,6 +19,18 @@ public interface LocationRepository extends JpaRepository<LocationEntity, Long>
     @Query(value = "SELECT l.id_location, l.label, l.longitude, l.latitude " +
             "from location l " +
             "INNER JOIN locations_tags tl on l.id_location = tl.location_id " +
+            "INNER JOIN tag t on tl.tag_id = t.id_tag " +
+            "where t.user_id = :user_id and t.title IN :tag_labels"
+            , nativeQuery = true
+    )
+    Optional<List<LocationEntity>> getLocationsByUserIdAndTagIds(
+            @Param("user_id") Long user_id,
+            @Param("tag_labels") List<String> tag_labels
+    );
+
+    @Query(value = "SELECT l.id_location, l.label, l.longitude, l.latitude " +
+            "from location l " +
+            "INNER JOIN locations_tags tl on l.id_location = tl.location_id " +
             "INNER JOIN tag t on tl.tag_id = t.id_tag where t.user_id = ?1", nativeQuery = true)
     Optional<List<LocationEntity>> findAllLocationsByUserId(Long id);
 
