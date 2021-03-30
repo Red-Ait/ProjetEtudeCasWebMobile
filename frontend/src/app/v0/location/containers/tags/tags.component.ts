@@ -142,11 +142,11 @@ export class TagsComponent implements OnInit, OnDestroy {
           text: 'Yes',
           handler: async () => {
             this.store.dispatch(new DeleteTag(this.deletedTag.id)).pipe(takeUntil(this.destroy$)).subscribe(result => {
-              this.result = result;
+              this.result = result.tagState.deleteResult;
               console.log(this.result);
             });
             switch (this.result) {
-              case  'true':
+              case  true:
                 const alert5 = await this.alertController.create({
                   cssClass: 'my-custom-class',
                   header: ' Great ',
@@ -163,7 +163,7 @@ export class TagsComponent implements OnInit, OnDestroy {
                 });
                 await alert5.present();
                 break;
-              case  'false':
+              case  false:
                 if (this.deletedTag.label === ' defaultTag') {
                   const alert4 = await this.alertController.create({
                     cssClass: 'my-custom-class',
@@ -198,11 +198,7 @@ export class TagsComponent implements OnInit, OnDestroy {
                   await alert7.present();
                 }
                 break;
-
-
             }
-            this.deletedTag.id = null;
-            this.deletedTag.label = '';
           }
         },
         {

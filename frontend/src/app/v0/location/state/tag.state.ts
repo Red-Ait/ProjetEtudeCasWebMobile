@@ -22,6 +22,7 @@ import {ILocation} from '../../@entities/ILocation';
 export class TagStateModel {
   tags: Array<ITag>;
   searchedtags: Array<ITag>;
+  deleteResult: boolean;
   tag: {
     id: number,
     label: string
@@ -38,7 +39,8 @@ export class LocationStateModel {
   defaults: {
     tags: [],
     searchedtags: [],
-    tag : null
+    tag : null,
+    deleteResult: false
   }
 })
 
@@ -95,9 +97,17 @@ export class TagState {
 
   @Action(tagAction.DeleteTag)
   deleteTag(ctx: StateContext<TagStateModel>, {payload}: tagAction.DeleteTag) {
+    const state = ctx.getState();
     this.tagApi.deleteTag(payload)
       .subscribe(r => {
-        ctx.dispatch(new DeleteTagSuccess({ deletedTag: payload}));
+        if (r) {
+          ctx.dispatch(new DeleteTagSuccess(payload));
+        } else {
+          ctx.patchState({
+            ...state,
+            deleteResult: false
+          });
+        }
       });
   }
 
@@ -106,6 +116,7 @@ export class TagState {
     const state = ctx.getState();
     ctx.patchState({
       ...state,
+      deleteResult: true,
       tags: state.tags.filter(p => p.id !== payload)
     });
   }
