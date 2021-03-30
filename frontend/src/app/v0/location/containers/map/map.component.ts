@@ -136,10 +136,9 @@ export class MapComponent implements OnInit {
     this.$pointsSearchedByTags.subscribe(data => {
       this.searchResults = [];
       const aux = data.map(d => ({point: d, saved: true}));
-      this.searchResults = [...this.searchResults, ...aux];
-    });
+      this.searchResults = [ ...aux];
+      });
     this.$sharedWithMeLocations.subscribe(data => {
-      console.log(data);
       this.sharedWithMeLocation = data;
       this.markerClusterData = this.setMarkers();
     });
@@ -397,8 +396,11 @@ export class MapComponent implements OnInit {
       });
       this.store.select(LocationState.searchPositionByName)
         .pipe(map(query => query(address))).subscribe(data => {
-          const aux = data.map(d => ({point: d, saved: true}));
-          this.searchResults = [...this.searchResults, ...aux];
+          console.log(address, data);
+          if (this.searchMode === this.searchPlace) {
+            const aux = data.map(d => ({point: d, saved: true}));
+            this.searchResults = [...this.searchResults, ...aux];
+          }
       });
 
     } else {

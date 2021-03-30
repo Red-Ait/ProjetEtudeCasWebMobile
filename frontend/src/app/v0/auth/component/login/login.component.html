@@ -3,7 +3,7 @@
 
     <!-- Login Form -->
     <form *ngIf="formType === 'login'">
-      <input type="text" id="login" class="fadeIn second text-input" [(ngModel)]="loginData.username" name="login" placeholder="Email">
+      <input type="text" id="login" class="fadeIn second text-input" [(ngModel)]="loginData.username" name="login" placeholder="Username">
       <input type="password" id="password" class="fadeIn third text-input" [(ngModel)]="loginData.password" name="login" placeholder="Password">
       <input type="submit" class="fadeIn fourth" value="Connexion" (click)="login()">
       <ion-button fill="outline" size="small" (click)="formType = 'uri'">
