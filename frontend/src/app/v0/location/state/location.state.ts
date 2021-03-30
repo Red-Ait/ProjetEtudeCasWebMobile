@@ -84,10 +84,21 @@ export class LocationState {
 
   @Action(locationAction.GetUserMapPointSuccess)
   getUserMapPointSuccess(ctx: StateContext<LocationStateModel>, {payload}: locationAction.GetUserMapPointSuccess) {
+    const aux = new Array<ILocation>();
+    const map = new Map();
+    if (payload !== null) {
+      payload.forEach(l => {
+        if (!map.has(l.id)) {
+          map.set(l.id, true);
+          aux.push(l);
+        }
+      });
+    }
+
     const state = ctx.getState();
     ctx.patchState({
       ...state,
-      mapPoints: payload === null ? [] : payload
+      mapPoints: aux
     });
   }
 
@@ -199,6 +210,7 @@ export class LocationState {
   searchByTagsAndMode(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTagsAndMode) {
     const state = ctx.getState();
     let data = new Array<ILocation>();
+    const indexs = new Set<number>();
     data = [...state.mapPoints];
     for (const tag of payload) {
       for (const pt of data) {
@@ -211,10 +223,15 @@ export class LocationState {
         if (!exist) {
           const index = data.indexOf(pt);
           if (index >= 0) {
-            data.splice(index, 1);
+            indexs.add(index);
           }
         }
       }
+    }
+    let i = 0;
+    for (const index of indexs) {
+      data.splice(index - i, 1);
+      i ++;
     }
     ctx.dispatch(new SearchByTagsAndModeSuccess(data));
   }

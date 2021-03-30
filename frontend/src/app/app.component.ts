@@ -8,7 +8,6 @@ import {environment} from '../environments/environment';
 })
 export class AppComponent {
   constructor() {
-    console.log(localStorage.getItem('uri'));
     localStorage.setItem('uri', environment.backendApiUrl);
   }
 }
