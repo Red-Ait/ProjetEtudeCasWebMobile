@@ -4,7 +4,7 @@ import {ThemePalette} from '@angular/material/core';
 import {ITag} from '../../../@entities/ITag';
 import {
   AddTag,
-  DeleteTag,
+  DeleteTag, DeleteTagSuccess,
   GetTags,
   GetUserNames,
   ShareLocationsWithAnotherUserByTagTitles,
@@ -27,7 +27,7 @@ import {TagService} from '../../service/tag.service';
   styleUrls: ['./tags.component.scss'],
 })
 
-export class TagsComponent implements OnInit, OnDestroy  {
+export class TagsComponent implements OnInit, OnDestroy {
   private locations: ArrayBuffer;
 
 
@@ -43,7 +43,8 @@ export class TagsComponent implements OnInit, OnDestroy  {
   deletedTag: ITag;
   users: any;
   tagsSelected: string[] = [];
-   used: '';
+  used: '';
+  private result: any;
 
 
   tag = {} as ITag;
@@ -74,6 +75,7 @@ export class TagsComponent implements OnInit, OnDestroy  {
     });
   }*/
   selectedUser: string;
+
 
   ngOnInit() {
     this.store.dispatch(new GetTags());
@@ -138,10 +140,69 @@ export class TagsComponent implements OnInit, OnDestroy  {
       buttons: [
         {
           text: 'Yes',
-          handler: () => {
-                this.store.dispatch(new DeleteTag(this.deletedTag.id));
-                this.deletedTag.id = null;
-                this.deletedTag.label = '';
+          handler: async () => {
+            this.store.dispatch(new DeleteTag(this.deletedTag.id)).pipe(takeUntil(this.destroy$)).subscribe(result => {
+              this.result = result;
+              console.log(this.result);
+            });
+            switch (this.result) {
+              case  'true':
+                const alert5 = await this.alertController.create({
+                  cssClass: 'my-custom-class',
+                  header: ' Great ',
+                  subHeader: ' ',
+                  message: 'tag deleted !',
+                  buttons: [
+                    {
+                      text: 'Close',
+                      role: 'cancel',
+                      handler: () => {
+                      }
+                    }
+                  ]
+                });
+                await alert5.present();
+                break;
+              case  'false':
+                if (this.deletedTag.label === ' defaultTag') {
+                  const alert4 = await this.alertController.create({
+                    cssClass: 'my-custom-class',
+                    header: ' You cannot delete this tag ! ',
+                    subHeader: ' ',
+                    message: '',
+                    buttons: [
+                      {
+                        text: 'Close',
+                        role: 'cancel',
+                        handler: () => {
+                        }
+                      }
+                    ]
+                  });
+                  await alert4.present();
+                } else {
+                  const alert7 = await this.alertController.create({
+                    cssClass: 'my-custom-class',
+                    header: ' tag not found  ! ',
+                    subHeader: ' ',
+                    message: '',
+                    buttons: [
+                      {
+                        text: 'Close',
+                        role: 'cancel',
+                        handler: () => {
+                        }
+                      }
+                    ]
+                  });
+                  await alert7.present();
+                }
+                break;
+
+
+            }
+            this.deletedTag.id = null;
+            this.deletedTag.label = '';
           }
         },
         {
@@ -154,16 +215,14 @@ export class TagsComponent implements OnInit, OnDestroy  {
     await alert.present();
   }
 
-
-/*
-  select(tag: ITag) {
-    this.selectedTagid = tag.id;
-    this.selectedTagLabel = tag.label;
-    console.log(this.selectedTagLabel);
-    return this.selectedTagLabel;
-
-  }
-*/
+  /*
+    select(tag: ITag) {
+      this.selectedTagid = tag.id;
+      this.selectedTagLabel = tag.label;
+      console.log(this.selectedTagLabel);
+      return this.selectedTagLabel;
+    }
+  */
 
   async update() {
     for (const tags of this.tags) {
@@ -224,11 +283,11 @@ export class TagsComponent implements OnInit, OnDestroy  {
     });
   }
   open(tag: ITag) {
-  this.selectedTagid = tag.id;
-  this.selectedTagLabel = tag.label;
-  this.deletedTag = tag;
-  this.openModal(this.list, false);
-}
+    this.selectedTagid = tag.id;
+    this.selectedTagLabel = tag.label;
+    this.deletedTag = tag;
+    this.openModal(this.list, false);
+  }
 
 
   share() {
@@ -297,7 +356,5 @@ export class TagsComponent implements OnInit, OnDestroy  {
     this.tagsSelected = [];
     this.selectedUser = null;
   }
-
-
 
 }

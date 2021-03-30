@@ -106,6 +106,7 @@ export class TagState {
     const state = ctx.getState();
     ctx.patchState({
       ...state,
+      tags: state.tags.filter(p => p.id !== payload)
     });
   }
 
