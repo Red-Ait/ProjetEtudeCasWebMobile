@@ -1,0 +1,66 @@
+<div class="wrapper fadeInDown">
+  <div id="formContent">
+
+    <!-- Login Form -->
+    <form #f="ngForm" (ngSubmit)="submit()">
+      <input
+        type="text"
+        id="lastName"
+        [(ngModel)]="user.lastName"
+        class="fadeIn second text-input"
+        name="lastName"
+        placeholder="Last Name"
+      >
+      <input
+        type="text"
+        id="firstName"
+        [(ngModel)]="user.firstName"
+        class="fadeIn second text-input"
+        name="firstName"
+        placeholder="First Name"
+      >
+      <input
+        type="text"
+        id="id"
+        [(ngModel)]="user.username"
+        class="fadeIn second text-input"
+        name="username"
+        placeholder="Username"
+      >
+      <input
+        type="text"
+        id="email"
+        [(ngModel)]="user.email"
+        class="fadeIn second text-input"
+        name="email"
+        placeholder="Email"
+      >
+      <input
+        type="password"
+        id="password"
+        [(ngModel)]="user.password"
+        class="fadeIn third text-input"
+        name="password"
+        placeholder="Password"
+      >
+      <input
+        type="password"
+        id="passwordConfirmer"
+        class="fadeIn third text-input"
+        name="login"
+        placeholder="Confirm Password"
+      >
+      <input
+        type="submit"
+        class="fadeIn fourth"
+        value="Submit"
+      >
+    </form>
+
+    <!-- Remind Passowrd -->
+    <div id="formFooter">
+      <a class="underlineHover" routerLink="/auth/login">Already signed up  ? Log in.</a>
+    </div>
+
+  </div>
+</div>

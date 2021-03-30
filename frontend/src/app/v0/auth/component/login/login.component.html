@@ -1,0 +1,37 @@
+<div class="wrapper fadeInDown">
+  <div id="formContent">
+
+    <!-- Login Form -->
+    <form *ngIf="formType === 'login'">
+      <input type="text" id="login" class="fadeIn second text-input" [(ngModel)]="loginData.username" name="login" placeholder="Username">
+      <input type="password" id="password" class="fadeIn third text-input" [(ngModel)]="loginData.password" name="login" placeholder="Password">
+      <input type="submit" class="fadeIn fourth" value="Connexion" (click)="login()">
+      <ion-button fill="outline" size="small" (click)="formType = 'uri'">
+        <ion-label style="display: inline-block; vertical-align: middle">
+          Set Api Uri
+        </ion-label>
+        <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px"
+                  name="arrow-forward-outline"></ion-icon>
+      </ion-button>
+    </form>
+
+    <form *ngIf="formType === 'uri'">
+      <input type="text" id="uri" class="fadeIn second text-input" [(ngModel)]="uri"
+             name="Api Uri" placeholder="Email">
+      <input type="submit" class="fadeIn fourth" value="Save" (click)="save()">
+      <ion-button fill="outline" size="small" (click)="formType = 'login'">
+        <ion-icon style="display: inline-block; vertical-align: middle; margin-left:5px"
+                  name="arrow-back-outline"></ion-icon>
+        <ion-label style="display: inline-block; vertical-align: middle">
+          Back to login form
+        </ion-label>
+      </ion-button>
+    </form>
+
+    <!-- Remind Passowrd -->
+    <div id="formFooter">
+      <a class="underlineHover" routerLink="/auth/register">Sign Up</a>
+    </div>
+
+  </div>
+</div>
