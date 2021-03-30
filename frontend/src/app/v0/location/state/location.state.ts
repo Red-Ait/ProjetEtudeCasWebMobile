@@ -4,7 +4,7 @@ import {Injectable} from '@angular/core';
 import {ITag} from '../../@entities/ITag';
 import * as locationAction from './location.action';
 import {
-  DeletePositionSuccess,
+  DeletePositionSuccess, GetSharedWithMeLocation, GetSharedWithMeLocationSuccess,
   GetUserMapPointFail,
   GetUserMapPointSuccess,
   SavePositionFail,
@@ -12,10 +12,13 @@ import {
 } from './location.action';
 import {LocationApi} from '../service/location.api';
 import {GetTags} from './tag.action';
+import {Logout} from '../../auth/state/auth.action';
 
 export class LocationStateModel {
   mapPoints: Array<ILocation>;
+  sharedWithMePoints: Array<ILocation>;
   pointsSearchedByTags: Array<ILocation>;
+  menuToggle: boolean;
   tags: Array<ITag>;
 }
 
@@ -23,7 +26,9 @@ export class LocationStateModel {
   name: 'locationState',
   defaults: {
     mapPoints: [],
+    sharedWithMePoints: [],
     pointsSearchedByTags: [],
+    menuToggle: false,
     tags: []
   }
 })
@@ -41,6 +46,11 @@ export class LocationState {
   }
 
   @Selector()
+  static getSharedWithMeLocations(state: LocationStateModel) {
+    return state.sharedWithMePoints;
+  }
+
+  @Selector()
   static getTags(state: LocationStateModel) {
     return state.tags;
   }
@@ -54,6 +64,15 @@ export class LocationState {
     return (query: string) =>
       state.mapPoints.filter(pt => pt.label.trim().toLowerCase().includes(query.trim().toLowerCase()));
   }
+  @Selector()
+  static menuToggle(state: LocationStateModel) {
+    return state.menuToggle;
+  }
+
+
+  /************       Handling actions         ********************/
+
+
   @Action(locationAction.GetUserMapPoint)
   getUserMapPoint(ctx: StateContext<LocationStateModel>) {
     this.locationApi.getUserMapPoint().subscribe(data => {
@@ -71,6 +90,23 @@ export class LocationState {
       mapPoints: payload === null ? [] : payload
     });
   }
+
+  @Action(locationAction.GetSharedWithMeLocation)
+  getSharedWithMeLocation(ctx: StateContext<LocationStateModel>) {
+    this.locationApi.getSharedWithMeLocation().subscribe(data => {
+      ctx.dispatch(new GetSharedWithMeLocationSuccess(data));
+    });
+  }
+
+  @Action(locationAction.GetSharedWithMeLocationSuccess)
+  getSharedWithMeLocationSuccess(ctx: StateContext<LocationStateModel>, {payload}: locationAction.GetSharedWithMeLocationSuccess) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
+      sharedWithMePoints: payload === null ? [] : payload
+    });
+  }
+
   @Action(locationAction.SavePosition)
   saveMapPoint(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SavePosition) {
     this.locationApi.saveMapPoint(payload).subscribe(data => {
@@ -136,8 +172,8 @@ export class LocationState {
   @Action(locationAction.SearchByTagsOrMode)
   searchByTagsOrMode(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SearchByTagsOrMode) {
     this.locationApi.searchByTags(payload).subscribe(data => {
-      let aux = new Array<ILocation>();
-      let map = new Map();
+      const aux = new Array<ILocation>();
+      const map = new Map();
       data.forEach(list => {
         list.forEach(l => {
           if (!map.has(l.id)) {
@@ -190,5 +226,20 @@ export class LocationState {
       ...state,
       pointsSearchedByTags: payload
     });
+  }
+
+  @Action(locationAction.ToggleSideMenu)
+  toggleSideMenu(ctx: StateContext<LocationStateModel>, {payload}: locationAction.ToggleSideMenu) {
+    const state = ctx.getState();
+    ctx.patchState({
+      ...state,
+      menuToggle: payload
+    });
+  }
+
+  @Action(locationAction.SetBackendUri)
+  setBackendUri(ctx: StateContext<LocationStateModel>, {payload}: locationAction.SetBackendUri) {
+    localStorage.setItem('uri', payload);
+    ctx.dispatch(new Logout());
   }
 }

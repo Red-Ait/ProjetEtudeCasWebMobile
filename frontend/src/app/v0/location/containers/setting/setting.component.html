@@ -1,0 +1,11 @@
+<app-header [title]="'Setting'"></app-header>
+
+
+<ion-content [fullscreen]="true">
+  <form >
+    <input type="text" id="uri" class="fadeIn third text-input" [(ngModel)]="uri" name="login" placeholder="Backend uri">
+    <input type="submit" class="fadeIn fourth" value="Save" (click)="save()">
+
+  </form>
+
+</ion-content>

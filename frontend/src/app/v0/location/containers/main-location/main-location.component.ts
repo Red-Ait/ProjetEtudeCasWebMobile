@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Store} from '@ngxs/store';
 import {Logout} from '../../../auth/state/auth.action';
+import {ToggleSideMenu} from '../../state/location.action';
 
 @Component({
   selector: 'app-main-location',
@@ -12,7 +13,7 @@ export class MainLocationComponent implements OnInit {
   public appPages = [
     { title: 'Maps', url: '/location/map', icon: 'map' },
     { title: 'Tags', url: '/location/tags', icon: 'pricetags' },
-    { title: 'Shared', url: '/folder/Trash', icon: 'share-social' },
+    { title: 'Setting', url: '/location/setting', icon: 'settings' },
     { title: 'Log out', url: '/auth/login', icon: 'log-out' },
   ];
   public labels = [];
@@ -25,5 +26,8 @@ export class MainLocationComponent implements OnInit {
     if (p.title === 'Log out') {
       this.store.dispatch(new Logout());
     }
+  }
+  toggleMenu(t: boolean) {
+    this.store.dispatch(new ToggleSideMenu(t));
   }
 }
