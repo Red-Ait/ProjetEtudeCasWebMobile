@@ -119,4 +119,13 @@ public class TagIT {
         );
     }
 
+    @Test
+    @Transactional
+    public void when_deleteTag_default_expect_false() {
+        Assertions.assertEquals(
+                new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED),
+                tagImpl.deleteTagById(1L)
+        );
+    }
+
 }

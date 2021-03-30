@@ -87,18 +87,9 @@ public class LocationController {
     }
 
     @PostMapping("location/tags")
-    public ResponseEntity<List<List<Location>>> getListLocationsOfListTags(@Validated @RequestBody List<Tag> list_tags)
+    public ResponseEntity<List<Location>> getListLocationsOfListTags(@Validated @RequestBody List<Tag> tags)
     {
-        List<String> str = new ArrayList<String>();
-        List<List<Location>> locations = new ArrayList<List<Location>>();
-
-        for(int i = 0; i<list_tags.size(); i++)
-        {
-           List<Location> locat = this.locationService.getLocationsByTag(list_tags.get(i).getId());
-           locations.add(locat);
-        }
-
-        return new ResponseEntity<>(locations, HttpStatus.OK);
+        return new ResponseEntity<>(locationService.getLocationsByTags(tags), HttpStatus.OK);
     }
 
     @PostMapping("location/tags/mutual")

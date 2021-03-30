@@ -225,6 +225,23 @@ public class LocationImpl implements LocationService {
     }
 
     @Override
+    public List<Location> getLocationsByTags(
+            List<Tag> tags
+    ) {
+        if(!tags.isEmpty()) {
+            List<String> tagLabels = tags.stream().map(Tag::getLabel).collect(Collectors.toList());
+            return locationRepository.getLocationsByUserIdAndTagIds(
+                    userDetailsService.getCurrentUser().getId(),
+                    tagLabels
+            ).orElseThrow(() -> new NoContentException("Locations Not Found"))
+                    .stream()
+                    .map(locationMapper::toModel).collect(Collectors.toList());
+        } else
+            throw new UnauthorizedException("there are no Tags");
+
+    }
+
+    @Override
     public List<Location> findAllLocationsByUserId(Long id) {
 
         return locationRepository.findAllLocationsByUserId(id)

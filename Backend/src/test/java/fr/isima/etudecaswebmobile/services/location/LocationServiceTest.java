@@ -96,11 +96,6 @@ public class LocationServiceTest {
         when(locationMapper.fromModel(location3)).thenReturn(locationEntity3);
         when(locationMapper.toModel(locationEntity4)).thenReturn(location4);
 
-        when(locationRepository.findAll()).thenReturn(
-                new ArrayList<LocationEntity>(
-                        Arrays.asList(locationEntity1, locationEntity2)
-                )
-        );
         when(locationRepository.findAllLocationsByUserId(1L)).thenReturn(
                 Optional.of(
                         new ArrayList<LocationEntity>(

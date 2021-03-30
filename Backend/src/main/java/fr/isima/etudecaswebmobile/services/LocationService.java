@@ -1,6 +1,7 @@
 package fr.isima.etudecaswebmobile.services;
 
 import fr.isima.etudecaswebmobile.models.Location;
+import fr.isima.etudecaswebmobile.models.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -17,5 +18,6 @@ public interface LocationService {
     public List<Location> findAllLocationsOfAnotherUserByTagTitles(String ownerUsername, List<String> tagTitles);
     public String shareLocationsWithAnotherUserByTagTitles(String ownerUsername, List<String> tagTitles);
     public List<Location> findAllSharedLocations();
+    public List<Location> getLocationsByTags(List<Tag> tags);
 
 }
